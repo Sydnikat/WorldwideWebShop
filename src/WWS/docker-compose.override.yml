@@ -1,0 +1,9 @@
+version: '3.4'
+
+services:
+  inventory:
+    ports:
+    - "8081:8080"
+  mssql:
+    ports:
+    - "1433:1433"

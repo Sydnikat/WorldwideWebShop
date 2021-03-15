@@ -1,0 +1,32 @@
+version: '3.4'
+
+services:
+  inventory:
+    container_name: "wws_inventory"
+    image: ${DOCKER_REGISTRY:-wws}inventory:${IMAGE_TAG:-latest}
+    build:
+      context: ./Inventory/inventory
+      dockerfile: Dockerfile
+    networks:
+      - wws-network
+    depends_on:
+      - mssql
+
+  mssql:
+    container_name: "wws_mssql"
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: "WWSPass420*"
+      ACCEPT_EULA: "Y"
+    networks:
+      - wws-network
+    volumes:
+      - ./wws-mssql-data:/var/opt/mssql/data
+  
+volumes:
+  data:
+    name: wws-mssql-data
+  
+networks:
+  wws-network:
+    driver: bridge
