@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Folder Include="inventory\" />
+    <Folder Include="inventory\src\test\kotlin\hu\bme\aut\inventory\" />
   </ItemGroup>
 
 

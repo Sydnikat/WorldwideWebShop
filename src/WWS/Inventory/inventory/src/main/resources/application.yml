@@ -1,0 +1,20 @@
+spring:
+  data:
+    mssql:
+      host: ${MSSQL_HOST:localhost}
+      port: ${MSSQL_PORT:1433}
+      database: ${MSSQL_DATABASE:WWS}
+      username: ${MSSQL_USERNAME:sa}
+      password: ${MSSQL_PASSWORD:WWSPass420*}
+    r2dbc:
+      repositories:
+        enabled: true
+  main:
+    web-application-type: reactive
+
+logging:
+  level:
+    hu.bme.aut.inventory: TRACE
+    org:
+      springframework:
+       r2dbc: TRACE
