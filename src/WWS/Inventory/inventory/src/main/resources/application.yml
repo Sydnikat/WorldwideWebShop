@@ -1,7 +1,7 @@
 spring:
   data:
     mssql:
-      host: ${MSSQL_HOST:localhost}
+      host: ${MSSQL_HOST:wws_mssql}
       port: ${MSSQL_PORT:1433}
       database: ${MSSQL_DATABASE:WWS}
       username: ${MSSQL_USERNAME:sa}
