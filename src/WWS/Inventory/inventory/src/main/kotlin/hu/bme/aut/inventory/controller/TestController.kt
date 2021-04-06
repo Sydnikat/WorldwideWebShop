@@ -1,11 +1,10 @@
 package hu.bme.aut.inventory.controller
 
-import hu.bme.aut.inventory.dal.TestRepository
+import hu.bme.aut.inventory.dal.CategoryRepository
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.reactive.awaitFirstOrNull
-import kotlinx.coroutines.reactive.awaitSingle
-import kotlinx.coroutines.reactive.awaitSingleOrElse
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -15,13 +14,14 @@ import java.lang.Exception
 @RestController
 @RequestMapping("/test")
 class TestController(
-    private val testRepository: TestRepository
+    private val categoryRepository: CategoryRepository
 ) {
 
     @GetMapping
     suspend fun testEndpoint(): ResponseEntity<String> {
         return try {
-            val people = testRepository.findAll().asFlow().toList()
+            val p = PageRequest.of(0, 1, Sort.by("id").descending())
+            val people = categoryRepository.findAllByIdIn(listOf(1,2,3), p).asFlow().toList()
             ResponseEntity.ok("Test data: $people")
         } catch (e: Exception) {
             ResponseEntity.ok("Exception: ${e.message}")
