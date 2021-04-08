@@ -2,6 +2,8 @@ package hu.bme.aut.inventory.controller.category
 
 import hu.bme.aut.inventory.controller.category.request.NewCategoryRequest
 import hu.bme.aut.inventory.controller.category.response.CategoryResponse
+import hu.bme.aut.inventory.controller.item.request.NewItemRequest
+import hu.bme.aut.inventory.controller.item.response.ItemResponse
 import hu.bme.aut.inventory.service.category.CategoryService
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
@@ -57,5 +59,24 @@ class CategoryController(
                 .toList()
                 .map { CategoryResponse.of(it) }
         )
+    }
+
+    @PostMapping("{id}/items")
+    suspend fun addItem(
+        @PathVariable
+        id: Long,
+        @RequestBody @Valid
+        request: NewItemRequest
+    ): ResponseEntity<ItemResponse> {
+        val category = categoryService.getCategory(id).awaitFirst()
+            ?: return ResponseEntity.notFound().build()
+
+        val savedItem = categoryService.saveNewItem(
+            category = category,
+            name = request.name,
+            description = request.description
+        ).awaitSingle()
+
+        return ResponseEntity.ok(ItemResponse.of(savedItem))
     }
 }
