@@ -9,4 +9,5 @@ import reactor.core.publisher.Flux
 interface CategoryRepository : ReactiveCrudRepository<Category, Long> {
     fun findAllByNameContaining(str: String, pageable: Pageable = Pageable.unpaged()): Flux<Category>
     fun findAllByIdIn(ids: List<Long>, pageable: Pageable = Pageable.unpaged()): Flux<Category>
+    fun findAllByIdNotNull(pageable: Pageable = Pageable.unpaged()): Flux<Category>
 }
