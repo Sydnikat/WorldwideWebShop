@@ -2,14 +2,19 @@ package hu.bme.aut.inventory.service.item
 
 import hu.bme.aut.inventory.dal.Item
 import hu.bme.aut.inventory.dal.ItemRepository
+import hu.bme.aut.inventory.dal.Review
+import hu.bme.aut.inventory.dal.ReviewRepository
+import hu.bme.aut.inventory.service.item.exception.RatingOutOfRangeException
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.LocalDate
 
 @Service
 class ItemService(
-    private val itemRepository: ItemRepository
+    private val itemRepository: ItemRepository,
+    private val reviewRepository: ReviewRepository
 ) {
     suspend fun getItem(itemId: Long): Mono<Item?> =
         itemRepository.findById(itemId)
@@ -37,5 +42,30 @@ class ItemService(
         }
 
         return itemRepository.save(item)
+    }
+
+    suspend fun saveNewReview(
+        item: Item,
+        reviewerName: String,
+        reviewerId: String,
+        summary: String,
+        rating: Int
+    ): Mono<Review> {
+
+        if (rating > 5) {
+            throw RatingOutOfRangeException(rating)
+        }
+
+        val newReview = Review(
+            id = null,
+            itemId = item.id!!,
+            reviewerName = reviewerName,
+            reviewerId = reviewerId,
+            summary = summary,
+            rating = rating,
+            created = LocalDate.now()
+        )
+
+        return reviewRepository.save(newReview)
     }
 }
