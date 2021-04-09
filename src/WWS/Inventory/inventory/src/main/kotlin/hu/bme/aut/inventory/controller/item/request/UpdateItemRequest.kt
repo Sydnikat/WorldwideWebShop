@@ -22,6 +22,7 @@ data class UpdateItemRequest(
         name = "",
         description = description,
         discountId = null,
+        discount = null,
         rating = null,
         ratingCount = 0,
         created = LocalDate.now(),

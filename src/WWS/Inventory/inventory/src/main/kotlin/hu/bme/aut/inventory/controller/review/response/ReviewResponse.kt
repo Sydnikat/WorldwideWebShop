@@ -19,7 +19,7 @@ data class ReviewResponse(
                 reviewerName = reviewerName,
                 reviewerId = reviewerId,
                 summary = summary,
-                rating = rating,
+                rating = rating.toInt(),
                 created = created.toString()
             )
         }

@@ -17,6 +17,8 @@ data class Item(
     var description: String,
     @Column("DiscountID")
     var discountId: Long?,
+    @Column("Discount")
+    var discount: Long?,
     @Column("Rating")
     var rating: Float?,
     @Column("RatingCount")

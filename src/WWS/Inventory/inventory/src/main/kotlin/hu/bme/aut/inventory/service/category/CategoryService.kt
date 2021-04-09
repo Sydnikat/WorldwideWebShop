@@ -37,6 +37,7 @@ class CategoryService(
             name = name,
             description = description,
             discountId = null,
+            discount = null,
             rating = null,
             ratingCount = 0,
             created = LocalDate.now(),
