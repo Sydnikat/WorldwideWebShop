@@ -14,5 +14,7 @@ data class Discount(
     @Column("StartDate")
     var startDate: LocalDate,
     @Column("EndDate")
-    var endDate: LocalDate
+    var endDate: LocalDate,
+    @Column("Expired")
+    var expired: Boolean,
 )

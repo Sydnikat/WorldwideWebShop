@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.LocalDate
+import kotlin.jvm.Throws
 
 @Service
 class ItemService(
@@ -22,6 +23,9 @@ class ItemService(
 
     suspend fun getItems(pageable: Pageable = Pageable.unpaged()): Flux<Item> =
         itemRepository.findAllByIdNotNull(pageable)
+
+    suspend fun getItems(categoryId: Long, pageable: Pageable = Pageable.unpaged()): Flux<Item> =
+        itemRepository.findAllByCategoryId(categoryId = categoryId, pageable = pageable)
 
     suspend fun getItems(ids: List<Long>, pageable: Pageable = Pageable.unpaged()): Flux<Item> =
         itemRepository.findAllByIdIn(ids = ids, pageable = pageable)
@@ -45,6 +49,9 @@ class ItemService(
         return itemRepository.save(item)
     }
 
+    @Throws(
+        RatingOutOfRangeException::class,
+    )
     suspend fun saveNewReview(
         item: Item,
         reviewerName: String,
