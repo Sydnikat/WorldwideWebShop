@@ -5,6 +5,7 @@ import hu.bme.aut.inventory.dal.ItemRepository
 import hu.bme.aut.inventory.dal.Review
 import hu.bme.aut.inventory.dal.ReviewRepository
 import hu.bme.aut.inventory.service.item.exception.RatingOutOfRangeException
+import hu.bme.aut.inventory.util.increaseRating
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -76,13 +77,14 @@ class ItemService(
 
         val savedReview = reviewRepository.save(newReview).awaitSingle()
 
-        val newRating = (((item.rating ?: 0.0F) * item.ratingCount) + rating.toFloat()) / (item.ratingCount + 1)
-
-        item.ratingCount += 1
-        item.rating = newRating
-
+        item.increaseRating(savedReview.rating.toInt())
         itemRepository.save(item)
 
         return Mono.just(savedReview)
+    }
+
+    fun deleteItem(item: Item) {
+        reviewRepository.deleteAllByItemId(itemId = item.id!!)
+        itemRepository.delete(item)
     }
 }

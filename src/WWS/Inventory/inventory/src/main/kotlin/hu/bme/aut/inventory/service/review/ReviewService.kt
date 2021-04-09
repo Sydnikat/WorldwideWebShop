@@ -1,8 +1,11 @@
 package hu.bme.aut.inventory.service.review
 
 import hu.bme.aut.inventory.dal.Item
+import hu.bme.aut.inventory.dal.ItemRepository
 import hu.bme.aut.inventory.dal.Review
 import hu.bme.aut.inventory.dal.ReviewRepository
+import hu.bme.aut.inventory.util.decreaseRating
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -10,7 +13,8 @@ import reactor.core.publisher.Mono
 
 @Service
 class ReviewService(
-    private val reviewRepository: ReviewRepository
+    private val reviewRepository: ReviewRepository,
+    private val itemRepository: ItemRepository
 ) {
     suspend fun getReview(reviewId: Long): Mono<Review?> =
         reviewRepository.findById(reviewId)
@@ -26,4 +30,16 @@ class ReviewService(
 
     suspend fun getReviewsOfItem(item: Item, pageable: Pageable = Pageable.unpaged()): Flux<Review> =
         reviewRepository.findAllByItemId(item.id!!)
+
+    suspend fun deleteReview(review: Review) {
+        val item = itemRepository.findById(review.itemId)
+            .awaitFirstOrNull()
+
+        if (item != null) {
+            item.decreaseRating(review.rating.toInt())
+            itemRepository.save(item)
+        }
+
+        reviewRepository.delete(review)
+    }
 }

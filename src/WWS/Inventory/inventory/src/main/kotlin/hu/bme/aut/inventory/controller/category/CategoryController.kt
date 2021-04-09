@@ -8,9 +8,11 @@ import hu.bme.aut.inventory.service.category.CategoryService
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -78,5 +80,16 @@ class CategoryController(
         ).awaitSingle()
 
         return ResponseEntity.ok(ItemResponse.of(savedItem))
+    }
+
+    @DeleteMapping("{id}")
+    suspend fun deleteCategory(
+        @PathVariable
+        id: Long
+    ) {
+        val category = categoryService.getCategory(id).awaitFirstOrNull()
+            ?: return
+
+        categoryService.deleteCategory(category = category)
     }
 }

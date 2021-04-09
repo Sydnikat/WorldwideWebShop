@@ -81,4 +81,15 @@ class DiscountService(
         discountRepository.saveAll(discounts)
     }
 
+    suspend fun deleteDiscount(discount: Discount) {
+        val connectedItems = itemRepository.findAllByDiscountId(discount.id!!).asFlow().toList()
+        connectedItems.forEach { item ->
+            item.discountId = null
+            item.discount = null
+        }
+        itemRepository.saveAll(connectedItems)
+
+        discountRepository.delete(discount)
+    }
+
 }

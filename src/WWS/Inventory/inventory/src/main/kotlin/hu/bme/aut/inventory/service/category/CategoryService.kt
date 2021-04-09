@@ -4,6 +4,9 @@ import hu.bme.aut.inventory.dal.Category
 import hu.bme.aut.inventory.dal.CategoryRepository
 import hu.bme.aut.inventory.dal.Item
 import hu.bme.aut.inventory.dal.ItemRepository
+import hu.bme.aut.inventory.dal.ReviewRepository
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.reactive.asFlow
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -13,7 +16,8 @@ import java.time.LocalDate
 @Service
 class CategoryService(
     private val categoryRepository: CategoryRepository,
-    private val itemRepository: ItemRepository
+    private val itemRepository: ItemRepository,
+    private val reviewRepository: ReviewRepository
 ) {
     suspend fun getCategory(categoryId: Long): Mono<Category?> =
         categoryRepository.findById(categoryId)
@@ -45,5 +49,15 @@ class CategoryService(
             lowLevel = 0
         )
         return itemRepository.save(newItem)
+    }
+
+    suspend fun deleteCategory(category: Category) {
+        val items = itemRepository.findAllByCategoryId(categoryId = category.id!!).asFlow().toList()
+        val reviews = reviewRepository.findAllByItemIdIn(itemIds = items.map { it.id!! })
+
+        itemRepository.deleteAll(items)
+        reviewRepository.deleteAll(reviews)
+
+        categoryRepository.delete(category)
     }
 }

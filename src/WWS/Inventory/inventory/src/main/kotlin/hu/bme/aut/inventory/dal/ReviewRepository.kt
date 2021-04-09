@@ -12,6 +12,7 @@ interface ReviewRepository : ReactiveCrudRepository<Review, Long> {
     fun findAllByIdIn(ids: List<Long>, pageable: Pageable = Pageable.unpaged()): Flux<Review>
     fun findAllByIdNotNull(pageable: Pageable = Pageable.unpaged()): Flux<Review>
     fun findAllByItemId(itemId: Long, pageable: Pageable = Pageable.unpaged()): Flux<Review>
+    fun findAllByItemIdIn(itemIds: List<Long>, pageable: Pageable = Pageable.unpaged()): Flux<Review>
 
     @Query(value = """
         SELECT AVG(Rating)
@@ -20,4 +21,5 @@ interface ReviewRepository : ReactiveCrudRepository<Review, Long> {
       GROUP BY ItemID
     """)
     fun getAverageRatingOfItem(itemId: Long): Mono<Float>
+    fun deleteAllByItemId(itemId: Long): Mono<Void>
 }

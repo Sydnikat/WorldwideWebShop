@@ -5,8 +5,10 @@ import hu.bme.aut.inventory.service.review.ReviewService
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,10 +25,10 @@ class ReviewController(
         @PathVariable
         id: Long
     ): ResponseEntity<ReviewResponse> {
-        val item = reviewService.getReview(id).awaitFirst()
+        val review = reviewService.getReview(id).awaitFirst()
             ?: return ResponseEntity.notFound().build()
 
-        return ResponseEntity.ok(ReviewResponse.of(item))
+        return ResponseEntity.ok(ReviewResponse.of(review))
     }
 
     @GetMapping
@@ -43,5 +45,18 @@ class ReviewController(
                 .toList()
                 .map { ReviewResponse.of(it) }
         )
+    }
+
+    @DeleteMapping("{id}")
+    suspend fun deleteReview(
+        @PathVariable
+        id: Long
+    ) {
+        val review = reviewService.getReview(reviewId = id).awaitFirstOrNull()
+            ?: return
+
+        // TODO: check user
+
+        reviewService.deleteReview(review = review)
     }
 }

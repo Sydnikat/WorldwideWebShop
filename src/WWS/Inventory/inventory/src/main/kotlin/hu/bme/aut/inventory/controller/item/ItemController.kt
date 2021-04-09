@@ -12,10 +12,12 @@ import hu.bme.aut.inventory.util.requestError
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -124,5 +126,16 @@ class ItemController(
         return ResponseEntity.ok(
             reviews.map { ReviewResponse.of(it) }
         )
+    }
+
+    @DeleteMapping("{id}")
+    suspend fun deleteDiscount(
+        @PathVariable
+        id: Long
+    ) {
+        val item = itemService.getItem(id).awaitFirstOrNull()
+            ?: return
+
+        itemService.deleteItem(item = item)
     }
 }
