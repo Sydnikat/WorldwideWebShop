@@ -5,6 +5,7 @@ import hu.bme.aut.inventory.dal.ItemRepository
 import hu.bme.aut.inventory.dal.Review
 import hu.bme.aut.inventory.dal.ReviewRepository
 import hu.bme.aut.inventory.service.item.exception.RatingOutOfRangeException
+import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -62,10 +63,19 @@ class ItemService(
             reviewerName = reviewerName,
             reviewerId = reviewerId,
             summary = summary,
-            rating = rating,
+            rating = rating.toFloat(),
             created = LocalDate.now()
         )
 
-        return reviewRepository.save(newReview)
+        val savedReview = reviewRepository.save(newReview).awaitSingle()
+
+        val newRating = (((item.rating ?: 0.0F) * item.ratingCount) + rating.toFloat()) / (item.ratingCount + 1)
+
+        item.ratingCount += 1
+        item.rating = newRating
+
+        itemRepository.save(item)
+
+        return Mono.just(savedReview)
     }
 }

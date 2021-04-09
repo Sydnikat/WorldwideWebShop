@@ -18,7 +18,7 @@ data class Review(
     @Column("Summary")
     var summary: String,
     @Column("Rating")
-    var rating: Int,
+    var rating: Float,
     @Column("Created")
     var created: LocalDate
 )
