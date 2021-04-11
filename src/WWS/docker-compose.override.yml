@@ -7,3 +7,8 @@ services:
   mssql:
     ports:
     - "1433:1433"
+  order:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8082:80"

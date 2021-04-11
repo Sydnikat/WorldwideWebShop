@@ -12,6 +12,17 @@ services:
     depends_on:
       - mssql
 
+  order:
+     container_name: "wws_order"
+     image: ${DOCKER_REGISTRY:-wws}order:${IMAGE_TAG:-latest}
+     build:
+      context: .
+      dockerfile: Order/Web/Dockerfile
+     networks:
+      - wws-network
+     depends_on:
+      - mssql
+
   mssql:
     container_name: "wws_mssql"
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -22,7 +33,7 @@ services:
       - wws-network
     volumes:
       - ./wws-mssql-data:/var/opt/mssql/data
-  
+
 volumes:
   data:
     name: wws-mssql-data
