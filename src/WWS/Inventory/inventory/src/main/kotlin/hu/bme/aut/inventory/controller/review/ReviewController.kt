@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/reviews")
+@RequestMapping("/api/reviews")
 class ReviewController(
     private val reviewService: ReviewService
 ) {

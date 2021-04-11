@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
 @RestController
-@RequestMapping("/discounts")
+@RequestMapping("/api/discounts")
 class DiscountController(
     private val discountService: DiscountService,
     private val itemService: ItemService

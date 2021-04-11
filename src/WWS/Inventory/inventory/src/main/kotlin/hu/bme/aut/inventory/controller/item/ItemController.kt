@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
 @RestController
-@RequestMapping("/items")
+@RequestMapping("/api/items")
 class ItemController(
     private val itemService: ItemService,
     private val reviewService: ReviewService
