@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Cache;
 
 namespace Web
 {
@@ -27,6 +28,8 @@ namespace Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSqlServer(this.Configuration);
+
+            services.AddCartsCache(this.Configuration);
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

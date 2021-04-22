@@ -34,6 +34,12 @@ services:
     volumes:
       - ./wws-mssql-data:/var/opt/mssql/data
 
+  redis:
+    container_name: "wws_redis"
+    image: redis:6.0.5-alpine
+    networks:
+      - wws-network
+
 volumes:
   data:
     name: wws-mssql-data
