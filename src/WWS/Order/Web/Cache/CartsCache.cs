@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using Domain.Cart;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,18 +19,23 @@ namespace Web.Cache
             this.cacheEntryOptions = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(15));
         }
 
-        public async Task TryGet()
+        public async Task<Cart> TryGet(string customerId)
         {
-            throw new NotImplementedException();
+            var valueString = await cache.GetStringAsync(getCacheKey(customerId));
+            if (valueString == null)
+                return null;
+            else
+                return JsonConvert.DeserializeObject<Cart>(valueString);
         }
 
-        public async Task Set()
+        public async Task Set(Cart cart)
         {
-            throw new NotImplementedException();
+            var valueString = JsonConvert.SerializeObject(cart);
+            await cache.SetStringAsync(key: getCacheKey(cart.CustomerId), value: valueString, options: cacheEntryOptions);
         }
 
-        public Task Invalidate() => throw new NotImplementedException();
+        public Task Invalidate(string customerId) => cache.RemoveAsync(getCacheKey(customerId));
 
-        private string getCacheKey() => throw new NotImplementedException();
+        private string getCacheKey(string customerId) => $"carts-{customerId}";
     }
 }
