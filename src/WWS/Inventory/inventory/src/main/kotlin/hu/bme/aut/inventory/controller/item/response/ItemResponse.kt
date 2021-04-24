@@ -12,11 +12,13 @@ data class ItemResponse(
     val ratingCount: Int,
     val created: String,
     val price: Float,
+    val originalPrice: Float,
     val stock: Int,
     val lowLevel: Int
 ) {
     companion object {
         fun of(item: Item): ItemResponse = item.run {
+            val discount = item.discount
             ItemResponse(
                 id = id!!,
                 categoryId = categoryId,
@@ -26,7 +28,8 @@ data class ItemResponse(
                 rating = rating,
                 ratingCount = ratingCount,
                 created = created.toString(),
-                price = price,
+                price = if(discount != null) price * ((100 - discount) / 100.0F) else price,
+                originalPrice = price,
                 stock = stock,
                 lowLevel = lowLevel
             )
