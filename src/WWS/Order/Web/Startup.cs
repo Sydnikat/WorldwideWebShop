@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Cache;
+using Web.Services.Config;
 
 namespace Web
 {
@@ -31,6 +32,8 @@ namespace Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSqlServer(this.Configuration);
+
+            services.AddServices(this.Configuration);
 
             services.AddCartsCache(this.Configuration);
 

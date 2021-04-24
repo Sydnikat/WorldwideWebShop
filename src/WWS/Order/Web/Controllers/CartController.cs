@@ -9,6 +9,8 @@ using Web.Cache;
 using Web.Controllers.DTOs.Requests;
 using Web.Controllers.DTOs.Responses;
 using Web.InventoryClient;
+using Web.Services;
+using Web.Services.Exceptions;
 using static HWS.Middlewares.ErrorHandlerMiddleware;
 
 namespace Web.Controllers
@@ -19,14 +21,17 @@ namespace Web.Controllers
     {
         private readonly CartsCache cache;
         private readonly IInventoryApiClient inventoryApiClient;
+        private readonly ICartService cartService;
 
-        public CartController(CartsCache cache, IInventoryApiClient inventoryApiClient)
+        public CartController(CartsCache cache, IInventoryApiClient inventoryApiClient, ICartService cartService)
         {
             this.cache = cache;
             this.inventoryApiClient = inventoryApiClient;
+            this.cartService = cartService;
         }
 
         [HttpGet("me")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<CartResponse>> GetMyCart()
         {
             var customerId = "demo";
@@ -44,6 +49,9 @@ namespace Web.Controllers
         }
 
         [HttpPut("me")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CartResponse>> UpdateMyCart([FromBody] UpdateCartRequest request)
         {
             var customerId = "demo";
@@ -59,22 +67,29 @@ namespace Web.Controllers
             if (item == null)
                 throw new WWSSException("Item not found", StatusCodes.Status404NotFound);
 
-            if (request.Count > item.stock)
-                throw new WWSSException("Count must be positive", StatusCodes.Status400BadRequest);
+            try
+            {
+                var updatedCart = cartService.AddCartItem(cart, item, request);
 
-            var newCartItem = new CartItem(
-                itemId: item.Id,
-                name: item.Name,
-                price: item.Price,
-                count: request.Count
-                );
+                await cache.Invalidate(customerId);
+                await cache.Set(updatedCart);
 
-            cart.Items.Add(newCartItem);
+                return Ok(CartResponse.Of(updatedCart));
+            }
+            catch (StockIsNotEnoughException)
+            {
+                throw new WWSSException("Not enough item in stock", StatusCodes.Status400BadRequest);
+            }
+            
+        }
 
+        [HttpDelete("me")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> EmptyMyCart()
+        {
+            var customerId = "demo";
             await cache.Invalidate(customerId);
-            await cache.Set(cart);
-
-            return Ok(CartResponse.Of(cart));
+            return Ok();
         }
     }
 }
