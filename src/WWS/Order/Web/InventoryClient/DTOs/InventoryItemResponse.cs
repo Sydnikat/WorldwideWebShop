@@ -19,6 +19,6 @@ namespace Web.InventoryClient.DTOs
         public float Price { get; set; }
 
         [JsonProperty(PropertyName = "stock")]
-        public int stock { get; set; }
+        public int Stock { get; set; }
     }
 }
