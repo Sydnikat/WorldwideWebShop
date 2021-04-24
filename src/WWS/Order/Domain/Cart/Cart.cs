@@ -18,7 +18,7 @@ namespace Domain.Cart
         {
             get
             {
-                return Items.ToList().Select(i => i.Price).Sum();
+                return Items.ToList().Select(i => i.Count * i.Price).Sum();
             }
         }
         public ICollection<CartItem> Items { get; set; } = new List<CartItem>();
