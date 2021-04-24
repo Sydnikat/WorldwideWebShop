@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HWS.Controllers.DTOs.Converters
 {
-    public class GuidConverter : JsonConverter<Guid>
+    public class GuidConverter : System.Text.Json.Serialization.JsonConverter<Guid>
     {
         public override Guid Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
