@@ -8,6 +8,11 @@ namespace Domain.Cart
 {
     public class Cart
     {
+        public Cart(string customerId)
+        {
+            CustomerId = customerId;
+        }
+
         public string CustomerId { get; set; }
         public double TotalPrice 
         {

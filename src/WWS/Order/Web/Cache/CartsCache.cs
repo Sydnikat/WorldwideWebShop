@@ -16,7 +16,7 @@ namespace Web.Cache
         public CartsCache(IDistributedCache cache)
         {
             this.cache = cache;
-            this.cacheEntryOptions = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(15));
+            this.cacheEntryOptions = new DistributedCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
         }
 
         public async Task<Cart> TryGet(string customerId)

@@ -1,4 +1,7 @@
 using Dal.Config;
+using HWS.Controllers.DTOs.Config;
+using HWS.Middlewares;
+using Inventory.Supply.Web.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +34,12 @@ namespace Web
 
             services.AddCartsCache(this.Configuration);
 
-            services.AddControllers();
+            services.AddRefit();
+
+            services.AddControllers()
+                .SetupJsonConverters()
+                .SetupJsonSerialization();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Web", Version = "v1" });
@@ -49,6 +57,8 @@ namespace Web
             }
 
             app.UseRouting();
+
+            app.UseMiddlewares();
 
             app.UseAuthorization();
 
