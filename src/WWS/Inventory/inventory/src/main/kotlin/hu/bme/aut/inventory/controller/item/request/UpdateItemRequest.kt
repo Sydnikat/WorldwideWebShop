@@ -26,6 +26,7 @@ data class UpdateItemRequest(
         rating = null,
         ratingCount = 0,
         created = LocalDate.now(),
+        price = 0.0F,
         stock = stock,
         lowLevel = lowLevel
     )

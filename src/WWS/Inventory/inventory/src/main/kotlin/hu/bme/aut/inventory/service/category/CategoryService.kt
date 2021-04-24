@@ -34,7 +34,7 @@ class CategoryService(
     suspend fun saveCategory(category: Category): Mono<Category> =
         categoryRepository.save(category)
 
-    suspend fun saveNewItem(category: Category, name: String, description: String): Mono<Item> {
+    suspend fun saveNewItem(category: Category, name: String, description: String, price: Float): Mono<Item> {
         val newItem = Item(
             id = null,
             categoryId = category.id!!,
@@ -45,6 +45,7 @@ class CategoryService(
             rating = null,
             ratingCount = 0,
             created = LocalDate.now(),
+            price = price,
             stock = 0,
             lowLevel = 0
         )

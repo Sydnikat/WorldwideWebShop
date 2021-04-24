@@ -25,6 +25,8 @@ data class Item(
     var ratingCount: Int = 0,
     @Column("Created")
     var created: LocalDate,
+    @Column("Price")
+    var price: Float,
     @Column("Stock")
     var stock: Int = 0,
     @Column("LowLevel")

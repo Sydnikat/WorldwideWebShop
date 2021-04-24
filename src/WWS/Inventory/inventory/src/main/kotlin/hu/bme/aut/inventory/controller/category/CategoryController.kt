@@ -76,7 +76,8 @@ class CategoryController(
         val savedItem = categoryService.saveNewItem(
             category = category,
             name = request.name,
-            description = request.description
+            description = request.description,
+            price = request.price
         ).awaitSingle()
 
         return ResponseEntity.ok(ItemResponse.of(savedItem))

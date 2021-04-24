@@ -11,6 +11,7 @@ data class ItemResponse(
     val rating: Float?,
     val ratingCount: Int,
     val created: String,
+    val price: Float,
     val stock: Int,
     val lowLevel: Int
 ) {
@@ -25,6 +26,7 @@ data class ItemResponse(
                 rating = rating,
                 ratingCount = ratingCount,
                 created = created.toString(),
+                price = price,
                 stock = stock,
                 lowLevel = lowLevel
             )
