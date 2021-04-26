@@ -7,6 +7,8 @@ import hu.bme.aut.inventory.dal.ItemRepository
 import hu.bme.aut.inventory.dal.ReviewRepository
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
+import kotlinx.coroutines.reactive.awaitSingle
+import kotlinx.coroutines.reactive.awaitSingleOrNull
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -56,9 +58,9 @@ class CategoryService(
         val items = itemRepository.findAllByCategoryId(categoryId = category.id!!).asFlow().toList()
         val reviews = reviewRepository.findAllByItemIdIn(itemIds = items.map { it.id!! })
 
-        itemRepository.deleteAll(items)
-        reviewRepository.deleteAll(reviews)
+        itemRepository.deleteAll(items).subscribe()
+        reviewRepository.deleteAll(reviews).subscribe()
 
-        categoryRepository.delete(category)
+        categoryRepository.delete(category).awaitSingleOrNull()
     }
 }

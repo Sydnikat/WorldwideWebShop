@@ -10,6 +10,7 @@ import hu.bme.aut.inventory.service.discount.exception.EndDateMustBeFutureDateEx
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitSingle
+import kotlinx.coroutines.reactive.awaitSingleOrNull
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -62,7 +63,8 @@ class DiscountService(
             it.discountId = savedDiscount.id!!
             it.discount = savedDiscount.value.toLong()
         }
-        itemRepository.saveAll(items)
+
+        itemRepository.saveAll(items).asFlow().toList()
 
         return Mono.just(savedDiscount)
     }
@@ -74,11 +76,11 @@ class DiscountService(
                 item.discountId = null
                 item.discount = null
             }
-            itemRepository.saveAll(connectedItems)
+            itemRepository.saveAll(connectedItems).subscribe()
 
             it.expired = true
         }
-        discountRepository.saveAll(discounts)
+        discountRepository.saveAll(discounts).subscribe()
     }
 
     suspend fun deleteDiscount(discount: Discount) {
@@ -87,9 +89,9 @@ class DiscountService(
             item.discountId = null
             item.discount = null
         }
-        itemRepository.saveAll(connectedItems)
+        itemRepository.saveAll(connectedItems).subscribe()
 
-        discountRepository.delete(discount)
+        discountRepository.deleteById(discount.id!!).awaitSingleOrNull()
     }
 
 }

@@ -6,6 +6,7 @@ import hu.bme.aut.inventory.dal.Review
 import hu.bme.aut.inventory.dal.ReviewRepository
 import hu.bme.aut.inventory.util.decreaseRating
 import kotlinx.coroutines.reactive.awaitFirstOrNull
+import kotlinx.coroutines.reactive.awaitSingleOrNull
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -37,9 +38,9 @@ class ReviewService(
 
         if (item != null) {
             item.decreaseRating(review.rating.toInt())
-            itemRepository.save(item)
+            itemRepository.save(item).subscribe()
         }
 
-        reviewRepository.delete(review)
+        reviewRepository.delete(review).awaitSingleOrNull()
     }
 }

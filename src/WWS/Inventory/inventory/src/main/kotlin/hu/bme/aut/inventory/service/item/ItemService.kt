@@ -7,6 +7,7 @@ import hu.bme.aut.inventory.dal.ReviewRepository
 import hu.bme.aut.inventory.service.item.exception.RatingOutOfRangeException
 import hu.bme.aut.inventory.util.increaseRating
 import kotlinx.coroutines.reactive.awaitSingle
+import kotlinx.coroutines.reactive.awaitSingleOrNull
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
@@ -83,8 +84,8 @@ class ItemService(
         return Mono.just(savedReview)
     }
 
-    fun deleteItem(item: Item) {
-        reviewRepository.deleteAllByItemId(itemId = item.id!!)
-        itemRepository.delete(item)
+    suspend fun deleteItem(item: Item) {
+        reviewRepository.deleteAllByItemId(itemId = item.id!!).subscribe()
+        itemRepository.delete(item).awaitSingleOrNull()
     }
 }
