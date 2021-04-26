@@ -8,9 +8,9 @@ namespace Domain.OrderItems
 {
     public class OrderItem
     {
-        public OrderItem(long id, long orderId, long itemId, string name, double price, int count)
+        public OrderItem(long id, long orderId, long itemId, string name, float price, int count)
         {
-            _id = id;
+            Id = id;
             OrderId = orderId;
             ItemId = itemId;
             Name = name;
@@ -18,11 +18,11 @@ namespace Domain.OrderItems
             Count = count;
         }
 
-        public long _id { get; set; }
+        public long Id { get; set; }
         public long OrderId { get; set; }
         public long ItemId { get; set; }
         public string Name { get; set; }
-        public double Price { get; set; }
+        public float Price { get; set; }
         public int Count { get; set; }
     }
 }

@@ -14,7 +14,7 @@ namespace Domain.Cart
         }
 
         public string CustomerId { get; set; }
-        public double TotalPrice 
+        public float TotalPrice 
         {
             get
             {

@@ -20,7 +20,7 @@ namespace Dal.Orders.DbEntities
                 totalPrice: order.TotalPrice,
                 items: order.Items.ToDomainOrNull(OrderItemConverter.ToDomain).ToList(),
                 created: order.Created,
-                state: order.State.toDomain()
+                state: order.State.ToDomain()
                 );
 
         public static Func<Domain.Orders.Order, Order> ToDalNew => order =>
@@ -44,14 +44,14 @@ namespace Dal.Orders.DbEntities
         public static Func<Domain.Orders.Order, Order> ToDal => order =>
         {
             var entity = new Order(
-                id: order._id,
+                id: order.Id,
                 orderCode: order.OrderCode,
                 customerId: order.CustomerId,
                 customerName: order.CustomerName,
                 totalPrice: order.TotalPrice,
                 items: new List<OrderItem>(),
                 created: order.Created,
-                state: order.State.toDal()
+                state: order.State.ToDal()
                 );
 
             entity.Items = order.Items.Select(i => i.ToDalOrNull(OrderItemConverter.ToDal)).ToList();

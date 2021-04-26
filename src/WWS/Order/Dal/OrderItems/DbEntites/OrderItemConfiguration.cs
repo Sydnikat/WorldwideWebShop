@@ -13,7 +13,8 @@ namespace Dal.OrderItems.DbEntites
         public void Configure(EntityTypeBuilder<OrderItem> builder)
         {
             builder
-                .ToTable("OrderItem");
+                .ToTable("OrderItem")
+                .Property(o => o._id).HasColumnName("OrderItemId");
         }
     }
 }

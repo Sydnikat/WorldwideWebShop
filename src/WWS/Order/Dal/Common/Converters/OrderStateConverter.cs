@@ -9,7 +9,7 @@ namespace Dal.Common.Converters
 {
     public static class OrderStateConverter
     {
-        public static Domain.Orders.Order.OrderState toDomain(this Orders.DbEntities.Order.OrderState state)
+        public static Domain.Orders.Order.OrderState ToDomain(this Orders.DbEntities.Order.OrderState state)
         {
             switch(state)
             {
@@ -22,7 +22,7 @@ namespace Dal.Common.Converters
             }
         }
 
-        public static Orders.DbEntities.Order.OrderState toDal(this Domain.Orders.Order.OrderState state)
+        public static Orders.DbEntities.Order.OrderState ToDal(this Domain.Orders.Order.OrderState state)
         {
             switch (state)
             {

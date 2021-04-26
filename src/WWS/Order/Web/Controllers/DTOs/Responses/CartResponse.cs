@@ -8,7 +8,7 @@ namespace Web.Controllers.DTOs.Responses
 {
     public class CartResponse
     {
-        public CartResponse(string customerId, double totalPrice, ICollection<CartItemResponse> items)
+        public CartResponse(string customerId, float totalPrice, ICollection<CartItemResponse> items)
         {
             CustomerId = customerId;
             TotalPrice = totalPrice;
@@ -16,7 +16,7 @@ namespace Web.Controllers.DTOs.Responses
         }
 
         public string CustomerId { get; set; }
-        public double TotalPrice { get; set; }
+        public float TotalPrice { get; set; }
         public ICollection<CartItemResponse> Items { get; set; } = new List<CartItemResponse>();
 
         public static CartResponse Of(Cart cart)

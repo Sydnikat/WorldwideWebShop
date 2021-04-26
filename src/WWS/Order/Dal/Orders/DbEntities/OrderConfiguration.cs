@@ -13,7 +13,8 @@ namespace Dal.Orders.DbEntities
         public void Configure(EntityTypeBuilder<Order> builder)
         {
             builder
-                .ToTable("Order");
+                .ToTable("CustomerOrder")
+                .Property(o => o._id).HasColumnName("OrderId");
 
             builder
                 .HasMany(o => o.Items)

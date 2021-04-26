@@ -30,7 +30,7 @@ namespace Dal.OrderItems.DbEntites
 
         public static Func<Domain.OrderItems.OrderItem, OrderItem> ToDal => item
             => new OrderItem(
-                id: item._id,
+                id: item.Id,
                 orderId: item.OrderId,
                 itemId: item.ItemId,
                 name: item.Name,
