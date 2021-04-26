@@ -10,8 +10,13 @@ namespace Dal.Orders
 {
     public interface IOrderRepository
     {
+        Task<Order> FindById(long orderId);
         Task<Order> FindByOrderCode(Guid code);
+        Task<Order> FindByCustomer(string cusomerId);
         Task<Order> Insert(Order order);
         Task<Order> InserOrderItem(long orderId, OrderItem item);
+        Task<Order> InserOrderItem(Order order, OrderItem item);
+        Task<bool> DeleteOrder(long orderId);
+        Task<Order> Update(Order order);
     }
 }

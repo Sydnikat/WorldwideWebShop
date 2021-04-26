@@ -12,6 +12,7 @@ namespace Web.Services.Config
         public static void AddServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddTransient<ICartService, CartService>();
+            services.AddTransient<IOrderService, OrderService>();
         }
     }
 }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Dal
 {
-    class WWSContext : DbContext
+    public class WWSContext : DbContext
     {
         public WWSContext(DbContextOptions<WWSContext> options) 
             : base(options)

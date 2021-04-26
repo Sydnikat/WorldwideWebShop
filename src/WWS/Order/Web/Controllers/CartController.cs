@@ -22,12 +22,14 @@ namespace Web.Controllers
         private readonly CartsCache cache;
         private readonly IInventoryApiClient inventoryApiClient;
         private readonly ICartService cartService;
+        private readonly IOrderService orderService;
 
-        public CartController(CartsCache cache, IInventoryApiClient inventoryApiClient, ICartService cartService)
+        public CartController(CartsCache cache, IInventoryApiClient inventoryApiClient, ICartService cartService, IOrderService orderService)
         {
             this.cache = cache;
             this.inventoryApiClient = inventoryApiClient;
             this.cartService = cartService;
+            this.orderService = orderService;
         }
 
         [HttpGet("me")]
@@ -81,6 +83,25 @@ namespace Web.Controllers
                 throw new WWSSException("Not enough item in stock", StatusCodes.Status400BadRequest);
             }
             
+        }
+
+        [HttpPost("me/checkout")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<OrderResponse>> CheckoutMyCart()
+        {
+            var customerId = "demo";
+            var cart = await cache.TryGet(customerId);
+
+            if (cart == null)
+                throw new WWSSException("Cart not found", StatusCodes.Status404NotFound);
+
+            //if (cart.Items.Count <= 0)
+            //    throw new WWSSException("Cart is empty", StatusCodes.Status400BadRequest);
+
+            var newOrder = await orderService.CreateOrder(cart).ConfigureAwait(false);
+            return Ok(OrderResponse.Of(newOrder));
         }
 
         [HttpDelete("me")]
