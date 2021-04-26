@@ -3,20 +3,14 @@ package hu.bme.aut.inventory.config
 import io.r2dbc.mssql.MssqlConnectionConfiguration
 import io.r2dbc.mssql.MssqlConnectionFactory
 import io.r2dbc.spi.ConnectionFactory
-import io.r2dbc.spi.ConnectionFactoryOptions
-import io.r2dbc.spi.ConnectionFactoryOptions.DATABASE
-import io.r2dbc.spi.ConnectionFactoryOptions.DRIVER
-import io.r2dbc.spi.ConnectionFactoryOptions.HOST
-import io.r2dbc.spi.ConnectionFactoryOptions.PASSWORD
-import io.r2dbc.spi.ConnectionFactoryOptions.PORT
-import io.r2dbc.spi.ConnectionFactoryOptions.USER
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.convert.converter.Converter
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration
+import org.springframework.data.r2dbc.convert.R2dbcCustomConversions
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
-import org.springframework.r2dbc.core.DatabaseClient
-import java.time.Duration
+import java.time.LocalDateTime
 
 
 @Configuration
@@ -28,6 +22,15 @@ class DatabaseConfiguration(
   @Value("\${spring.data.mssql.username}") private val username: String,
   @Value("\${spring.data.mssql.password}") private val password: String
 ) : AbstractR2dbcConfiguration() {
+
+  @Bean
+  override fun r2dbcCustomConversions(): R2dbcCustomConversions {
+    return R2dbcCustomConversions(
+      listOf(
+        Converter { b: Byte -> b.toInt() != 0 }
+      )
+    )
+  }
 
   @Bean
   override fun connectionFactory(): ConnectionFactory {
