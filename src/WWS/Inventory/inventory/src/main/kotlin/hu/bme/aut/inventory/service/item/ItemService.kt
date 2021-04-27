@@ -79,7 +79,7 @@ class ItemService(
         val savedReview = reviewRepository.save(newReview).awaitSingle()
 
         item.increaseRating(savedReview.rating.toInt())
-        itemRepository.save(item)
+        itemRepository.save(item).subscribe()
 
         return Mono.just(savedReview)
     }
