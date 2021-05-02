@@ -58,8 +58,8 @@ class CategoryService(
         val items = itemRepository.findAllByCategoryId(categoryId = category.id!!).asFlow().toList()
         val reviews = reviewRepository.findAllByItemIdIn(itemIds = items.map { it.id!! })
 
-        itemRepository.deleteAll(items).subscribe()
-        reviewRepository.deleteAll(reviews).subscribe()
+        itemRepository.deleteAll(items).awaitSingleOrNull()
+        reviewRepository.deleteAll(reviews).awaitSingleOrNull()
 
         categoryRepository.delete(category).awaitSingleOrNull()
     }

@@ -79,7 +79,7 @@ class DiscountController(
         @PathVariable
         id: Long
     ): ResponseEntity<DiscountResponse> {
-        val discount = discountService.getDiscount(id).awaitFirst()
+        val discount = discountService.getDiscount(id).awaitFirstOrNull()
             ?: return ResponseEntity.notFound().build()
 
         return ResponseEntity.ok(DiscountResponse.of(discount))

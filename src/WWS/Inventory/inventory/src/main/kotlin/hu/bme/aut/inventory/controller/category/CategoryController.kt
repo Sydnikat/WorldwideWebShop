@@ -41,7 +41,7 @@ class CategoryController(
         @PathVariable
         id: Long
     ): ResponseEntity<CategoryResponse> {
-        val category = categoryService.getCategory(id).awaitFirst()
+        val category = categoryService.getCategory(id).awaitFirstOrNull()
             ?: return ResponseEntity.notFound().build()
 
         return ResponseEntity.ok(CategoryResponse.of(category))
@@ -70,7 +70,7 @@ class CategoryController(
         @RequestBody @Valid
         request: NewItemRequest
     ): ResponseEntity<ItemResponse> {
-        val category = categoryService.getCategory(id).awaitFirst()
+        val category = categoryService.getCategory(id).awaitFirstOrNull()
             ?: return ResponseEntity.notFound().build()
 
         val savedItem = categoryService.saveNewItem(

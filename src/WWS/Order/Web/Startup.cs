@@ -1,6 +1,5 @@
 using Dal.Config;
 using HWS.Controllers.DTOs.Config;
-using HWS.Middlewares;
 using Inventory.Supply.Web.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Cache;
+using Web.Middlewares;
 using Web.Services.Config;
 
 namespace Web

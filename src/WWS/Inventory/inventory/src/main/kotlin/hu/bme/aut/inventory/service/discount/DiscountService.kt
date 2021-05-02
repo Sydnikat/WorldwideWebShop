@@ -89,7 +89,7 @@ class DiscountService(
             item.discountId = null
             item.discount = null
         }
-        itemRepository.saveAll(connectedItems).subscribe()
+        itemRepository.saveAll(connectedItems).asFlow().toList()
 
         discountRepository.deleteById(discount.id!!).awaitSingleOrNull()
     }

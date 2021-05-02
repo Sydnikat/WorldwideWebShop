@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dal.Common.Converters
+namespace Dal.Orders.DbEntities
 {
     public static class OrderStateConverter
     {

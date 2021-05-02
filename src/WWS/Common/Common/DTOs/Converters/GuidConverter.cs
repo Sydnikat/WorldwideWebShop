@@ -1,12 +1,11 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace HWS.Controllers.DTOs.Converters
+namespace Common.DTOs.Converters
 {
     public class GuidConverter : System.Text.Json.Serialization.JsonConverter<Guid>
     {

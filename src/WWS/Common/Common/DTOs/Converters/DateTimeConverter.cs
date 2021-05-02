@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace HWS.Controllers.DTOs.Converters
+namespace Common.DTOs.Converters
 {
     public class DateTimeConverter : JsonConverter<DateTime>
     {

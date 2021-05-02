@@ -39,7 +39,7 @@ class ItemController(
         @PathVariable
         id: Long
     ): ResponseEntity<ItemResponse> {
-        val item = itemService.getItem(id).awaitFirst()
+        val item = itemService.getItem(id).awaitFirstOrNull()
             ?: return ResponseEntity.notFound().build()
 
         return ResponseEntity.ok(ItemResponse.of(item))
@@ -68,7 +68,7 @@ class ItemController(
         @RequestBody @Valid
         request: UpdateItemRequest
     ): ResponseEntity<ItemResponse> {
-        val item = itemService.getItem(id).awaitFirst()
+        val item = itemService.getItem(id).awaitFirstOrNull()
             ?: return ResponseEntity.notFound().build()
 
         val updatedItem = itemService.updateItem(item, request.toPatchData()).awaitSingle()
@@ -83,7 +83,7 @@ class ItemController(
         @RequestBody @Valid
         request: NewReviewRequest
     ): ResponseEntity<ReviewResponse> {
-        val item = itemService.getItem(id).awaitFirst()
+        val item = itemService.getItem(id).awaitFirstOrNull()
             ?: return ResponseEntity.notFound().build()
 
         try {
@@ -114,7 +114,7 @@ class ItemController(
         @RequestParam(required = false)
         size: Int?
     ): ResponseEntity<List<ReviewResponse>> {
-        val item = itemService.getItem(id).awaitFirst()
+        val item = itemService.getItem(id).awaitFirstOrNull()
             ?: return ResponseEntity.notFound().build()
 
         val pageable = PageRequest.of(offset ?: 0, size ?: 5)

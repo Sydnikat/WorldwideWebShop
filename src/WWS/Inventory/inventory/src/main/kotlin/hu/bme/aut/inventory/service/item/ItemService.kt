@@ -85,7 +85,7 @@ class ItemService(
     }
 
     suspend fun deleteItem(item: Item) {
-        reviewRepository.deleteAllByItemId(itemId = item.id!!).subscribe()
+        reviewRepository.deleteAllByItemId(itemId = item.id!!).awaitSingleOrNull()
         itemRepository.delete(item).awaitSingleOrNull()
     }
 }

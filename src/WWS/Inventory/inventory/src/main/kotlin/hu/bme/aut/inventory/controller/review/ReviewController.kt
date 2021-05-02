@@ -25,7 +25,7 @@ class ReviewController(
         @PathVariable
         id: Long
     ): ResponseEntity<ReviewResponse> {
-        val review = reviewService.getReview(id).awaitFirst()
+        val review = reviewService.getReview(id).awaitFirstOrNull()
             ?: return ResponseEntity.notFound().build()
 
         return ResponseEntity.ok(ReviewResponse.of(review))

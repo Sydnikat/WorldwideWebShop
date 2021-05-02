@@ -11,7 +11,7 @@ using Web.Controllers.DTOs.Responses;
 using Web.InventoryClient;
 using Web.Services;
 using Web.Services.Exceptions;
-using static HWS.Middlewares.ErrorHandlerMiddleware;
+using static Web.Middlewares.ErrorHandlerMiddleware;
 
 namespace Web.Controllers
 {
@@ -97,8 +97,8 @@ namespace Web.Controllers
             if (cart == null)
                 throw new WWSSException("Cart not found", StatusCodes.Status404NotFound);
 
-            //if (cart.Items.Count <= 0)
-            //    throw new WWSSException("Cart is empty", StatusCodes.Status400BadRequest);
+            if (cart.Items.Count <= 0)
+                throw new WWSSException("Cart is empty", StatusCodes.Status400BadRequest);
 
             var newOrder = await orderService.CreateOrder(cart).ConfigureAwait(false);
             return Ok(OrderResponse.Of(newOrder));

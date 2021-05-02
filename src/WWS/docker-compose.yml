@@ -23,6 +23,17 @@ services:
      depends_on:
       - mssql
 
+  user:
+     container_name: "wws_user"
+     image: ${DOCKER_REGISTRY:-wws}user:${IMAGE_TAG:-latest}
+     build:
+      context: .
+      dockerfile: User/Web/Dockerfile
+     networks:
+      - wws-network
+     depends_on:
+      - mongodb
+
   mssql:
     container_name: "wws_mssql"
     image: mcr.microsoft.com/mssql/server:2019-latest
@@ -34,6 +45,14 @@ services:
     volumes:
       - ./wws-mssql-data:/var/opt/mssql/data
 
+  mongodb:
+    container_name: "wws_mongodb"
+    image: mongo:4.2.8
+    networks:
+      - wws-network
+    volumes:
+      - wws-mongo-data:/data/db
+
   redis:
     container_name: "wws_redis"
     image: redis:6.0.5-alpine
@@ -41,9 +60,12 @@ services:
       - wws-network
 
 volumes:
-  data:
-    name: wws-mssql-data
+  wws-mssql-data:
+    driver: local
+  wws-mongo-data:
+    driver: local
   
 networks:
   wws-network:
     driver: bridge
+

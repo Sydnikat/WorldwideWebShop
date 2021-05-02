@@ -7,8 +7,16 @@ services:
   mssql:
     ports:
     - "1433:1433"
+  mongodb:
+    ports:
+      - "27018:27017"
   order:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - "8082:80"
+  user:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8083:80"
