@@ -26,7 +26,9 @@ namespace Web.Services
                 password: hashPassword(patchData.Password),
                 userFullName: patchData.UserFullName,
                 role: User.UserRole.Customer,
-                email: new Email(patchData.Email.Value, false)
+                email: new Email(patchData.Email.Value, false),
+                address: patchData.Address,
+                phone: new Phone(patchData.Phone.Value, false)
                 );
 
             return await userRepository.Save(newUser).ConfigureAwait(false);

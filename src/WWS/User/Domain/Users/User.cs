@@ -8,7 +8,7 @@ namespace Domain.Users
 {
     public class User
     {
-        public User(string _id, Guid id, string userName, string password, string userFullName, UserRole role, Email email)
+        public User(string _id, Guid id, string userName, string password, string userFullName, UserRole role, Email email, Address address, Phone phone)
         {
             UserName = userName;
             Password = password;
@@ -17,6 +17,8 @@ namespace Domain.Users
             UserFullName = userFullName;
             this._id = _id;
             Id = id;
+            Address = address;
+            Phone = phone;
         }
 
         public enum UserRole
@@ -31,5 +33,7 @@ namespace Domain.Users
         public string UserFullName { get; set; }
         public UserRole Role { get; set; }
         public Email Email { get; set; }
+        public Address Address { get; set; }
+        public Phone Phone { get; set; }
     }
 }

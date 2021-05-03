@@ -16,7 +16,9 @@ namespace Dal.Users.Converters
                 userFullName: user.UserFullName,
                 password: user.Password,
                 role: user.Role.ToDomain(),
-                email: user.Email.ToDomain()
+                email: user.Email.ToDomain(),
+                address: user.Address.ToDomain(),
+                phone: user.Phone.ToDomain()
                 );
 
         public static Func<Domain.Users.User, DbEntities.User> ToDalNew =>
@@ -27,7 +29,9 @@ namespace Dal.Users.Converters
                 userFullName: user.UserFullName,
                 password: user.Password,
                 role: user.Role.ToDal(),
-                email: user.Email.ToDal()
+                email: user.Email.ToDal(),
+                address: user.Address.ToDal(),
+                phone: user.Phone.ToDal()
                 );
 
         public static Func<Domain.Users.User, DbEntities.User> ToDal =>
@@ -38,7 +42,9 @@ namespace Dal.Users.Converters
                 userFullName: user.UserFullName,
                 password: user.Password,
                 role: user.Role.ToDal(),
-                email: user.Email.ToDal()
+                email: user.Email.ToDal(),
+                address: user.Address.ToDal(),
+                phone: user.Phone.ToDal()
                 );
     }
 }

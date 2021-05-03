@@ -17,7 +17,7 @@ namespace Dal.Users.Converters
         public static DbEntities.Email ToDal(this Domain.Users.Email email) =>
             new DbEntities.Email(
                 value: email.Value,
-                confirmed: false
+                confirmed: email.Confirmed
                 );
     }
 }

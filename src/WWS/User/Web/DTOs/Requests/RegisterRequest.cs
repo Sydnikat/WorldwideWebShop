@@ -13,6 +13,8 @@ namespace Web.DTOs.Requests
         public string ConfirmPassword { get; set; }
         public string UserFullName { get; set; }
         public string Email { get; set; }
+        public AddressRequest Address { get; set; }
+        public string Phone { get; set; }
 
         public User ToNewUser()
             => new User(
@@ -22,7 +24,9 @@ namespace Web.DTOs.Requests
                 password: Password,
                 userFullName: UserFullName,
                 role: User.UserRole.Customer,
-                email: new Email(value: Email, confirmed: false)
+                email: new Email(value: Email, confirmed: false),
+                address: Address.ToAddress(),
+                phone: new Phone(value: Phone, confirmed: false)
                 );
     }
 }

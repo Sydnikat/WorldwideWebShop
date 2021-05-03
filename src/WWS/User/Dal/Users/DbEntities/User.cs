@@ -10,7 +10,7 @@ namespace Dal.Users.DbEntities
 {
     public class User
     {
-        public User(string _id, Guid id, string userName, string password, string userFullName, UserRole role, Email email)
+        public User(string _id, Guid id, string userName, string password, string userFullName, UserRole role, Email email, Address address, Phone phone)
         {
             UserName = userName;
             Password = password;
@@ -19,6 +19,8 @@ namespace Dal.Users.DbEntities
             UserFullName = userFullName;
             this._id = _id;
             Id = id;
+            Address = address;
+            Phone = phone;
         }
 
         public enum UserRole
@@ -49,5 +51,11 @@ namespace Dal.Users.DbEntities
 
         [BsonElement("Email")]
         public Email Email { get; set; }
+
+        [BsonElement("Address")]
+        public Address Address { get; set; }
+
+        [BsonElement("Phone")]
+        public Phone Phone { get; set; }
     }
 }
