@@ -1,11 +1,14 @@
-﻿using Domain.Cart;
+﻿using Common.DTOs;
+using Domain.Cart;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Cache;
+using Web.Controllers.Config;
 using Web.Controllers.DTOs.Requests;
 using Web.Controllers.DTOs.Responses;
 using Web.InventoryClient;
@@ -15,16 +18,16 @@ using static Web.Middlewares.ErrorHandlerMiddleware;
 
 namespace Web.Controllers
 {
-    [Route("api/carts")]
+    [Route("api/order/carts")]
     [ApiController]
-    public class CartController : ControllerBase
+    public class CartController : WWSControllerBase
     {
         private readonly CartsCache cache;
         private readonly IInventoryApiClient inventoryApiClient;
         private readonly ICartService cartService;
         private readonly IOrderService orderService;
 
-        public CartController(CartsCache cache, IInventoryApiClient inventoryApiClient, ICartService cartService, IOrderService orderService)
+        public CartController(CartsCache cache, IInventoryApiClient inventoryApiClient, ICartService cartService, IOrderService orderService) : base()
         {
             this.cache = cache;
             this.inventoryApiClient = inventoryApiClient;
@@ -36,7 +39,7 @@ namespace Web.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<CartResponse>> GetMyCart()
         {
-            var customerId = "demo";
+            var customerId = getUserMetaData().Id;
             var cachedValue = await cache.TryGet(customerId);
             if (cachedValue != null)
             {

@@ -14,6 +14,7 @@ namespace Web.Middlewares
         public static void UseMiddlewares(this IApplicationBuilder app)
         {
             app.UseMiddleware<ErrorHandlerMiddleware>();
+            app.UseMiddleware<JwtResolveMiddleware>();
         }
     }
 }
