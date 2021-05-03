@@ -98,7 +98,7 @@ namespace Web.Controllers
             }
         }
 
-        [HttpPost("check/customer")]
+        [HttpGet("check/customer")]
         public async Task<ActionResult> CheckCustomer()
         {
             try
@@ -118,7 +118,7 @@ namespace Web.Controllers
             }
         }
 
-        [HttpPost("check/admin")]
+        [HttpGet("check/admin")]
         public async Task<ActionResult> CheckAdmin()
         {
             try
@@ -131,6 +131,23 @@ namespace Web.Controllers
                     return Ok();
 
                 return Unauthorized();
+            }
+            catch (SecurityTokenException e)
+            {
+                throw new WWSSException(e.Message, StatusCodes.Status401Unauthorized);
+            }
+        }
+
+        [HttpGet("check")]
+        public async Task<ActionResult> VerifyJwtToken()
+        {
+            try
+            {
+                var user = await getUserFromAccessToken().ConfigureAwait(false);
+                if (user == null)
+                    return Unauthorized();
+
+                return Ok();
             }
             catch (SecurityTokenException e)
             {
