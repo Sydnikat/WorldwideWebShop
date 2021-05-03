@@ -34,6 +34,7 @@ namespace Web.Services
                     new Claim("Id", user.Id.ToString()),
                     new Claim("Role", user.Role.ToString()),
                     new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                    new Claim("FullName", user.UserFullName)
                 };
 
             return GenerateTokens(user.UserName, claims, DateTime.Now);

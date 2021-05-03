@@ -140,7 +140,6 @@ namespace Web.Controllers
 
         private async Task<User> getUserFromAccessToken()
         {
-            //var accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
             var accessToken = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split(" ").Last();
             if (string.IsNullOrWhiteSpace(accessToken))
                 return null;
