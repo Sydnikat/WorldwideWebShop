@@ -1,6 +1,22 @@
 version: '3.4'
 
 services:
+  apigateway:
+    container_name: "wws_apigateway"
+    image: traefik:v2.2.1
+    ports:
+      - "5080:80" 
+      - "5088:8080" 
+    command:
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock 
+    networks:
+      - wws-network
+
   inventory:
     container_name: "wws_inventory"
     image: ${DOCKER_REGISTRY:-wws}inventory:${IMAGE_TAG:-latest}
@@ -11,6 +27,11 @@ services:
       - wws-network
     depends_on:
       - mssql
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.inventory.rule=PathPrefix(`/api/inventory`)" 
+      - "traefik.http.routers.inventory.middlewares=inventory-auth@docker"
+      - "traefik.http.middlewares.inventory-auth.forwardauth.address=http://wws_user/auth/check"
 
   order:
      container_name: "wws_order"
@@ -22,6 +43,11 @@ services:
       - wws-network
      depends_on:
       - mssql
+     labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.order.rule=PathPrefix(`/api/order`)" 
+      - "traefik.http.routers.order.middlewares=order-auth@docker"
+      - "traefik.http.middlewares.order-auth.forwardauth.address=http://wws_user/auth/check"
 
   user:
      container_name: "wws_user"
