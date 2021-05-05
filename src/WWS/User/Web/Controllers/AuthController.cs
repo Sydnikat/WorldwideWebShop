@@ -1,4 +1,5 @@
-﻿using Domain.Users;
+﻿using Common.DTOs;
+using Domain.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 using Web.DTOs.Requests;
 using Web.DTOs.Responses;
 using Web.Services;
+using Web.Services.Exceptions;
 using static Web.Middlewares.ErrorHandlerMiddleware;
 
 namespace Web.Controllers
@@ -46,7 +48,7 @@ namespace Web.Controllers
             return Ok(new LoginResult
             {
                 UserName = user.UserName,
-                Role = user.Role,
+                Roles = user.Roles,
                 AccessToken = jwtResult.AccessToken,
                 RefreshToken = jwtResult.RefreshToken.TokenString
             });
@@ -61,12 +63,23 @@ namespace Web.Controllers
 
             var patchData = request.ToNewUser();
 
-            var savedUser = await userService.CreateUser(patchData).ConfigureAwait(false);
+            try
+            {
+                var savedUser = await userService.CreateUser(patchData).ConfigureAwait(false);
 
-            if (savedUser != null)
-                return Ok();
+                if (savedUser != null)
+                    return Ok();
 
-            return BadRequest();
+                return BadRequest();
+            }
+            catch (UserAlreadyExistsException)
+            {
+                throw new WWSSException("Username is not available", StatusCodes.Status400BadRequest);
+            }
+            catch (EmailAlreadyExistsException)
+            {
+                throw new WWSSException("Email is already used", StatusCodes.Status400BadRequest);
+            }
         }
 
         [HttpPost("refresh-token")]
@@ -78,16 +91,14 @@ namespace Web.Controllers
             try
             {
                 var accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
-                var user = await getUserFromAccessToken().ConfigureAwait(false);
-                if (user == null)
-                    return BadRequest();
+                var userMetaData = getUserFromAccessToken();
 
                 var jwtResult = jwtAuthManager.Refresh(request.RefreshToken, accessToken, DateTime.Now);
 
                 return Ok(new LoginResult
                 {
-                    UserName = user.UserName,
-                    Role = user.Role,
+                    UserName = userMetaData.UserName,
+                    Roles = userMetaData.Roles,
                     AccessToken = jwtResult.AccessToken,
                     RefreshToken = jwtResult.RefreshToken.TokenString
                 });
@@ -98,52 +109,12 @@ namespace Web.Controllers
             }
         }
 
-        [HttpGet("check/customer")]
-        public async Task<ActionResult> CheckCustomer()
-        {
-            try
-            {
-                var user = await getUserFromAccessToken().ConfigureAwait(false);
-                if (user == null)
-                    return BadRequest();
-
-                if (user.Role == Domain.Users.User.UserRole.Customer)
-                    return Ok();
-
-                return Unauthorized();
-            }
-            catch (SecurityTokenException e)
-            {
-                throw new WWSSException(e.Message, StatusCodes.Status401Unauthorized);
-            }
-        }
-
-        [HttpGet("check/admin")]
-        public async Task<ActionResult> CheckAdmin()
-        {
-            try
-            {
-                var user = await getUserFromAccessToken().ConfigureAwait(false);
-                if (user == null)
-                    return BadRequest();
-
-                if (user.Role == Domain.Users.User.UserRole.Admin)
-                    return Ok();
-
-                return Unauthorized();
-            }
-            catch (SecurityTokenException e)
-            {
-                throw new WWSSException(e.Message, StatusCodes.Status401Unauthorized);
-            }
-        }
-
         [HttpGet("check")]
-        public async Task<ActionResult> VerifyJwtToken()
+        public ActionResult VerifyJwtToken()
         {
             try
             {
-                var user = await getUserFromAccessToken().ConfigureAwait(false);
+                var user = getUserFromAccessToken();
                 if (user == null)
                     return Unauthorized();
 
@@ -155,7 +126,7 @@ namespace Web.Controllers
             }
         }
 
-        private async Task<User> getUserFromAccessToken()
+        private UserMetaData getUserFromAccessToken()
         {
             var accessToken = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split(" ").Last();
             if (string.IsNullOrWhiteSpace(accessToken))
@@ -163,8 +134,15 @@ namespace Web.Controllers
 
             var (principal, jwtToken) = jwtAuthManager.DecodeJwtToken(accessToken);
 
-            var userId = Guid.Parse(jwtToken.Claims.First(x => x.Type == "Id").Value);
-            return await userService.GetUser(userId).ConfigureAwait(false);
+            var user = new UserMetaData
+            {
+                Id = jwtToken.Claims.First(x => x.Type == "Id").Value,
+                Roles = jwtToken.Claims.First(x => x.Type == "Roles").Value.Split(" ").ToList(),
+                FullName = jwtToken.Claims.First(x => x.Type == "FullName").Value,
+                UserName = jwtToken.Claims.First(x => x.Type == "sub").Value
+            };
+
+            return user;
         }
     }
 }

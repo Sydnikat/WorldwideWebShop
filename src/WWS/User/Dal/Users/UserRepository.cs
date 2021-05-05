@@ -22,9 +22,16 @@ namespace Dal.Users
             _users = database.GetCollection<DbEntities.User>(settings.UsersCollectionName);
         }
 
+        public async Task<Domain.Users.User> FindByEmail(string emailStr)
+        {
+            var filter = Builders<DbEntities.User>.Filter.Where(u => u.Email.Value == emailStr);
+            var query = await _users.FindAsync(filter);
+            return query.FirstOrDefault().ToDomainOrNull(UserConverter.ToDomain);
+        }
+
         public async Task<Domain.Users.User> FindById(Guid id)
         {
-            var filter = Builders<DbEntities.User>.Filter.Eq("Id", id.ToString());
+            var filter = Builders<DbEntities.User>.Filter.Where(u => u.Id == id);
             var query = await _users.FindAsync(filter);
             return query.FirstOrDefault().ToDomainOrNull(UserConverter.ToDomain);
         }

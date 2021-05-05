@@ -32,7 +32,7 @@ namespace Web.Services
         {
             var claims = new[] {
                     new Claim("Id", user.Id.ToString()),
-                    new Claim("Role", user.Role.ToString()),
+                    new Claim("Roles", string.Join(" ", user.Roles)),
                     new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                     new Claim("FullName", user.UserFullName)
                 };

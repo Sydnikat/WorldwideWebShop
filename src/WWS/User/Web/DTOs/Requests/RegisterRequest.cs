@@ -23,7 +23,7 @@ namespace Web.DTOs.Requests
                 userName: UserName,
                 password: Password,
                 userFullName: UserFullName,
-                role: User.UserRole.Customer,
+                roles: new List<string>(),
                 email: new Email(value: Email, confirmed: false),
                 address: Address.ToAddress(),
                 phone: new Phone(value: Phone, confirmed: false)

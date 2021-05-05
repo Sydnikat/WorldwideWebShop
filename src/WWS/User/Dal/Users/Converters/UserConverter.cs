@@ -15,7 +15,7 @@ namespace Dal.Users.Converters
                 userName: user.UserName,
                 userFullName: user.UserFullName,
                 password: user.Password,
-                role: user.Role.ToDomain(),
+                roles: user.Roles,
                 email: user.Email.ToDomain(),
                 address: user.Address.ToDomain(),
                 phone: user.Phone.ToDomain()
@@ -28,7 +28,7 @@ namespace Dal.Users.Converters
                 userName: user.UserName,
                 userFullName: user.UserFullName,
                 password: user.Password,
-                role: user.Role.ToDal(),
+                roles: user.Roles,
                 email: user.Email.ToDal(),
                 address: user.Address.ToDal(),
                 phone: user.Phone.ToDal()
@@ -41,7 +41,7 @@ namespace Dal.Users.Converters
                 userName: user.UserName,
                 userFullName: user.UserFullName,
                 password: user.Password,
-                role: user.Role.ToDal(),
+                roles: user.Roles,
                 email: user.Email.ToDal(),
                 address: user.Address.ToDal(),
                 phone: user.Phone.ToDal()
