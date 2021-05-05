@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Services.Exceptions;
 
 namespace Web.Services
 {
@@ -19,13 +20,24 @@ namespace Web.Services
 
         public async Task<User> CreateUser(User patchData)
         {
+            var existingUser = await userRepository.FindByUserName(patchData.UserName);
+            if (existingUser != null)
+                throw new UserAlreadyExistsException(patchData.UserName);
+
+            var existingUserWithEmail = await userRepository.FindByEmail(patchData.Email.Value);
+            if (existingUserWithEmail != null)
+                throw new EmailAlreadyExistsException(patchData.Email.Value);
+
+            var userRoles = new List<string>();
+            userRoles.Add("Customer");
+
             var newUser = new User(
                 _id: null,
                 id: Guid.NewGuid(),
                 userName: patchData.UserName,
                 password: hashPassword(patchData.Password),
                 userFullName: patchData.UserFullName,
-                role: User.UserRole.Customer,
+                roles: userRoles,
                 email: new Email(patchData.Email.Value, false),
                 address: patchData.Address,
                 phone: new Phone(patchData.Phone.Value, false)
