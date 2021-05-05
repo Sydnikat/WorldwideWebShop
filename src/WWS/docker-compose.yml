@@ -59,6 +59,10 @@ services:
       - wws-network
      depends_on:
       - mongodb
+     labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.rule=PathPrefix(`/auth`)"
+      - "traefik.http.routers.users.rule=PathPrefix(`/api/users`)"
 
   mssql:
     container_name: "wws_mssql"
