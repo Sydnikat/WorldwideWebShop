@@ -15,6 +15,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Web.Cache;
 using Web.Middlewares;
+using Web.Middlewares.Authentications;
+using Web.Middlewares.Authorizations;
 using Web.Services.Config;
 
 namespace Web
@@ -36,6 +38,9 @@ namespace Web
             services.AddServices(this.Configuration);
 
             services.AddCartsCache(this.Configuration);
+
+            services.AddWWSAuthentication();
+            services.AddWWSAuthorization();
 
             services.AddRefit();
 
