@@ -42,13 +42,20 @@ namespace Web.Controllers
 
             if (!userService.IsValidUserCredentials(user, request.Password))
                 return Unauthorized();
+
+            var roles = new List<string>();
+            var chosenRole = request.Role.ToString();
+            if (user.Roles.Contains(chosenRole))
+            {
+                roles.Add(chosenRole);
+            }
             
 
             var jwtResult = jwtAuthManager.GenerateTokens(user);
             return Ok(new LoginResult
             {
                 UserName = user.UserName,
-                Roles = user.Roles,
+                Roles = roles,
                 AccessToken = jwtResult.AccessToken,
                 RefreshToken = jwtResult.RefreshToken.TokenString
             });
