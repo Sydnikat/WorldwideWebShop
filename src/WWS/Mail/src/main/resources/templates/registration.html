@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body style="background-color: #F5F6F6; padding: 10px;">
+<table style="border-spacing: 0; margin: 0 auto; padding: 0; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;  background-color: #ffffff; font-family: 'Nunito Sans', Arial, sans-serif; color: #2E2E2F; min-height: 100%; font-size: 16px; line-height: 150%; min-width: 50%; max-width: 600px; text-decoration: none; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;">
+    <tbody>
+    <tr>
+        <td width="100%" style="padding: 10px 25px; -moz-border-top-left-radius: 10px; -webkit-border-top-left-radius: 10px; border-top-left-radius: 10px; -moz-border-top-right-radius: 10px; -webkit-border-top-right-radius: 10px; border-top-right-radius: 10px; background-color: #465364; color: #ffffff;">
+            <h1 th:text="#{registration.headTitle}" style="font-size: 30px; line-height: 42px; font-weight: 600;">Welcome to WorldwideWebShop!</h1>
+        </td>
+    </tr>
+    <tr>
+        <td width="100%" style="padding: 0px 25px;">
+            <p style="color: #2E2E2F;" th:text="#{registration.info}">
+                Thank you for joining us!
+            </p>
+            <p style="color: #2E2E2F;" th:text="#{registration.info_pt3}">
+                Your username is:
+            </p>
+            <p th:if="${userName != null}" th:text="${userName}"></p>
+
+            <p style="color: #2E2E2F;" th:text="#{registration.info_pt2}">
+                This is a verification email for completing the registration. Please do not reply to this email!
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td width="100%" style="padding: 5px 25px;">
+        </td>
+    </tr>
+    <tr>
+        <td width="100%" style="margin-top: 40px; background-color: #D0D4D8; text-align: center; -moz-border-bottom-left-radius: 10px; -webkit-border-bottom-left-radius: 10px; border-bottom-left-radius: 10px; -moz-border-bottom-right-radius: 10px; -webkit-border-bottom-right-radius: 10px; border-bottom-right-radius: 10px; padding-top: 10px;">
+            <p style="font-weight: 600;" th:text="#{registration.wws}">WorldwideWebShop Team</p>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

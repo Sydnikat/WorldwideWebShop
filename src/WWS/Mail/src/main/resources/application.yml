@@ -1,0 +1,11 @@
+spring:
+  main:
+    banner-mode: "off"
+    web-application-type: reactive
+
+mail:
+  smtpHost: ${SMTP_HOST:smtp.gmail.com}
+  smtpPort: ${SMTP_PORT:587}
+  smtpUser: ${SMTP_USER:bme.aut.wws.dev@gmail.com}
+  smtpPass: ${SMTP_PASS:wwsDEV_bmeaut69*}
+  noReplyAddress: ${SMTP_FROM:bme.aut.wws.dev@gmail.com}

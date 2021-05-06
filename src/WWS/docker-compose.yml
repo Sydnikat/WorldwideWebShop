@@ -17,6 +17,15 @@ services:
     networks:
       - wws-network
 
+  mail:
+    container_name: "wws_mail"
+    image: ${DOCKER_REGISTRY:-wws}mail:${IMAGE_TAG:-latest}
+    build:
+      context: ./Mail
+      dockerfile: Dockerfile
+    networks:
+      - wws-network
+      
   inventory:
     container_name: "wws_inventory"
     image: ${DOCKER_REGISTRY:-wws}inventory:${IMAGE_TAG:-latest}
