@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:alpine AS build
+FROM adoptopenjdk/openjdk11 AS build
 ENV APP_HOME=/usr/app
 WORKDIR $APP_HOME
 COPY build.gradle.kts settings.gradle.kts gradlew $APP_HOME
