@@ -29,6 +29,8 @@ dependencies {
 
     implementation("javax.validation:validation-api:2.0.1.Final")
 
+    implementation("com.auth0:java-jwt:3.15.0")
+
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")

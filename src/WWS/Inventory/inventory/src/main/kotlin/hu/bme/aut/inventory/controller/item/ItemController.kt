@@ -1,10 +1,13 @@
 package hu.bme.aut.inventory.controller.item
 
+import hu.bme.aut.inventory.config.resolver.UserMetaData
+import hu.bme.aut.inventory.config.resolver.WWSUserMetaData
 import hu.bme.aut.inventory.controller.item.request.UpdateItemRequest
 import hu.bme.aut.inventory.controller.item.response.ItemResponse
 import hu.bme.aut.inventory.controller.review.request.NewReviewRequest
 import hu.bme.aut.inventory.controller.review.response.ReviewResponse
 import hu.bme.aut.inventory.exception.RequestError
+import hu.bme.aut.inventory.service.auth.AuthManager
 import hu.bme.aut.inventory.service.item.ItemService
 import hu.bme.aut.inventory.service.item.exception.RatingOutOfRangeException
 import hu.bme.aut.inventory.service.review.ReviewService
@@ -29,10 +32,11 @@ import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
 @RestController
-@RequestMapping("/api/items")
+@RequestMapping("/api/inventory/items")
 class ItemController(
     private val itemService: ItemService,
-    private val reviewService: ReviewService
+    private val reviewService: ReviewService,
+    private val authManager: AuthManager
 ) {
     @GetMapping("{id}")
     suspend fun getItem(
@@ -63,11 +67,17 @@ class ItemController(
 
     @PutMapping("{id}")
     suspend fun updateItem(
+        @WWSUserMetaData
+        user: UserMetaData,
         @PathVariable
         id: Long,
         @RequestBody @Valid
         request: UpdateItemRequest
     ): ResponseEntity<ItemResponse> {
+        if (!authManager.canManageResource(user)) {
+            requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
+        }
+
         val item = itemService.getItem(id).awaitFirstOrNull()
             ?: return ResponseEntity.notFound().build()
 
@@ -129,10 +139,16 @@ class ItemController(
     }
 
     @DeleteMapping("{id}")
-    suspend fun deleteDiscount(
+    suspend fun deleteItem(
+        @WWSUserMetaData
+        user: UserMetaData,
         @PathVariable
         id: Long
     ) {
+        if (!authManager.canManageResource(user)) {
+            requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
+        }
+
         val item = itemService.getItem(id).awaitFirstOrNull()
             ?: return
 

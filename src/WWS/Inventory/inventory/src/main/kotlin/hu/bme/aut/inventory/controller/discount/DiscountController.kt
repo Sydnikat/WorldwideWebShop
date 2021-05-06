@@ -1,9 +1,12 @@
 package hu.bme.aut.inventory.controller.discount
 
+import hu.bme.aut.inventory.config.resolver.UserMetaData
+import hu.bme.aut.inventory.config.resolver.WWSUserMetaData
 import hu.bme.aut.inventory.controller.discount.request.NewDiscountRequest
 import hu.bme.aut.inventory.controller.discount.response.DiscountResponse
 import hu.bme.aut.inventory.dal.Item
 import hu.bme.aut.inventory.exception.RequestError
+import hu.bme.aut.inventory.service.auth.AuthManager
 import hu.bme.aut.inventory.service.discount.DiscountService
 import hu.bme.aut.inventory.service.discount.exception.DiscountOutOfRangeException
 import hu.bme.aut.inventory.service.discount.exception.EndDateMustBeFutureDateException
@@ -28,17 +31,24 @@ import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
 @RestController
-@RequestMapping("/api/discounts")
+@RequestMapping("/api/inventory/discounts")
 class DiscountController(
     private val discountService: DiscountService,
-    private val itemService: ItemService
+    private val itemService: ItemService,
+    private val authManager: AuthManager
 ) {
 
     @PostMapping
     suspend fun createDiscount(
+        @WWSUserMetaData
+        user: UserMetaData,
         @RequestBody @Valid
         request: NewDiscountRequest
     ): ResponseEntity<DiscountResponse> {
+        if (!authManager.canManageResource(user)) {
+            requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
+        }
+
         val items = when {
             request.categoryId != null -> {
                 itemService.getItems(categoryId = request.categoryId).asFlow().toList()
@@ -76,9 +86,15 @@ class DiscountController(
 
     @GetMapping("{id}")
     suspend fun getDiscount(
+        @WWSUserMetaData
+        user: UserMetaData,
         @PathVariable
         id: Long
     ): ResponseEntity<DiscountResponse> {
+        if (!authManager.canManageResource(user)) {
+            requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
+        }
+
         val discount = discountService.getDiscount(id).awaitFirstOrNull()
             ?: return ResponseEntity.notFound().build()
 
@@ -87,11 +103,17 @@ class DiscountController(
 
     @GetMapping
     suspend fun getDiscounts(
+        @WWSUserMetaData
+        user: UserMetaData,
         @RequestParam(required = false)
         offset: Int?,
         @RequestParam(required = false)
         size: Int?
     ): ResponseEntity<List<DiscountResponse>> {
+        if (!authManager.canManageResource(user)) {
+            requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
+        }
+
         val pageable = PageRequest.of(offset ?: 0, size ?: 20)
         return ResponseEntity.ok(
             discountService.getDiscounts(pageable)
@@ -103,9 +125,15 @@ class DiscountController(
 
     @DeleteMapping("{id}")
     suspend fun deleteDiscount(
+        @WWSUserMetaData
+        user: UserMetaData,
         @PathVariable
         id: Long
     ) {
+        if (!authManager.canManageResource(user)) {
+            requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
+        }
+
         val discount = discountService.getDiscount(id).awaitFirstOrNull()
             ?: return
 
