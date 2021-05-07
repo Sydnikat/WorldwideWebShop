@@ -9,7 +9,7 @@ namespace Web.InventoryClient
 {
     public interface IInventoryApiClient
     {
-        [Get("/api/items/{id}")]
+        [Get("/api/inventory/items/{id}")]
         Task<InventoryItemResponse> GetInventoryItem([AliasAs("id")] long itemId);
     }
 }
