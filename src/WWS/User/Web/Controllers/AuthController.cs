@@ -46,10 +46,10 @@ namespace Web.Controllers
             var roles = new List<string>();
             var chosenRole = request.Role.ToString();
             if (user.Roles.Contains(chosenRole))
-            {
                 roles.Add(chosenRole);
-            }
-            
+            else
+                return Unauthorized();
+
 
             var jwtResult = jwtAuthManager.GenerateTokens(user);
             return Ok(new LoginResult

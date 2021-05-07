@@ -3,6 +3,7 @@ using Domain.OrderItems;
 using Domain.Orders;
 using System;
 using System.Threading.Tasks;
+using Web.UserClient.DTOs;
 
 namespace Web.Services
 {
@@ -14,7 +15,7 @@ namespace Web.Services
 
         Task<Order> GetOrder(long orderId);
 
-        Task<Order> CreateOrder(Cart cart);
+        Task<Order> CreateOrder(Cart cart, UserResponse userDetails);
 
         Task<Order> AddItem(long orderId, OrderItem patchData);
 

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Web.Cache;
 using Web.Services.Exceptions;
+using Web.UserClient.DTOs;
 using static Domain.Orders.Order;
 
 namespace Web.Services
@@ -62,17 +63,24 @@ namespace Web.Services
             return updatedOrder != null;
         }
 
-        public async Task<Order> CreateOrder(Cart cart)
+        public async Task<Order> CreateOrder(Cart cart, UserResponse userDetails)
         {
+            var items = cart.Items.Select(ci => ci.ToNewOrderItem(0)).ToList();
             var newOrder = new Order(
                 id: 0,
                 orderCode: Guid.NewGuid(),
                 customerId: cart.CustomerId,
-                customerName: "",
+                customerName: userDetails.UserFullName,
                 totalPrice: cart.TotalPrice,
-                items: cart.Items.Select(ci => ci.ToNewOrderItem(0)).ToList(),
+                items: items,
                 created: DateTime.Now,
-                state: OrderState.InProgress
+                state: OrderState.InProgress,
+                zip: userDetails.Address.Zip,
+                street: userDetails.Address.Street,
+                city: userDetails.Address.City,
+                countryCode: userDetails.Address.CountryCode,
+                email: userDetails.Email,
+                phone: userDetails.Phone
                 );
 
             return await orderRepository.Insert(newOrder).ConfigureAwait(false);

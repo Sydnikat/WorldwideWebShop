@@ -14,6 +14,8 @@ using Web.Controllers.DTOs.Responses;
 using Web.InventoryClient;
 using Web.Services;
 using Web.Services.Exceptions;
+using Web.UserClient;
+using Web.UserClient.DTOs;
 using static Web.Middlewares.ErrorHandlerMiddleware;
 
 namespace Web.Controllers
@@ -24,15 +26,22 @@ namespace Web.Controllers
     {
         private readonly CartsCache cache;
         private readonly IInventoryApiClient inventoryApiClient;
+        private readonly IUserApiClient userApiClient;
         private readonly ICartService cartService;
         private readonly IOrderService orderService;
 
-        public CartController(CartsCache cache, IInventoryApiClient inventoryApiClient, ICartService cartService, IOrderService orderService) : base()
+        public CartController(
+            CartsCache cache,
+            IInventoryApiClient inventoryApiClient,
+            ICartService cartService, IOrderService orderService,
+            IUserApiClient userApiClient) 
+            : base()
         {
             this.cache = cache;
             this.inventoryApiClient = inventoryApiClient;
             this.cartService = cartService;
             this.orderService = orderService;
+            this.userApiClient = userApiClient;
         }
 
         [HttpGet("me")]
@@ -59,7 +68,7 @@ namespace Web.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CartResponse>> UpdateMyCart([FromBody] UpdateCartRequest request)
         {
-            var customerId = "demo";
+            var customerId = getUserMetaData().Id;
             var cart = await cache.TryGet(customerId);
 
             if (cart == null)
@@ -94,7 +103,7 @@ namespace Web.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<OrderResponse>> CheckoutMyCart()
         {
-            var customerId = "demo";
+            var customerId = getUserMetaData().Id;
             var cart = await cache.TryGet(customerId);
 
             if (cart == null)
@@ -103,7 +112,17 @@ namespace Web.Controllers
             if (cart.Items.Count <= 0)
                 throw new WWSSException("Cart is empty", StatusCodes.Status400BadRequest);
 
-            var newOrder = await orderService.CreateOrder(cart).ConfigureAwait(false);
+            UserResponse userResponse;
+            try
+            {
+                userResponse = await userApiClient.GetUserDetails(userId: customerId).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                userResponse = new UserResponse();
+            }
+
+            var newOrder = await orderService.CreateOrder(cart, userResponse).ConfigureAwait(false);
             return Ok(OrderResponse.Of(newOrder));
         }
 
@@ -111,7 +130,7 @@ namespace Web.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> EmptyMyCart()
         {
-            var customerId = "demo";
+            var customerId = getUserMetaData().Id;
             await cache.Invalidate(customerId);
             return Ok();
         }

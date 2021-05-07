@@ -10,16 +10,21 @@ namespace Web.Controllers.DTOs.Responses
 {
     public class OrderResponse
     {
-        public long Id { get; set; }
-        public Guid OrderCode { get; set; }
-        public string CustomerId { get; set; }
-        public string CustomerName { get; set; }
-        public float TotalPrice { get; set; }
-        public ICollection<OrderItemResponse> Items { get; set; } = new List<OrderItemResponse>();
-        public DateTime Created { get; set; }
-        public OrderState State { get; set; }
-
-        public OrderResponse(long id, Guid orderCode, string customerId, string customerName, float totalPrice, ICollection<OrderItem> items, DateTime created, OrderState state)
+        public OrderResponse(
+            long id, 
+            Guid orderCode,
+            string customerId,
+            string customerName, 
+            float totalPrice,
+            ICollection<OrderItem> items,
+            DateTime created,
+            OrderState state,
+            string zip,
+            string city,
+            string street,
+            string countryCode,
+            string email,
+            string phone)
         {
             Id = id;
             OrderCode = orderCode;
@@ -29,7 +34,29 @@ namespace Web.Controllers.DTOs.Responses
             Items = items.Select(OrderItemResponse.Of).ToList();
             Created = created;
             State = state;
+            State = state;
+            Zip = zip;
+            City = city;
+            Street = street;
+            CountryCode = countryCode;
+            Email = email;
+            Phone = phone;
         }
+
+        public long Id { get; set; }
+        public Guid OrderCode { get; set; }
+        public string CustomerId { get; set; }
+        public string CustomerName { get; set; }
+        public float TotalPrice { get; set; }
+        public ICollection<OrderItemResponse> Items { get; set; } = new List<OrderItemResponse>();
+        public DateTime Created { get; set; }
+        public OrderState State { get; set; }
+        public string Zip { get; set; }
+        public string City { get; set; }
+        public string Street { get; set; }
+        public string CountryCode { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
 
         public static OrderResponse Of(Order order)
             => new OrderResponse(
@@ -40,7 +67,13 @@ namespace Web.Controllers.DTOs.Responses
                 totalPrice: order.TotalPrice,
                 items: order.Items,
                 created: order.Created,
-                state: order.State
+                state: order.State,
+                zip: order.Zip,
+                street: order.Street,
+                city: order.City,
+                countryCode: order.CountryCode,
+                email: order.Email,
+                phone: order.Phone
                 );
     }
 }

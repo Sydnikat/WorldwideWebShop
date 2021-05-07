@@ -21,7 +21,21 @@ namespace Dal.Orders.DbEntities
         {
         }
 
-        public Order(long id, Guid orderCode, string customerId, string customerName, float totalPrice, ICollection<OrderItem> items, DateTime created, OrderState state)
+        public Order(
+            long id,
+            Guid orderCode,
+            string customerId,
+            string customerName,
+            float totalPrice,
+            ICollection<OrderItem> items,
+            DateTime created, 
+            OrderState state, 
+            string zip, 
+            string city, 
+            string street, 
+            string countryCode,
+            string email, 
+            string phone)
         {
             _id = id;
             OrderCode = orderCode;
@@ -31,6 +45,12 @@ namespace Dal.Orders.DbEntities
             Items = items;
             Created = created;
             State = state;
+            Zip = zip;
+            City = city;
+            Street = street;
+            CountryCode = countryCode;
+            Email = email;
+            Phone = phone;
         }
 
         [Key]
@@ -40,8 +60,14 @@ namespace Dal.Orders.DbEntities
         public string CustomerId { get; set; }
         public string CustomerName { get; set; }
         public float TotalPrice { get; set; }
-        public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
+        public ICollection<OrderItem> Items { get; set; }
         public DateTime Created { get; set; }
         public OrderState State { get; set; }
+        public string Zip { get; set; }
+        public string City { get; set; }
+        public string Street { get; set; }
+        public string CountryCode { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
     }
 }
