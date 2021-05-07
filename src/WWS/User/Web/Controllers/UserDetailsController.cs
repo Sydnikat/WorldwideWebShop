@@ -15,7 +15,8 @@ namespace Web.Controllers
     {
         private readonly IUserService userService;
 
-        public UserDetailsController(IUserService userService)
+        public UserDetailsController(IUserService userService, IJwtAuthManager jwtAuthManager) 
+            : base(jwtAuthManager)
         {
             this.userService = userService;
         }

@@ -20,15 +20,14 @@ namespace Web.Controllers
 {
     [Route("auth")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : WWSControllerBase
     {
         private readonly IUserService userService;
-        private readonly IJwtAuthManager jwtAuthManager;
 
         public AuthController(IUserService userService, IJwtAuthManager jwtAuthManager)
+            : base(jwtAuthManager)
         {
             this.userService = userService;
-            this.jwtAuthManager = jwtAuthManager;
         }
 
         [AllowAnonymous]
