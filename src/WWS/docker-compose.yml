@@ -73,6 +73,13 @@ services:
       - "traefik.http.routers.auth.rule=PathPrefix(`/auth`)"
       - "traefik.http.routers.users.rule=PathPrefix(`/api/users`)"
 
+  rabbitmq:
+    container_name: "wws_rabbitmq"
+    image: rabbitmq:3-management-alpine
+    hostname: rabbitmq
+    networks:
+      - wws-network
+
   mssql:
     container_name: "wws_mssql"
     image: mcr.microsoft.com/mssql/server:2019-latest
