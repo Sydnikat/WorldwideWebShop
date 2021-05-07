@@ -1,5 +1,6 @@
 ﻿using Common.DTOs;
 using Domain.Cart;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -45,6 +46,7 @@ namespace Web.Controllers
         }
 
         [HttpGet("me")]
+        [Authorize(policy: "Customer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<CartResponse>> GetMyCart()
         {
@@ -63,6 +65,7 @@ namespace Web.Controllers
         }
 
         [HttpPut("me")]
+        [Authorize(policy: "Customer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -98,6 +101,7 @@ namespace Web.Controllers
         }
 
         [HttpPost("me/checkout")]
+        [Authorize(policy: "Customer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -127,6 +131,7 @@ namespace Web.Controllers
         }
 
         [HttpDelete("me")]
+        [Authorize(policy: "Customer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> EmptyMyCart()
         {
