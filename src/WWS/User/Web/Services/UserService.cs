@@ -12,10 +12,12 @@ namespace Web.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository userRepository;
+        private readonly INotificationService notificationService;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, INotificationService notificationService)
         {
             this.userRepository = userRepository;
+            this.notificationService = notificationService;
         }
 
         public async Task<User> CreateUser(User patchData)
@@ -43,7 +45,12 @@ namespace Web.Services
                 phone: new Phone(patchData.Phone.Value, false)
                 );
 
-            return await userRepository.Save(newUser).ConfigureAwait(false);
+            var savedUser = await userRepository.Save(newUser).ConfigureAwait(false);
+
+            if (savedUser != null)
+                await notificationService.PublishUserRegisteredEvent(savedUser).ConfigureAwait(false);
+
+            return savedUser;
         }
 
         public async Task<User> GetUser(string userName)

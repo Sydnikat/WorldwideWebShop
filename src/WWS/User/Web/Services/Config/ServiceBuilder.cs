@@ -13,6 +13,7 @@ namespace Web.Services.Config
         {
             services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
             services.AddTransient<IUserService, UserService>();
+            services.AddSingleton<INotificationService, NotificationService>();
         }
     }
 }

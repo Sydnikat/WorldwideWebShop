@@ -9,3 +9,13 @@ mail:
   smtpUser: ${SMTP_USER:bme.aut.wws.dev@gmail.com}
   smtpPass: ${SMTP_PASS:wwsDEV_bmeaut69*}
   noReplyAddress: ${SMTP_FROM:bme.aut.wws.dev@gmail.com}
+
+rabbitmq:
+  host: ${RABBITMQ_HOST:wws_rabbitmq}
+  port: ${RABBITMQ_PORT:5672}
+  username: ${RABBITMQ_USERNAME:guest}
+  password: ${RABBITMQ_PASSWORD:guest}
+  mail:
+    queue: ${RABBITMQ_MAILQUEUE:mail}
+    exchange: ${RABBITMQ_MAILQUEUE:mailQueue}
+    routingkey: ${RABBITMQ_MAILQUEUE:mail_queue}
