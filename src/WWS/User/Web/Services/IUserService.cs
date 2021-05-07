@@ -12,5 +12,6 @@ namespace Web.Services
         Task<User> CreateUser(User patchData);
         Task<User> GetUser(string userName);
         Task<User> GetUser(Guid id);
+        Task<User> UpdateUser(User user, User patchData);
     }
 }

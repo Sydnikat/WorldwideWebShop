@@ -67,6 +67,15 @@ namespace Web.Services
         {
             return verifyHashedPassword(user.Password, password);
         }
+
+        public async Task<User> UpdateUser(User user, User patchData)
+        {
+            user.UserFullName = patchData.UserFullName;
+            user.Phone = patchData.Phone;
+            user.Address = patchData.Address;
+            return await userRepository.Update(user).ConfigureAwait(false);
+        }
+
         private string hashPassword(string password)
         {
             return Argon2.Hash(password);

@@ -13,5 +13,6 @@ namespace Dal.Users
         public Task<User> FindByUserName(string userName);
         public Task<User> FindByEmail(string emailStr);
         public Task<User> Save(User user);
+        public Task<User> Update(User user);
     }
 }

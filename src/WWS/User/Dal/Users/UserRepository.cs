@@ -56,5 +56,27 @@ namespace Dal.Users
 
             return user;
         }
+
+        public async Task<Domain.Users.User> Update(Domain.Users.User user)
+        {
+            if (user == null)
+                return null;
+
+            var dbUser = user.ToDalOrNull(UserConverter.ToDal);
+
+            var filter = Builders<DbEntities.User>.Filter.Where(u => u.Id == user.Id);
+            var update = Builders<DbEntities.User>.Update
+                .Set(u => u.Phone.Value, user.Phone.Value)
+                .Set(u => u.Phone.Confirmed, user.Phone.Confirmed)
+                .Set(u => u.UserFullName, user.UserFullName)
+                .Set(u => u.Address.Zip, user.Address.Zip)
+                .Set(u => u.Address.City, user.Address.City)
+                .Set(u => u.Address.Street, user.Address.Street)
+                .Set(u => u.Address.CountryCode, user.Address.CountryCode);
+
+            await _users.UpdateOneAsync(filter, update).ConfigureAwait(false);
+
+            return user;
+        }
     }
 }
