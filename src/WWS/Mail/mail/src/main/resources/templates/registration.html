@@ -10,7 +10,7 @@
 <table style="border-spacing: 0; margin: 0 auto; padding: 0; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;  background-color: #ffffff; font-family: 'Nunito Sans', Arial, sans-serif; color: #2E2E2F; min-height: 100%; font-size: 16px; line-height: 150%; min-width: 50%; max-width: 600px; text-decoration: none; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;">
     <tbody>
     <tr>
-        <td width="100%" style="padding: 10px 25px; -moz-border-top-left-radius: 10px; -webkit-border-top-left-radius: 10px; border-top-left-radius: 10px; -moz-border-top-right-radius: 10px; -webkit-border-top-right-radius: 10px; border-top-right-radius: 10px; background-color: #465364; color: #ffffff;">
+        <td width="100%" style="padding: 10px 25px; text-align: center; border-top-left-radius: 20px; border-top-right-radius: 20px; background-color: #1a3872; color: #ffffff;">
             <h1 th:text="#{registration.headTitle}" style="font-size: 30px; line-height: 42px; font-weight: 600;">Welcome to WorldwideWebShop!</h1>
         </td>
     </tr>
@@ -22,7 +22,9 @@
             <p style="color: #2E2E2F;" th:text="#{registration.info_pt3}">
                 Your username is:
             </p>
-            <p th:if="${userName != null}" th:text="${userName}"></p>
+            <b>
+                <p th:if="${userName != null}" th:text="${userName}"></p>
+            </b>
 
             <p style="color: #2E2E2F;" th:text="#{registration.info_pt2}">
                 This is a verification email for completing the registration. Please do not reply to this email!
@@ -34,7 +36,7 @@
         </td>
     </tr>
     <tr>
-        <td width="100%" style="margin-top: 40px; background-color: #D0D4D8; text-align: center; -moz-border-bottom-left-radius: 10px; -webkit-border-bottom-left-radius: 10px; border-bottom-left-radius: 10px; -moz-border-bottom-right-radius: 10px; -webkit-border-bottom-right-radius: 10px; border-bottom-right-radius: 10px; padding-top: 10px;">
+        <td width="100%" style="margin-top: 40px; background-color: #8abaf1; text-align: center; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; padding-top: 10px; color: #413f3f;">
             <p style="font-weight: 600;" th:text="#{registration.wws}">WorldwideWebShop Team</p>
         </td>
     </tr>
