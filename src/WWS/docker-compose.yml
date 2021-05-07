@@ -42,6 +42,17 @@ services:
       - "traefik.http.routers.inventory.middlewares=inventory-auth@docker"
       - "traefik.http.middlewares.inventory-auth.forwardauth.address=http://wws_user/auth/check"
 
+  invoice:
+    container_name: "wws_invoice"
+    image: ${DOCKER_REGISTRY:-wws}invoice:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Invoice/Web/Dockerfile
+    networks:
+      - wws-network
+    depends_on:
+      - mongodb
+
   order:
      container_name: "wws_order"
      image: ${DOCKER_REGISTRY:-wws}order:${IMAGE_TAG:-latest}
@@ -72,6 +83,21 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.auth.rule=PathPrefix(`/auth`)"
       - "traefik.http.routers.users.rule=PathPrefix(`/api/users`)"
+  
+  web:
+    container_name: "wws_web"
+    image: ${REGISTRY_URL:-ims}/web:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Web/Docker/Dockerfile
+    volumes:
+      - ./Web/frontend/public:/code/public
+      - ./Web/frontend/src:/code/src
+    networks:
+      - wws-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=PathPrefix(`/`)"
 
   rabbitmq:
     container_name: "wws_rabbitmq"
@@ -114,4 +140,3 @@ volumes:
 networks:
   wws-network:
     driver: bridge
-

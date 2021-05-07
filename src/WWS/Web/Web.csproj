@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.Build.NoTargets/2.0.1">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="frontend\node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="frontend\" />
+  </ItemGroup>
+
+
+</Project>
