@@ -14,10 +14,12 @@ namespace Web.Controllers
     public class InvoiceCreationController : ControllerBase
     {
         private readonly IInvoiceService invoiceService;
+        private readonly INotificationService notificationService;
 
-        public InvoiceCreationController(IInvoiceService invoiceService)
+        public InvoiceCreationController(IInvoiceService invoiceService, INotificationService notificationService)
         {
             this.invoiceService = invoiceService;
+            this.notificationService = notificationService;
         }
 
         [HttpPost]
@@ -30,7 +32,7 @@ namespace Web.Controllers
 
             if (savedInvoice != null)
             {
-                // TODO: publish event(s)
+                await notificationService.PublishInvoiceCreatedEvent(savedInvoice).ConfigureAwait(false);
                 return Ok();
             }
 

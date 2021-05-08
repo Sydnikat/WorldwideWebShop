@@ -34,13 +34,15 @@ namespace Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMassTransitSetup(this.Configuration);
+            services.AddRabbitmqSettings(this.Configuration);
 
             services.AddMongodb(this.Configuration);
 
             services.AddJwtSetup(this.Configuration);
 
             services.AddServices(this.Configuration);
+
+            services.AddMassTransitSetup(this.Configuration);
 
             services.AddControllers()
                 .SetupJsonConverters()

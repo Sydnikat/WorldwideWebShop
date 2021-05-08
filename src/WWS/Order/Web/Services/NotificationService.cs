@@ -1,4 +1,4 @@
-﻿using Domain.Users;
+﻿using Domain.Orders;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
@@ -20,13 +20,23 @@ namespace Web.Services
             this.rabbimqSettings = rabbimqSettings;
         }
 
-        public Task PublishUserRegisteredEvent(User user)
+        public Task PublishOrderCreatedEvent(Order order)
         {
-            var newEvent = new UserRegisteredEvent
+            var items = new List<OrderItem>();
+            order.Items.ToList().ForEach(i =>
             {
-                UserId = user.Id.ToString(),
-                UserName = user.UserName,
-                Email = user.Email.Value
+                items.Add(new OrderItem
+                {
+                    ItemId = i.ItemId,
+                    Count = i.Count
+                });
+            });
+
+            var newEvent = new OrderCreatedEvent
+            {
+                CustomerId = order.CustomerId,
+                OrderCode = order.OrderCode.ToString(),
+                Items = items
             };
 
             var msg = JsonSerializer.Serialize(newEvent, Common.DTOs.JsonSerializationOptions.options);
@@ -47,8 +57,8 @@ namespace Web.Services
                 props.ContentEncoding = "UTF-8";
                 props.DeliveryMode = 2;
 
-                channel.QueueDeclare(queue: rabbimqSettings.MailQueue, durable: true, exclusive: false, autoDelete: false, arguments: null);
-                channel.BasicPublish(exchange: rabbimqSettings.Exchange, routingKey: rabbimqSettings.RoutingKey, basicProperties: props, body: body);
+                channel.QueueDeclare(queue: rabbimqSettings.orderCreatedQueue, durable: true, exclusive: false, autoDelete: false, arguments: null);
+                channel.BasicPublish(exchange: rabbimqSettings.orderCreatedExchange, routingKey: rabbimqSettings.orderCreatedRoutingkey, basicProperties: props, body: body);
             }
 
             return Task.CompletedTask;

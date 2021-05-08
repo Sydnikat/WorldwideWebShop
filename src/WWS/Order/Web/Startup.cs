@@ -18,6 +18,7 @@ using Web.Middlewares;
 using Web.Middlewares.Authentications;
 using Web.Middlewares.Authorizations;
 using Web.Services.Config;
+using Web.Config;
 
 namespace Web
 {
@@ -35,7 +36,11 @@ namespace Web
         {
             services.AddSqlServer(this.Configuration);
 
+            services.AddRabbitmqSettings(this.Configuration);
+
             services.AddServices(this.Configuration);
+
+            services.AddMassTransitSetup(this.Configuration);
 
             services.AddCartsCache(this.Configuration);
 

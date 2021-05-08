@@ -20,6 +20,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("io.r2dbc:r2dbc-mssql")
     implementation("io.projectreactor:reactor-core:3.4.3")
+    implementation("org.springframework.boot:spring-boot-starter-amqp")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
@@ -35,6 +36,7 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
+    testImplementation("org.springframework.amqp:spring-rabbit-test")
 
 }
 

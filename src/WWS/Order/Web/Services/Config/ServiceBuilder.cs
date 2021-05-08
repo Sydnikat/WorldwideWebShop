@@ -13,6 +13,7 @@ namespace Web.Services.Config
         {
             services.AddTransient<ICartService, CartService>();
             services.AddTransient<IOrderService, OrderService>();
+            services.AddSingleton<INotificationService, NotificationService>();
         }
     }
 }

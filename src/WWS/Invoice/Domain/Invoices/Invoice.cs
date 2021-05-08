@@ -8,7 +8,7 @@ namespace Domain.Invoices
 {
     public class Invoice
     {
-        public Invoice(string _id, Guid id, string customerId, double totalPrice, Guid orderCode, DateTime created, string zip, string city, string street, string countryCode)
+        public Invoice(string _id, Guid id, string customerId, double totalPrice, Guid orderCode, DateTime created, string zip, string city, string street, string countryCode, string email)
         {
             this._id = _id;
             Id = id;
@@ -20,6 +20,7 @@ namespace Domain.Invoices
             City = city;
             Street = street;
             CountryCode = countryCode;
+            Email = email;
         }
 
         public string _id { get; set; }
@@ -32,5 +33,6 @@ namespace Domain.Invoices
         public string City { get; set; }
         public string Street { get; set; }
         public string CountryCode { get; set; }
+        public string Email { get; set; }
     }
 }

@@ -12,11 +12,6 @@ namespace Web.Middlewares
     {
         private readonly RequestDelegate _next;
 
-        private readonly JsonSerializerOptions options = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-
 
         public ErrorHandlerMiddleware(RequestDelegate next)
         {
@@ -54,7 +49,7 @@ namespace Web.Middlewares
                 response.ContentType = "application/json";
                 response.StatusCode = error.StatusCode;
 
-                var result = JsonSerializer.Serialize(new GlobalExceptionResponse(error.Message, error.StatusCode), options);
+                var result = JsonSerializer.Serialize(new GlobalExceptionResponse(error.Message, error.StatusCode), Common.DTOs.JsonSerializationOptions.options);
                 await response.WriteAsync(result);
             }
             catch (Exception e)
@@ -67,7 +62,7 @@ namespace Web.Middlewares
                 response.StatusCode = StatusCodes.Status500InternalServerError;
 
                 
-                var result = JsonSerializer.Serialize(new GlobalExceptionResponse(e.Message, StatusCodes.Status500InternalServerError), options);
+                var result = JsonSerializer.Serialize(new GlobalExceptionResponse(e.Message, StatusCodes.Status500InternalServerError), Common.DTOs.JsonSerializationOptions.options);
                 await response.WriteAsync(result);
             }
         }

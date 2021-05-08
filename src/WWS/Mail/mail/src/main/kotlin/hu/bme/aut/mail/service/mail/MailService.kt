@@ -1,5 +1,6 @@
 package hu.bme.aut.mail.service.mail
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import hu.bme.aut.mail.util.process
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -106,6 +107,36 @@ class MailService(
             templateName = "registration",
             params = mapOf(
                 "userName" to userName
+            )
+        )
+    }
+
+    @Async
+    fun sendInvoiceCreatedMail(
+        orderCode: String,
+        totalPrice: Double,
+        created: String,
+        zip: String,
+        city: String,
+        street: String,
+        countryCode: String,
+        email: String,
+        locale: Locale? = null
+    ) {
+        sendMail(
+            from = noReplyAddress,
+            to = email,
+            subjectId = "invoice_created.title",
+            locale = locale ?: Locale("hu"),
+            templateName = "invoice_created",
+            params = mapOf(
+                "orderCode" to orderCode,
+                "totalPrice" to totalPrice,
+                "created" to created,
+                "zip" to zip,
+                "city" to city,
+                "street" to street,
+                "countryCode" to countryCode,
             )
         )
     }

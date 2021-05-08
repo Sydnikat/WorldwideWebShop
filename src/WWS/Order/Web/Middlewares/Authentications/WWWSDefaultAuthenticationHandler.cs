@@ -13,12 +13,6 @@ namespace Web.Middlewares.Authentications
     public class WWWSDefaultAuthenticationHandler : IAuthenticationHandler
     {
         private HttpContext _context;
-
-        private readonly JsonSerializerOptions options = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-
         public Task InitializeAsync(AuthenticationScheme scheme, HttpContext context)
         {
             _context = context;
@@ -34,7 +28,7 @@ namespace Web.Middlewares.Authentications
             response.ContentType = "application/json";
             response.StatusCode = StatusCodes.Status403Forbidden;
 
-            var result = JsonSerializer.Serialize(new GlobalExceptionResponse("User cannot access this resource", StatusCodes.Status403Forbidden), options);
+            var result = JsonSerializer.Serialize(new GlobalExceptionResponse("User cannot access this resource", StatusCodes.Status403Forbidden), Common.DTOs.JsonSerializationOptions.options);
             await response.WriteAsync(result);
         }
 

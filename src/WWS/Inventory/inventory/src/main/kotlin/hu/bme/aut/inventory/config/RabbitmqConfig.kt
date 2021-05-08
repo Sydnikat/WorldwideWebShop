@@ -1,45 +1,37 @@
-package hu.bme.aut.mail.config
+package hu.bme.aut.inventory.config
 
+import com.fasterxml.jackson.databind.JavaType
+import com.fasterxml.jackson.databind.type.CollectionLikeType
+import com.fasterxml.jackson.databind.type.TypeFactory
+import hu.bme.aut.inventory.integrationEvent.event.OrderItem
 import org.springframework.amqp.core.Binding
 import org.springframework.amqp.core.BindingBuilder
 import org.springframework.amqp.core.Exchange
 import org.springframework.amqp.core.ExchangeBuilder
+import org.springframework.amqp.core.MessageProperties
 import org.springframework.amqp.core.Queue
 import org.springframework.amqp.core.QueueBuilder
-import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory
 import org.springframework.amqp.rabbit.core.RabbitTemplate
+import org.springframework.amqp.support.converter.DefaultJackson2JavaTypeMapper
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter
 import org.springframework.amqp.support.converter.MessageConverter
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.messaging.converter.MappingJackson2MessageConverter
-
-
-
 
 
 @Configuration
 class RabbitmqConfig(
-    @Value("\${rabbitmq.mail.queue}")
-    val mailQueue: String,
+    @Value("\${rabbitmq.order.orderCreatedQueue}")
+    val orderCreatedQueue: String,
 
-    @Value("\${rabbitmq.mail.exchange}")
-    val mailExchange: String,
+    @Value("\${rabbitmq.order.orderCreatedExchange}")
+    val orderCreatedExchange: String,
 
-    @Value("\${rabbitmq.mail.routingkey}")
-    val mailRoutingKey: String,
-
-    @Value("\${rabbitmq.invoice.invoiceCreatedQueue}")
-    val invoiceCreatedQueue: String,
-
-    @Value("\${rabbitmq.invoice.invoiceCreatedExchange}")
-    val invoiceCreatedExchange: String,
-
-    @Value("\${rabbitmq.invoice.invoiceCreatedRoutingkey}")
-    val invoiceCreatedRoutingkey: String,
+    @Value("\${rabbitmq.order.orderCreatedRoutingkey}")
+    val orderCreatedRoutingkey: String,
 
     @Value("\${rabbitmq.username}")
     val username: String,
@@ -50,51 +42,29 @@ class RabbitmqConfig(
     @Value("\${rabbitmq.host}")
     val host: String
 ) {
-    @Bean(name = ["mailQueue"])
-    fun queue(): Queue {
-        return QueueBuilder.durable(mailQueue).build()
-    }
-
-    @Bean(name = ["mailExchange"])
-    fun myExchange(): Exchange {
-        return ExchangeBuilder.fanoutExchange(mailExchange).durable(true).build()
-    }
-
-    @Bean
-    fun mailBinding(
-        @Qualifier("mailQueue") queue: Queue,
-        @Qualifier("mailExchange") exchange: Exchange
-    ): Binding {
-        return BindingBuilder
-            .bind(queue)
-            .to(exchange)
-            .with(mailRoutingKey)
-            .noargs()
-    }
-
     @Bean(name = ["invoiceCreatedQueue"])
-    fun invoiceCreatedQueue(): Queue {
-        return QueueBuilder.durable(invoiceCreatedQueue).build()
+    fun orderCreatedQueue(): Queue {
+        return QueueBuilder.durable(orderCreatedQueue).build()
     }
 
     @Bean(name = ["invoiceCreatedExchange"])
-    fun invoiceCreatedExchange(): Exchange {
-        return ExchangeBuilder.fanoutExchange(invoiceCreatedExchange).durable(true).build()
+    fun orderCreatedExchange(): Exchange {
+        return ExchangeBuilder.fanoutExchange(orderCreatedExchange).durable(true).build()
     }
 
     @Bean
-    fun invoiceCreatedBinding(
+    fun orderCreatedBinding(
         @Qualifier("invoiceCreatedQueue") queue: Queue,
         @Qualifier("invoiceCreatedExchange") exchange: Exchange
     ): Binding {
         return BindingBuilder
             .bind(queue)
             .to(exchange)
-            .with(invoiceCreatedRoutingkey)
+            .with(orderCreatedRoutingkey)
             .noargs()
     }
 
-    @Bean
+    @Bean(name = ["rabbitmq"])
     fun connectionFactory(): CachingConnectionFactory {
         val cachingConnectionFactory = CachingConnectionFactory(host)
         cachingConnectionFactory.username = username
@@ -108,7 +78,7 @@ class RabbitmqConfig(
     }
 
     @Bean
-    fun rabbitTemplate(connectionFactory: CachingConnectionFactory): RabbitTemplate {
+    fun rabbitTemplate(@Qualifier("rabbitmq") connectionFactory: CachingConnectionFactory): RabbitTemplate {
         val rabbitTemplate = RabbitTemplate(connectionFactory)
         rabbitTemplate.messageConverter = jsonMessageConverter()
         return rabbitTemplate

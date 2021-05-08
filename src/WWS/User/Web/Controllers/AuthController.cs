@@ -130,24 +130,5 @@ namespace Web.Controllers
                 throw new WWSSException(e.Message, StatusCodes.Status401Unauthorized);
             }
         }
-
-        private UserMetaData getUserFromAccessToken()
-        {
-            var accessToken = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split(" ").Last();
-            if (string.IsNullOrWhiteSpace(accessToken))
-                return null;
-
-            var (principal, jwtToken) = jwtAuthManager.DecodeJwtToken(accessToken);
-
-            var user = new UserMetaData
-            {
-                Id = jwtToken.Claims.First(x => x.Type == "Id").Value,
-                Roles = jwtToken.Claims.First(x => x.Type == "Roles").Value.Split(" ").ToList(),
-                FullName = jwtToken.Claims.First(x => x.Type == "FullName").Value,
-                UserName = jwtToken.Claims.First(x => x.Type == "sub").Value
-            };
-
-            return user;
-        }
     }
 }

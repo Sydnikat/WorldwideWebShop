@@ -90,7 +90,7 @@ namespace Web.InvoiceClient.DTOs
                 customerName: order.CustomerName,
                 totalPrice: order.TotalPrice,
                 items: order.Items.Select(i => OrderItemRequest.Of(i)).ToList(),
-                created: order.Created.ToString("yyyy-MM-dd", null),
+                created: order.Created.ToString(Common.DTOs.Converters.DateTimeConverter.readFormat, null),
                 state: order.State,
                 zip: order.Zip,
                 street: order.Street,

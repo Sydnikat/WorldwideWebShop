@@ -14,19 +14,10 @@ namespace Web.Config
     {
         public static void AddMassTransitSetup(this IServiceCollection services, IConfiguration config)
         {
-            configureSqlServer(services, config);
-
             var sp = services.BuildServiceProvider();
             var settings = sp.GetService<IRabbimqSettings>();
 
             services.AddMassTransit();
-        }
-
-        private static void configureSqlServer(IServiceCollection services, IConfiguration config)
-        {
-            services.Configure<RabbimqSettings>(config.GetSection(nameof(RabbimqSettings)));
-
-            services.AddSingleton<IRabbimqSettings>(sp => sp.GetRequiredService<IOptions<RabbimqSettings>>().Value);
         }
     }
 }

@@ -19,7 +19,8 @@ namespace Dal.Invoices.DbEntities
                 zip: invoice.Zip,
                 city: invoice.City,
                 street: invoice.Street,
-                countryCode: invoice.CountryCode
+                countryCode: invoice.CountryCode,
+                email: invoice.Email
                 );
 
         public static Func<Domain.Invoices.Invoice, DbEntities.Invoice> ToDal =>
@@ -33,7 +34,8 @@ namespace Dal.Invoices.DbEntities
                 zip: invoice.Zip,
                 city: invoice.City,
                 street: invoice.Street,
-                countryCode: invoice.CountryCode
+                countryCode: invoice.CountryCode,
+                email: invoice.Email
                 );
 
         public static Func<Domain.Invoices.Invoice, DbEntities.Invoice> ToDalNew =>
@@ -47,7 +49,8 @@ namespace Dal.Invoices.DbEntities
                 zip: invoice.Zip,
                 city: invoice.City,
                 street: invoice.Street,
-                countryCode: invoice.CountryCode
+                countryCode: invoice.CountryCode,
+                email: invoice.Email
                 );
     }
 }

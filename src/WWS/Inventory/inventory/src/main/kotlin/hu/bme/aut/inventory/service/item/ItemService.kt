@@ -6,6 +6,8 @@ import hu.bme.aut.inventory.dal.Review
 import hu.bme.aut.inventory.dal.ReviewRepository
 import hu.bme.aut.inventory.service.item.exception.RatingOutOfRangeException
 import hu.bme.aut.inventory.util.increaseRating
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactive.awaitSingleOrNull
 import org.springframework.data.domain.Pageable
@@ -49,6 +51,10 @@ class ItemService(
         }
 
         return itemRepository.save(item)
+    }
+
+    suspend fun saveItems(items: List<Item>): Flux<Item> {
+        return itemRepository.saveAll(items)
     }
 
     @Throws(

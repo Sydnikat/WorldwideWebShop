@@ -35,7 +35,6 @@ namespace Web.Middlewares.Authorizations.Handlers
             {
                 context.Fail();
                 return Task.CompletedTask;
-                //throw new WWSSException("User cannot access this resource", StatusCodes.Status403Forbidden);
             }
         }
     }

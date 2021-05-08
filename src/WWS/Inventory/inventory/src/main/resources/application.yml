@@ -18,3 +18,13 @@ logging:
     org:
       springframework:
        r2dbc: TRACE
+
+rabbitmq:
+  host: ${RABBITMQ_HOST:wws_rabbitmq}
+  port: ${RABBITMQ_PORT:5672}
+  username: ${RABBITMQ_USERNAME:guest}
+  password: ${RABBITMQ_PASSWORD:guest}
+  order:
+    orderCreatedQueue: ${RABBITMQ_ORDER_CREATED_QUEUE:orderCreated}
+    orderCreatedExchange: ${RABBITMQ__ORDER_CREATED_EXCHANGEE:orderCreatedQueue}
+    orderCreatedRoutingkey: ${RABBITMQ_ORDER_CREATED_ROUTINGKEY:order_created_queue}

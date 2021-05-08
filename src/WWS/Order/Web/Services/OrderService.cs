@@ -19,11 +19,15 @@ namespace Web.Services
     {
         private readonly IOrderRepository orderRepository;
         private readonly IInvoiceApiClient invoiceApiClient;
+        private readonly INotificationService notificationService;
+        private readonly CartsCache cache;
 
-        public OrderService(IOrderRepository orderRepository, IInvoiceApiClient invoiceApiClient)
+        public OrderService(IOrderRepository orderRepository, IInvoiceApiClient invoiceApiClient, INotificationService notificationService, CartsCache cache)
         {
             this.orderRepository = orderRepository;
             this.invoiceApiClient = invoiceApiClient;
+            this.notificationService = notificationService;
+            this.cache = cache;
         }
 
         public async Task<Order> AddItem(long orderId, OrderItem patchData)
@@ -108,6 +112,7 @@ namespace Web.Services
             {
                 var request = CreateInvoiceRequest.Of(updatedOrder);
                 await invoiceApiClient.CreateInvoice(request).ConfigureAwait(false);
+                await cache.Invalidate(updatedOrder.CustomerId).ConfigureAwait(false);
             }
 
             return updatedOrder != null;
@@ -123,7 +128,10 @@ namespace Web.Services
                 throw new OrderAlreadyFinishedException(orderCode);
 
             if (success)
+            {
                 order.State = OrderState.Active;
+                await notificationService.PublishOrderCreatedEvent(order).ConfigureAwait(false);
+            }
             else
                 order.State = OrderState.Failed;
 

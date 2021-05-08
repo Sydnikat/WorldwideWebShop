@@ -1,4 +1,4 @@
-﻿using Domain.Users;
+﻿using Domain.Invoices;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
@@ -20,13 +20,18 @@ namespace Web.Services
             this.rabbimqSettings = rabbimqSettings;
         }
 
-        public Task PublishUserRegisteredEvent(User user)
+        public Task PublishInvoiceCreatedEvent(Invoice invoice)
         {
-            var newEvent = new UserRegisteredEvent
+            var newEvent = new InvoiceCreatedEvent
             {
-                UserId = user.Id.ToString(),
-                UserName = user.UserName,
-                Email = user.Email.Value
+                TotalPrice = invoice.TotalPrice,
+                OrderCode = invoice.OrderCode.ToString(),
+                Created = invoice.Created.ToString(Common.DTOs.Converters.DateTimeConverter.writeFormat, null),
+                Zip = invoice.Zip,
+                City = invoice.City,
+                Street = invoice.Street,
+                CountryCode = invoice.CountryCode,
+                Email = invoice.Email
             };
 
             var msg = JsonSerializer.Serialize(newEvent, Common.DTOs.JsonSerializationOptions.options);
@@ -47,8 +52,8 @@ namespace Web.Services
                 props.ContentEncoding = "UTF-8";
                 props.DeliveryMode = 2;
 
-                channel.QueueDeclare(queue: rabbimqSettings.MailQueue, durable: true, exclusive: false, autoDelete: false, arguments: null);
-                channel.BasicPublish(exchange: rabbimqSettings.Exchange, routingKey: rabbimqSettings.RoutingKey, basicProperties: props, body: body);
+                channel.QueueDeclare(queue: rabbimqSettings.InvoiceCreatedQueue, durable: true, exclusive: false, autoDelete: false, arguments: null);
+                channel.BasicPublish(exchange: rabbimqSettings.InvoiceCreatedExchange, routingKey: rabbimqSettings.InvoiceCreatedRoutingkey, basicProperties: props, body: body);
             }
 
             return Task.CompletedTask;

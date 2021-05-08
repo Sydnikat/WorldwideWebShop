@@ -10,7 +10,7 @@ namespace Dal.Invoices.DbEntities
 {
     public class Invoice
     {
-        public Invoice(string _id, Guid id, string customerId, double totalPrice, Guid orderCode, DateTime created, string zip, string city, string street, string countryCode)
+        public Invoice(string _id, Guid id, string customerId, double totalPrice, Guid orderCode, DateTime created, string zip, string city, string street, string countryCode, string email)
         {
             this._id = _id;
             Id = id;
@@ -22,6 +22,7 @@ namespace Dal.Invoices.DbEntities
             City = city;
             Street = street;
             CountryCode = countryCode;
+            Email = email;
         }
 
         [BsonId]
@@ -54,5 +55,8 @@ namespace Dal.Invoices.DbEntities
 
         [BsonElement("CountryCode")]
         public string CountryCode { get; set; }
+
+        [BsonElement("Email")]
+        public string Email { get; set; }
     }
 }

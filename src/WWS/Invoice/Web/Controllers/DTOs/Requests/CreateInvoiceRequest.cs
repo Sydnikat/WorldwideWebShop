@@ -76,7 +76,8 @@ namespace Web.Controllers.DTOs.Requests
                 zip: Zip,
                 city: City,
                 street: Street,
-                countryCode: CountryCode
+                countryCode: CountryCode,
+                email: Email
                 );
     }
 }

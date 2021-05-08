@@ -19,3 +19,7 @@ rabbitmq:
     queue: ${RABBITMQ_MAILQUEUE:mail}
     exchange: ${RABBITMQ_MAILQUEUE:mailQueue}
     routingkey: ${RABBITMQ_MAILQUEUE:mail_queue}
+  invoice:
+    invoiceCreatedQueue: ${RABBITMQ_INVOICE_CREATED_QUEUE:invoiceCreated}
+    invoiceCreatedExchange: ${RABBITMQ__INVOICE_CREATED_EXCHANGEE:invoiceCreatedQueue}
+    invoiceCreatedRoutingkey: ${RABBITMQ__INVOICE_CREATED_ROUTINGKEY:invoice_created_queue}

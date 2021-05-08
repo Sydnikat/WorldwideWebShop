@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Config;
 using Web.DTOs.Config;
 using Web.Middlewares;
 using Web.Middlewares.Authentications;
@@ -31,6 +32,10 @@ namespace Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMongodb(this.Configuration);
+
+            services.AddRabbitmqSettings(this.Configuration);
+
+            services.AddMassTransitSetup(this.Configuration);
 
             services.AddServices(this.Configuration);
 
