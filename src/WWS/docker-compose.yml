@@ -92,7 +92,7 @@ services:
   
   web:
     container_name: "wws_web"
-    image: ${REGISTRY_URL:-ims}/web:${IMAGE_TAG:-latest}
+    image: ${REGISTRY_URL:-wws}/web:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: Web/Docker/Dockerfile
