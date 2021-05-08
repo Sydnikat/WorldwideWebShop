@@ -12,7 +12,7 @@ namespace Dal.Orders
     {
         Task<Order> FindById(long orderId);
         Task<Order> FindByOrderCode(Guid code);
-        Task<Order> FindByCustomer(string cusomerId);
+        Task<IReadOnlyCollection<Order>> FindAllByCustomer(string cusomerId);
         Task<Order> Insert(Order order);
         Task<Order> InserOrderItem(long orderId, OrderItem item);
         Task<Order> InserOrderItem(Order order, OrderItem item);

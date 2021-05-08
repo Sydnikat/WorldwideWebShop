@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Web.Cache;
+using Web.InvoiceClient;
+using Web.InvoiceClient.DTOs;
 using Web.Services.Exceptions;
 using Web.UserClient.DTOs;
 using static Domain.Orders.Order;
@@ -16,10 +18,12 @@ namespace Web.Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository orderRepository;
+        private readonly IInvoiceApiClient invoiceApiClient;
 
-        public OrderService(IOrderRepository orderRepository)
+        public OrderService(IOrderRepository orderRepository, IInvoiceApiClient invoiceApiClient)
         {
             this.orderRepository = orderRepository;
+            this.invoiceApiClient = invoiceApiClient;
         }
 
         public async Task<Order> AddItem(long orderId, OrderItem patchData)
@@ -32,9 +36,10 @@ namespace Web.Services
             return await orderRepository.DeleteOrder(orderId).ConfigureAwait(false);
         }
 
-        public async Task<Order> GetOrder(string customerId)
+        public async Task<List<Order>> GetOrders(string customerId)
         {
-            return await orderRepository.FindByCustomer(customerId).ConfigureAwait(false);
+            var list = await orderRepository.FindAllByCustomer(customerId).ConfigureAwait(false);
+            return list.ToList();
         }
 
         public async Task<Order> GetOrder(Guid orderCode)
@@ -47,7 +52,7 @@ namespace Web.Services
             return await orderRepository.FindById(orderId).ConfigureAwait(false);
         }
 
-        public async Task<bool> BillOrder(long orderId)
+        public async Task<bool> PayOrder(long orderId)
         {
             var order = await orderRepository.FindById(orderId).ConfigureAwait(false);
             if (order == null)
@@ -84,6 +89,47 @@ namespace Web.Services
                 );
 
             return await orderRepository.Insert(newOrder).ConfigureAwait(false);
+        }
+
+        public async Task<bool> ProcessOrder(Guid orderCode)
+        {
+            var order = await orderRepository.FindByOrderCode(orderCode).ConfigureAwait(false);
+            if (order == null)
+                throw new OrderNotFoundException(orderCode);
+
+            if (order.State == OrderState.Processing)
+                throw new OrderAlreadyProcessingException(orderCode);
+
+            order.State = OrderState.Processing;
+
+            var updatedOrder = await orderRepository.Update(order);
+
+            if (updatedOrder != null)
+            {
+                var request = CreateInvoiceRequest.Of(updatedOrder);
+                await invoiceApiClient.CreateInvoice(request).ConfigureAwait(false);
+            }
+
+            return updatedOrder != null;
+        }
+
+        public async Task<bool> BillOrder(Guid orderCode, bool success)
+        {
+            var order = await orderRepository.FindByOrderCode(orderCode).ConfigureAwait(false);
+            if (order == null)
+                throw new OrderNotFoundException(orderCode);
+
+            if (order.State == OrderState.Active || order.State == OrderState.Failed)
+                throw new OrderAlreadyFinishedException(orderCode);
+
+            if (success)
+                order.State = OrderState.Active;
+            else
+                order.State = OrderState.Failed;
+
+            var updatedOrder = await orderRepository.Update(order);
+
+            return updatedOrder != null;
         }
     }
 }

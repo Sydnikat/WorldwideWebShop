@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace HWS.Controllers.DTOs.Config
+namespace Web.DTOs.Config
 {
     public static class JsonSerializationConfig
     {

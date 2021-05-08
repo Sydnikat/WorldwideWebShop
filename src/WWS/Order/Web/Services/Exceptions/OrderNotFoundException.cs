@@ -9,9 +9,16 @@ namespace Web.Services.Exceptions
     {
         public long OrderId { get; set; }
 
+        public Guid OrderCode { get; set; }
+
         public OrderNotFoundException(long orderId)
         {
             OrderId = orderId;
+        }
+
+        public OrderNotFoundException(Guid orderCode)
+        {
+            OrderCode = orderCode;
         }
     }
 }

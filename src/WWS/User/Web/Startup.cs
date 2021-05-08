@@ -1,5 +1,5 @@
-using Dal.Config;
-using HWS.Controllers.DTOs.Config;
+    using Dal.Config;
+using Web.DTOs.Config;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;

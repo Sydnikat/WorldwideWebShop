@@ -29,12 +29,12 @@ namespace Dal.Orders
                 .ToDomainOrNull(OrderConverter.ToDomain);
         }
 
-        public async Task<Domain.Orders.Order> FindByCustomer(string cusomerId)
+        public async Task<IReadOnlyCollection<Domain.Orders.Order>> FindAllByCustomer(string cusomerId)
         {
             return await _orders.AsNoTracking()
                 .Include(o => o.Items)
                 .Where(o => o.CustomerId == cusomerId)
-                .SingleOrDefaultAsync()
+                .ToListAsync()
                 .ToDomainOrNull(OrderConverter.ToDomain);
         }
 

@@ -12,6 +12,9 @@ namespace Domain.Orders
         public enum OrderState
         {
             InProgress,
+            Processing,
+            Active,
+            Failed,
             Billed
         }
 
@@ -19,8 +22,8 @@ namespace Domain.Orders
             long id, 
             Guid orderCode,
             string customerId,
-            string customerName, 
-            float totalPrice,
+            string customerName,
+            double totalPrice,
             ICollection<OrderItem> items,
             DateTime created,
             OrderState state,
@@ -51,7 +54,7 @@ namespace Domain.Orders
         public Guid OrderCode { get; set; }
         public string CustomerId { get; set; }
         public string CustomerName { get; set; }
-        public float TotalPrice { get; set; }
+        public double TotalPrice { get; set; }
         public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
         public DateTime Created { get; set; }
         public OrderState State { get; set; }

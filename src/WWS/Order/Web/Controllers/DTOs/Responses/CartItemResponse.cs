@@ -8,7 +8,7 @@ namespace Web.Controllers.DTOs.Responses
 {
     public class CartItemResponse
     {
-        public CartItemResponse(long itemId, string name, float price, int count)
+        public CartItemResponse(long itemId, string name, double price, int count)
         {
 
             ItemId = itemId;
@@ -18,7 +18,7 @@ namespace Web.Controllers.DTOs.Responses
         }
         public long ItemId { get; set; }
         public string Name { get; set; }
-        public float Price { get; set; }
+        public double Price { get; set; }
         public int Count { get; set; }
 
         public static CartItemResponse Of(CartItem item)

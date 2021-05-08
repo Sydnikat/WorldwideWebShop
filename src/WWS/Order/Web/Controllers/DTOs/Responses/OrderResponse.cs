@@ -14,8 +14,8 @@ namespace Web.Controllers.DTOs.Responses
             long id, 
             Guid orderCode,
             string customerId,
-            string customerName, 
-            float totalPrice,
+            string customerName,
+            double totalPrice,
             ICollection<OrderItem> items,
             DateTime created,
             OrderState state,
@@ -47,7 +47,7 @@ namespace Web.Controllers.DTOs.Responses
         public Guid OrderCode { get; set; }
         public string CustomerId { get; set; }
         public string CustomerName { get; set; }
-        public float TotalPrice { get; set; }
+        public double TotalPrice { get; set; }
         public ICollection<OrderItemResponse> Items { get; set; } = new List<OrderItemResponse>();
         public DateTime Created { get; set; }
         public OrderState State { get; set; }

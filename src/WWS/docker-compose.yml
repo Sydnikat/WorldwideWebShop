@@ -52,6 +52,11 @@ services:
       - wws-network
     depends_on:
       - mongodb
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.invoice.rule=PathPrefix(`/api/invoice`)" 
+      - "traefik.http.routers.invoice.middlewares=invoice-auth@docker"
+      - "traefik.http.middlewares.invoice-auth.forwardauth.address=http://wws_user/auth/check"
 
   order:
      container_name: "wws_order"
@@ -91,7 +96,6 @@ services:
       context: .
       dockerfile: Web/Docker/Dockerfile
     volumes:
-      - ./Web/frontend/public:/code/public
       - ./Web/frontend/src:/code/src
     networks:
       - wws-network

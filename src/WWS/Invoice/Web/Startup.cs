@@ -1,3 +1,4 @@
+using Dal.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.DTOs.Config;
+using Web.Middlewares;
+using Web.Middlewares.Authentications;
+using Web.Middlewares.Authorizations;
+using Web.Services.Config;
 
 namespace Web
 {
@@ -24,8 +30,16 @@ namespace Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMongodb(this.Configuration);
 
-            services.AddControllers();
+            services.AddServices(this.Configuration);
+
+            services.AddWWSAuthentication();
+            services.AddWWSAuthorization();
+
+            services.AddControllers()
+                .SetupJsonConverters()
+                .SetupJsonSerialization();;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,6 +51,8 @@ namespace Web
             }
 
             app.UseRouting();
+
+            app.UseMiddlewares();
 
             app.UseAuthorization();
 

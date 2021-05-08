@@ -14,7 +14,7 @@ namespace Dal.OrderItems.DbEntites
         {
         }
 
-        public OrderItem(long id, long orderId, long itemId, string name, float price, int count)
+        public OrderItem(long id, long orderId, long itemId, string name, double price, int count)
         {
             _id = id;
             OrderId = orderId;
@@ -30,7 +30,7 @@ namespace Dal.OrderItems.DbEntites
         public long OrderId { get; set; }
         public long ItemId { get; set; }
         public string Name { get; set; }
-        public float Price { get; set; }
+        public double Price { get; set; }
         public int Count { get; set; }
     }
 }

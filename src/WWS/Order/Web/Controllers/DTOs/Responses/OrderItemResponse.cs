@@ -11,10 +11,10 @@ namespace Web.Controllers.DTOs.Responses
         public long Id { get; set; }
         public long ItemId { get; set; }
         public string Name { get; set; }
-        public float Price { get; set; }
+        public double Price { get; set; }
         public int Count { get; set; }
 
-        public OrderItemResponse(long id, long itemId, string name, float price, int count)
+        public OrderItemResponse(long id, long itemId, string name, double price, int count)
         {
             Id = id;
             ItemId = itemId;

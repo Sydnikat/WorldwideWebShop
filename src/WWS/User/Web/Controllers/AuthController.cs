@@ -60,8 +60,7 @@ namespace Web.Controllers
             });
         }
 
-        [Route("signup")]
-        [HttpPost]
+        [HttpPost("signup")]
         public async Task<ActionResult> Register([FromBody] RegisterRequest request)
         {
             if (!request.Password.Equals(request.ConfirmPassword))

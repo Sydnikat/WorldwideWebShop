@@ -1,5 +1,5 @@
 using Dal.Config;
-using HWS.Controllers.DTOs.Config;
+using Web.DTOs.Config;
 using Inventory.Supply.Web.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

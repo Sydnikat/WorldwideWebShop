@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace HWS.Controllers.DTOs.Config
+namespace Web.DTOs.Config
 {
     public static class ConverterConfig
     {

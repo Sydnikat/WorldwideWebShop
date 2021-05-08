@@ -17,6 +17,12 @@ namespace Dal.Orders.DbEntities
                     return Domain.Orders.Order.OrderState.InProgress;
                 case Orders.DbEntities.Order.OrderState.Billed:
                     return Domain.Orders.Order.OrderState.Billed;
+                case Orders.DbEntities.Order.OrderState.Processing:
+                    return Domain.Orders.Order.OrderState.Processing;
+                case Orders.DbEntities.Order.OrderState.Active:
+                    return Domain.Orders.Order.OrderState.Active;
+                case Orders.DbEntities.Order.OrderState.Failed:
+                    return Domain.Orders.Order.OrderState.Failed;
                 default:
                     throw new InvalidEnumArgumentException();
             }
@@ -30,6 +36,12 @@ namespace Dal.Orders.DbEntities
                     return Orders.DbEntities.Order.OrderState.InProgress;
                 case Domain.Orders.Order.OrderState.Billed:
                     return Orders.DbEntities.Order.OrderState.Billed;
+                case Domain.Orders.Order.OrderState.Processing:
+                    return Orders.DbEntities.Order.OrderState.Processing;
+                case Domain.Orders.Order.OrderState.Active:
+                    return Orders.DbEntities.Order.OrderState.Active;
+                case Domain.Orders.Order.OrderState.Failed:
+                    return Orders.DbEntities.Order.OrderState.Failed;
                 default:
                     throw new InvalidEnumArgumentException();
             }
