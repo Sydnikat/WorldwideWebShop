@@ -4,8 +4,9 @@ WORKDIR /code
 COPY Web/frontend/package*.json Web/frontend/tsconfig.json ./
 RUN npm install
 
-COPY Web/frontend/public ./public
-COPY Web/frontend/src ./src
+COPY Web/frontend .
 COPY Web/frontend/tsconfig.json ./tsconfig.json
 
-CMD [ "npm", "start" ]
+EXPOSE 3000
+
+CMD [ "npm", "run", "dev" ]
