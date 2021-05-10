@@ -9,7 +9,9 @@ import hu.bme.aut.inventory.controller.item.response.ItemResponse
 import hu.bme.aut.inventory.exception.RequestError
 import hu.bme.aut.inventory.service.auth.AuthManager
 import hu.bme.aut.inventory.service.category.CategoryService
+import hu.bme.aut.inventory.service.item.ItemService
 import hu.bme.aut.inventory.util.requestError
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirst
@@ -32,6 +34,7 @@ import javax.validation.Valid
 @RequestMapping("/api/inventory/categories")
 class CategoryController(
     private val categoryService: CategoryService,
+    private val itemService: ItemService,
     private val authManager: AuthManager
 ) {
     @PostMapping
@@ -117,5 +120,24 @@ class CategoryController(
             ?: return
 
         categoryService.deleteCategory(category = category)
+    }
+
+    @GetMapping("{id}/items")
+    suspend fun getItems(
+        @PathVariable
+        id: Long,
+        @RequestParam(required = false)
+        offset: Int?,
+        @RequestParam(required = false)
+        size: Int?
+    ): ResponseEntity<List<ItemResponse>> {
+        val pageable = PageRequest.of(offset ?: 0, size ?: 20)
+        return ResponseEntity.ok(
+            itemService.getItems(pageable)
+                .asFlow()
+                .filter { it.categoryId == id }
+                .toList()
+                .map { ItemResponse.of(it) }
+        )
     }
 }

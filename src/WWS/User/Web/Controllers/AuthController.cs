@@ -32,7 +32,7 @@ namespace Web.Controllers
 
         [AllowAnonymous]
         [HttpPost("signin")]
-        public async Task<ActionResult> Login([FromBody] LoginRequest request)
+        public async Task<ActionResult<LoginResult>> Login([FromBody] LoginRequest request)
         {
             var user = await userService.GetUser(request.UserName).ConfigureAwait(false);
 
