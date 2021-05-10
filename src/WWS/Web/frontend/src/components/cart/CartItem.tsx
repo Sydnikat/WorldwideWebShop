@@ -4,7 +4,7 @@ import React from "react";
 
 const CartItem = () => {
   const property = {
-    imageUrl: "https://bit.ly/2Z4KKcF",
+    imageUrl: "https://images-na.ssl-images-amazon.com/images/I/71z7ztyH1LL._AC_SX466_.jpg",
     imageAlt: "Árucikk képe",
     title: "Árucikk neve gffz kufk kufkk fffo ds dfljags l g lg slgdlg dslglkjhlsd  dlakjhgj khsd djsdh htfkhfk zfjhk",
     formattedPrice: "19 000",
@@ -27,7 +27,7 @@ const CartItem = () => {
         </Box>
       </Flex>
 
-      <Flex lignItems="center" justifyContent="start" mx="auto" w="70%" mt="3%">
+      <Flex alignItems="center" justifyContent="start" mx="auto" w="70%" mt="3%">
         <ButtonGroup size="sm" isAttached variant="outline" mr="2">
           <IconButton aria-label="Add to friends" icon={<MinusIcon />} />
         </ButtonGroup>

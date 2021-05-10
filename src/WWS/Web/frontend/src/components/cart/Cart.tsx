@@ -1,19 +1,12 @@
 import {Badge, Box, Button, Image, Text, Flex, Center, Tag, Spacer, Heading, ButtonGroup, IconButton } from "@chakra-ui/react";
 import {AddIcon, MinusIcon, StarIcon} from "@chakra-ui/icons";
-import React from "react";
+import React, { Fragment } from "react";
 import CartItem from "./CartItem";
 
 const Cart = () => {
 
   const property = {
-    imageUrl: "https://bit.ly/2Z4KKcF",
-    imageAlt: "Árucikk képe",
-    title: "Árucikk neve gffz kufk kufkk fffo ds dfljags l g lg slgdlg dslglkjhlsd  dlakjhgj khsd djsdh htfkhfk zfjhk",
-    formattedPrice: "19 000",
-    reviewCount: 34,
-    rating: 4,
-    discount: true,
-    count: 1
+    formattedPrice: "19 000"
   }
 
   return (
@@ -36,7 +29,9 @@ const Cart = () => {
       {Array(2)
         .fill("")
         .map((_, i) => (
-          <CartItem />
+          <Fragment key={i}>
+            <CartItem />
+          </Fragment>
         ))}
 
       <Flex alignItems="center" justifyContent="start"  mx="3%" w="90%" my="5%">

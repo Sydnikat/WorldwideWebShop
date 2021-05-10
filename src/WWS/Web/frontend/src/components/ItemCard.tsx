@@ -1,21 +1,54 @@
 import { StarIcon } from "@chakra-ui/icons";
 import {Badge, Box, Image } from "@chakra-ui/react";
 import React from "react";
+import {ItemResponse} from "../types/InventoryItem";
 
-const ItemCard: React.FC = () => {
-  const property = {
-    imageUrl: "https://bit.ly/2Z4KKcF",
+interface itemData {
+  imageUrl: string;
+  imageAlt: string;
+  title: string;
+  formattedPrice: string;
+  reviewCount: number;
+  rating: number;
+  discount: boolean;
+}
+
+
+
+/*
+"https://bit.ly/2Z4KKcF"
+ */
+
+const test = {
+  imageUrl: "https://images-na.ssl-images-amazon.com/images/I/71z7ztyH1LL._AC_SX466_.jpg",
+  imageAlt: "Árucikk képe",
+  title: "Árucikk neve",
+  formattedPrice: "19 000",
+  reviewCount: 34,
+  rating: 4,
+  discount: true
+}
+
+interface ItemCardProps {
+  item: ItemResponse | null;
+}
+
+const ItemCard = (props: ItemCardProps) => {
+  const {item} = props;
+
+  const property = (item === null) ? test : {
+    imageUrl: "https://images-na.ssl-images-amazon.com/images/I/71z7ztyH1LL._AC_SX466_.jpg",
     imageAlt: "Árucikk képe",
-    title: "Árucikk neve",
-    formattedPrice: "19 000",
-    reviewCount: 34,
-    rating: 4,
-    discount: true
-  }
+    title: item.name,
+    formattedPrice: item.price,
+    reviewCount: item.ratingCount,
+    rating: item.rating !== null ? item.rating : 0,
+    discount: item.discountId !== null
+  };
 
   return (
-    <Box maxW="sm" w={280} h={330} borderWidth="1px" borderRadius="lg" overflow="hidden" boxShadow="xl">
-      <Image p={2} borderRadius="3xl" src={property.imageUrl} alt={property.imageAlt} />
+    <Box maxW="sm" w={280} h={330} borderWidth="1px" borderRadius="lg" overflow="inherit" boxShadow="xl"  backgroundColor="white">
+      <Image p={2} mx="auto" boxSize="200px" borderRadius="3xl" src={property.imageUrl} alt={property.imageAlt} />
 
       <Box p="4">
         <Box

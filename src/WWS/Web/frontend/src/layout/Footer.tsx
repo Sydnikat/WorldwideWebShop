@@ -3,11 +3,13 @@ import React from "react";
 
 const Footer = () => {
   return(
-    <Flex alignItems="center" justifyContent="center" my="2" >
-      <Text>
-        WorldwideWebShop 2020
-      </Text>
-    </Flex>
+    <Box>
+      <Flex alignItems="center" justifyContent="center"  >
+        <Text color="white" fontWeight="bold" my="3">
+          WorldwideWebShop 2020
+        </Text>
+      </Flex>
+    </Box>
   );
 }
 

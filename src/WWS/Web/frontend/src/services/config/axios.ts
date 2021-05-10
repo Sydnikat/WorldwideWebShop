@@ -1,14 +1,15 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import {getUser} from "../helperFunctions";
 
 const axiosInstance: AxiosInstance = axios.create();
 
 axiosInstance.interceptors.request.use((request: AxiosRequestConfig) => {
-  const accessToken = "";
-  if (accessToken !== "") {
+  const user = getUser();
+  if (user !== null && user.accessToken !== "") {
     request.headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${user.accessToken}`,
     };
   } else {
     request.headers = {

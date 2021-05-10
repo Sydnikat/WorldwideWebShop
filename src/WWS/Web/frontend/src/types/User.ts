@@ -1,0 +1,45 @@
+export interface User {
+  userName: string;
+  roles: string[];
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface AddressResponse {
+  zip: string;
+  city: string;
+  street: string;
+  countryCode: string;
+}
+
+export interface UserResponse {
+  id: string;
+  userName: string;
+  userFullName: string;
+  email: string;
+  address: AddressResponse;
+  phone: string;
+}
+
+export interface LoginRequest {
+  userName: string;
+  password: string;
+  role: string;
+}
+
+export interface AddressRequest {
+  zip: string;
+  city: string;
+  street: string;
+  countryCode: string;
+}
+
+export interface RegisterRequest {
+  userName: string;
+  password: string;
+  confirmPassword: string;
+  userFullName: string;
+  email: string;
+  address: AddressRequest;
+  phone: string;
+}

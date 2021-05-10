@@ -1,4 +1,4 @@
-import {Flex, Grid, GridItem} from "@chakra-ui/react";
+import {Box, Flex, Grid, GridItem} from "@chakra-ui/react";
 import React  from "react";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
@@ -14,12 +14,12 @@ const AuthenticatedLayout: React.FC = ({ children }) => {
       <GridItem border="1px" borderColor="red">
         <Navbar />
       </GridItem>
-      <GridItem overflow="auto" border="1px" borderColor="red">
+      <GridItem overflow="auto" border="1px" borderColor="red"  backgroundColor="gray.100" >
         <Content>
           {children}
         </Content>
       </GridItem>
-      <GridItem border="1px" borderColor="red">
+      <GridItem bg="blue.300" border="1px" borderColor="red">
         <Footer />
       </GridItem>
     </Grid>
