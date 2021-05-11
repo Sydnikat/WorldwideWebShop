@@ -20,7 +20,7 @@ namespace Web.Services
             {
                 alreadyIn = true;
                 cartItem.Price = item.Price;
-                cartItem.Count += request.Count;
+                cartItem.Count = request.Count;
             }
             else
             {

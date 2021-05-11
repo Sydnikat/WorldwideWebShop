@@ -82,7 +82,7 @@ namespace Web.Controllers
         [HttpGet]
         [Authorize(policy: "Customer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<OrderResponse>> GetOrders()
+        public async Task<ActionResult<List<OrderResponse>>> GetOrders()
         {
             var customerId = getUserMetaData().Id;
             var orders = await orderService.GetOrders(customerId).ConfigureAwait(false);

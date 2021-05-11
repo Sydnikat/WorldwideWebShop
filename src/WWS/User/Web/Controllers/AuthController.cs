@@ -56,7 +56,9 @@ namespace Web.Controllers
                 UserName = user.UserName,
                 Roles = roles,
                 AccessToken = jwtResult.AccessToken,
-                RefreshToken = jwtResult.RefreshToken.TokenString
+                RefreshToken = jwtResult.RefreshToken.TokenString,
+                UserFullName = user.UserFullName,
+                Id = user.Id
             });
         }
 
