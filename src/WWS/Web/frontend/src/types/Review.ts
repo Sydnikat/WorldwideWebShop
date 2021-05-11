@@ -7,3 +7,12 @@ export interface ReviewResponse {
   rating: number;
   created: string;
 }
+
+export interface NewReviewRequest {
+  reviewerName: string;
+  reviewerId: string;
+  summary: string;
+  rating: number;
+}
+
+

@@ -77,9 +77,11 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
       }
     },
     onSettled: (data, error) => {
-      setInTransaction(false);
-      setUserName("");
-      setPassword("");
+      if (data === undefined) {
+        setInTransaction(false);
+        setUserName("");
+        setPassword("");
+      }
     }
   });
 

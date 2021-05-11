@@ -1,7 +1,9 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
 import React from "react";
+import {RouteComponentProps, withRouter} from "react-router-dom";
+import {getUser} from "../services/helperFunctions";
 
-const Footer = () => {
+const Footer: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
   return(
     <Box>
       <Flex alignItems="center" justifyContent="center"  >
@@ -13,4 +15,4 @@ const Footer = () => {
   );
 }
 
-export default Footer;
+export default withRouter(Footer);

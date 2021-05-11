@@ -3,6 +3,8 @@ export interface User {
   roles: string[];
   accessToken: string;
   refreshToken: string;
+  userFullName: string;
+  id: string;
 }
 
 export interface AddressResponse {
@@ -42,4 +44,17 @@ export interface RegisterRequest {
   email: string;
   address: AddressRequest;
   phone: string;
+}
+
+export interface AddressUpdateRequest {
+  zip: string;
+  city: string;
+  street: string;
+  countryCode: string;
+}
+
+export interface UserUpdateRequest {
+  address: AddressUpdateRequest;
+  phone: string;
+  userFullName: string;
 }
