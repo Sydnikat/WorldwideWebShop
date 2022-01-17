@@ -63,7 +63,7 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
       const response = error.response;
       const status = response?.status;
       if (status === 401 || status === 400) {
-        let errorText = "Sikertelen regisztráció";
+        let errorText = "Sikertelen belépés";
         if (response !== undefined && response.data !== undefined && response.data.message !== undefined) {
           errorText = response.data.message
         }
