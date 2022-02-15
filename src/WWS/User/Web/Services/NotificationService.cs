@@ -53,5 +53,46 @@ namespace Web.Services
 
             return Task.CompletedTask;
         }
+
+        public Task NotifyUsersForCategoryPromotion(List<Email> userEmails, CategoryDiscountCreatedEvent e)
+        {
+            const string writeFormat = Common.DTOs.Converters.DateTimeConverter.writeFormat;
+
+            var newEvents = userEmails.Select(email => new CategoryPromotionCreatedEvent()
+            {
+                CategoryName = e.CategoryName,
+                Discount = e.Discount,
+                StartDate = e.StartDate.ToString(writeFormat),
+                EndDate = e.EndDate.ToString(writeFormat),
+                email = email.Value
+            }).ToList();
+
+            var factory = new ConnectionFactory()
+            {
+                HostName = rabbimqSettings.Host,
+                UserName = rabbimqSettings.Username,
+                Password = rabbimqSettings.Password
+            };
+
+            using (var connection = factory.CreateConnection())
+            using (var channel = connection.CreateModel())
+            {
+                var props = channel.CreateBasicProperties();
+                props.ContentType = "application/json";
+                props.ContentEncoding = "UTF-8";
+                props.DeliveryMode = 2;
+
+                channel.QueueDeclare(queue: rabbimqSettings.CategoryPromotionQueue, durable: true, exclusive: false, autoDelete: false, arguments: null);
+
+                newEvents.ForEach(newEvent =>
+                {
+                    var msg = JsonSerializer.Serialize(newEvent, Common.DTOs.JsonSerializationOptions.options);
+                    var body = Encoding.UTF8.GetBytes(msg);
+                    channel.BasicPublish(exchange: rabbimqSettings.CategoryPromotionExchange, routingKey: rabbimqSettings.CategoryPromotionRoutingkey, basicProperties: props, body: body);
+                });
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }

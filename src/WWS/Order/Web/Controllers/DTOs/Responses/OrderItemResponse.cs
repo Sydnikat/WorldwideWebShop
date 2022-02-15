@@ -28,7 +28,7 @@ namespace Web.Controllers.DTOs.Responses
                 id: item.Id,
                 itemId: item.ItemId,
                 name: item.Name,
-                price: item.Price,
+                price: Math.Round(item.Price, 2),
                 count: item.Count
                 );
     }

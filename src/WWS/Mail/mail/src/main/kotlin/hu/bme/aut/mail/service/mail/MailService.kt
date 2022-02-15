@@ -140,4 +140,28 @@ class MailService(
             )
         )
     }
+
+    @Async
+    fun sendCategoryDiscountCreatedMail(
+        categoryName: String,
+        discount: String,
+        startDate: String,
+        endDate: String,
+        email: String,
+        locale: Locale? = null
+    ) {
+        sendMail(
+            from = noReplyAddress,
+            to = email,
+            subjectId = "category_promotion.title",
+            locale = locale ?: Locale("hu"),
+            templateName = "category_promotion",
+            params = mapOf(
+                "categoryName" to categoryName,
+                "discount" to discount,
+                "startDate" to startDate,
+                "endDate" to endDate
+            )
+        )
+    }
 }

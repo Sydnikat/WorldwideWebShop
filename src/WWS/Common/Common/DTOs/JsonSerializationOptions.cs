@@ -13,5 +13,10 @@ namespace Common.DTOs
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
+
+        public static readonly JsonSerializerOptions deserializeOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = null
+        };
     }
 }

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Web.Cache;
 using Web.Controllers.Config;
@@ -78,24 +79,30 @@ namespace Web.Controllers
                 cart = new Cart(customerId);
 
             if (request.Count <= 0)
-                throw new WWSSException("Count must be positive", StatusCodes.Status400BadRequest);
-
-            var item = await inventoryApiClient.GetInventoryItem(request.ItemId).ConfigureAwait(false);
-            if (item == null)
-                throw new WWSSException("Item not found", StatusCodes.Status404NotFound);
+                throw new WWSException("Count must be positive", StatusCodes.Status400BadRequest);
 
             try
             {
+                var item = await inventoryApiClient.GetInventoryItem(request.ItemId).ConfigureAwait(false);
+
                 var updatedCart = cartService.AddCartItem(cart, item, request);
 
                 await cache.Invalidate(customerId);
                 await cache.Set(updatedCart);
 
                 return Ok(CartResponse.Of(updatedCart));
+
             }
             catch (StockIsNotEnoughException)
             {
-                throw new WWSSException("Not enough item in stock", StatusCodes.Status400BadRequest);
+                throw new WWSException("Not enough item in stock", StatusCodes.Status400BadRequest);
+            }
+            catch (Refit.ApiException ex)
+            {
+                if (ex.StatusCode == HttpStatusCode.NotFound)
+                    throw new WWSException("Item not found", StatusCodes.Status404NotFound);
+                else
+                    throw;
             }
             
         }
@@ -111,10 +118,10 @@ namespace Web.Controllers
             var cart = await cache.TryGet(customerId);
 
             if (cart == null)
-                throw new WWSSException("Cart not found", StatusCodes.Status404NotFound);
+                throw new WWSException("Cart not found", StatusCodes.Status404NotFound);
 
             if (cart.Items.Count <= 0)
-                throw new WWSSException("Cart is empty", StatusCodes.Status400BadRequest);
+                throw new WWSException("Cart is empty", StatusCodes.Status400BadRequest);
 
             UserResponse userResponse;
             try

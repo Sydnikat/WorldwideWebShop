@@ -11,6 +11,8 @@ data class NewDiscountRequest(
     @field:[DateTimeFormat(iso = DateTimeFormat.ISO.DATE)]
     val endDate: LocalDate,
 
+    val sendPromotion: Boolean? = true,
+
     val categoryId: Long?,
 
     val itemIds: List<Long>?

@@ -23,7 +23,7 @@ namespace Web.Middlewares
             _next = next;
         }
 
-        public class WWSSException : Exception
+        public class WWSException : Exception
         {
             public override string Message { get; }
 
@@ -31,7 +31,7 @@ namespace Web.Middlewares
 
             public object[] Params { get; set; }
 
-            public WWSSException(string message, int statusCode, params object[] args) : base(message)
+            public WWSException(string message, int statusCode, params object[] args) : base(message)
             {
                 this.Message = message;
                 this.StatusCode = statusCode;
@@ -45,7 +45,7 @@ namespace Web.Middlewares
             {
                 await _next(context);
             }
-            catch (WWSSException error)
+            catch (WWSException error)
             {
                 // TODO: Proper logging...
                 Console.WriteLine($"${error.Message} : ${error.Params}");

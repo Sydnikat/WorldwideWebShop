@@ -1,11 +1,11 @@
 import {Box, ButtonGroup, Center, Divider, Flex, IconButton, Image, Tag, Text, useToast} from "@chakra-ui/react";
 import {AddIcon, MinusIcon} from "@chakra-ui/icons";
 import React from "react";
-import {CartItemResponse, UpdateCartRequest} from "../../types/Cart";
+import {CartItemResponse, UpdateCartRequest} from "../../types/dto/Cart";
 import {useMutation, useQueryClient} from "react-query";
 import {deleteMyCart, updateMyCart} from "../../services/queries";
 import {AxiosError} from "axios";
-import {WWSError} from "../../types/Error";
+import {WWSError} from "../../types/dto/Error";
 
 interface CartItemProps {
   cartItem: CartItemResponse

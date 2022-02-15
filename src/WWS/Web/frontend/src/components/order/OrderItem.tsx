@@ -1,4 +1,4 @@
-import {OrderItemResponse} from "../../types/Order";
+import {OrderItemResponse} from "../../types/dto/Order";
 import {Box, Divider, Flex, Image, Stack} from "@chakra-ui/react";
 import React from "react";
 

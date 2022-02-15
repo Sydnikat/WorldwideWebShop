@@ -26,5 +26,9 @@ rabbitmq:
   password: ${RABBITMQ_PASSWORD:guest}
   order:
     orderCreatedQueue: ${RABBITMQ_ORDER_CREATED_QUEUE:orderCreated}
-    orderCreatedExchange: ${RABBITMQ__ORDER_CREATED_EXCHANGEE:orderCreatedQueue}
+    orderCreatedExchange: ${RABBITMQ__ORDER_CREATED_EXCHANGE:orderCreatedQueue}
     orderCreatedRoutingkey: ${RABBITMQ_ORDER_CREATED_ROUTINGKEY:order_created_queue}
+  discount:
+    categoryDiscountQueue: ${RABBITMQ_CATEGORY_DISCOUNT_QUEUE:categoryDiscount}
+    categoryDiscountExchange: ${RABBITMQ_CATEGORY_DISCOUNT_EXCHANGE:categoryDiscountQueue}
+    categoryDiscountRoutingkey: ${RABBITMQ_CATEGORY_DISCOUNT_ROUTINGKEY:category_Discount_queue}

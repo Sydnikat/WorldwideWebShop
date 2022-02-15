@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body style="background-color: #F5F6F6; padding: 10px;">
+<table style="border-spacing: 0; margin: 0 auto; padding: 0; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;  background-color: #ffffff; font-family: 'Nunito Sans', Arial, sans-serif; color: #2E2E2F; min-height: 100%; font-size: 16px; line-height: 150%; min-width: 50%; max-width: 600px; text-decoration: none; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;">
+    <tbody>
+    <tr>
+        <td width="100%" style="padding: 10px 25px; text-align: center; border-top-left-radius: 20px; border-top-right-radius: 20px; background-color: #1a3872; color: #ffffff;">
+            <h1 th:text="#{category_promotion.headTitle}" style="font-size: 30px; line-height: 42px; font-weight: 600;">New Discounts in our Shop!</h1>
+        </td>
+    </tr>
+    <tr>
+        <td width="100%" style="padding: 0px 25px;">
+            <h3 style="color: #2E2E2F; padding: 0px 0px 25px 0px;" th:text="#{category_promotion.info}">
+                Dear customer! We would like to inform you that we have new discounts in our shop.
+            </h3>
+            <b>
+                <div style="display: flex; flex-direction: row;">
+                    <p th:text="#{category_promotion.categoryName}">Discounted category:</p>&nbsp;&nbsp;
+                    <p th:if="${categoryName != null}" th:text="${categoryName}"></p>
+                </div>
+            </b>
+            <b>
+                <div style="display: flex; flex-direction: row;">
+                    <p th:if="${discount != null}" th:text="${discount}"></p>
+                    <p>% &nbsp;</p>
+                    <p th:text="#{category_promotion.discount}"> discount for every item in this category</p>&nbsp;&nbsp;
+                </div>
+            </b>
+            <b>
+                <div style="display: flex; flex-direction: row;">
+                    <p th:text="#{category_promotion.startDate}">The start of this discount:</p>&nbsp;&nbsp;
+                    <p th:if="${startDate != null}" th:text="${startDate}"></p>
+                </div>
+            </b>
+            <b>
+                <div style="display: flex; flex-direction: row;">
+                    <p th:text="#{category_promotion.endDate}">The start of this discount:</p>&nbsp;&nbsp;
+                    <p th:if="${endDate != null}" th:text="${endDate}"></p>
+                </div>
+            </b>
+            <p style="color: #2E2E2F; text-align: center;" th:text="#{category_promotion.info_pt2}">
+                Don't miss this opportunity and visit our website! Regards, the team of WorldwideWebShop!
+            </p>
+        </td>
+    </tr>
+    <tr>
+        <td width="100%" style="padding: 5px 25px;">
+        </td>
+    </tr>
+    <tr>
+        <td width="100%" style="margin-top: 40px; background-color: #8abaf1; text-align: center; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; padding-top: 10px; color: #413f3f;">
+            <p style="font-weight: 600;" th:text="#{category_promotion.wws}">WorldwideWebShop Team</p>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

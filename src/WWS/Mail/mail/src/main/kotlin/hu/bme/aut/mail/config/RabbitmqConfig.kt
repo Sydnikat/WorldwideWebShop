@@ -41,6 +41,15 @@ class RabbitmqConfig(
     @Value("\${rabbitmq.invoice.invoiceCreatedRoutingkey}")
     val invoiceCreatedRoutingkey: String,
 
+    @Value("\${rabbitmq.promotion.categoryPromotionQueue}")
+    val categoryPromotionQueue: String,
+
+    @Value("\${rabbitmq.promotion.categoryPromotionExchange}")
+    val categoryPromotionExchange: String,
+
+    @Value("\${rabbitmq.promotion.categoryPromotionRoutingkey}")
+    val categoryPromotionRoutingkey: String,
+
     @Value("\${rabbitmq.username}")
     val username: String,
 
@@ -91,6 +100,28 @@ class RabbitmqConfig(
             .bind(queue)
             .to(exchange)
             .with(invoiceCreatedRoutingkey)
+            .noargs()
+    }
+
+    @Bean(name = ["categoryPromotionQueue"])
+    fun categoryPromotionQueue(): Queue {
+        return QueueBuilder.durable(categoryPromotionQueue).build()
+    }
+
+    @Bean(name = ["categoryPromotionExchange"])
+    fun categoryPromotionExchange(): Exchange {
+        return ExchangeBuilder.fanoutExchange(categoryPromotionExchange).durable(true).build()
+    }
+
+    @Bean
+    fun categoryPromotionBinding(
+        @Qualifier("categoryPromotionQueue") queue: Queue,
+        @Qualifier("categoryPromotionExchange") exchange: Exchange
+    ): Binding {
+        return BindingBuilder
+            .bind(queue)
+            .to(exchange)
+            .with(categoryPromotionRoutingkey)
             .noargs()
     }
 

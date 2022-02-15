@@ -90,24 +90,26 @@ namespace Web.Controllers
         }
 
         [HttpPost("refresh-token")]
-        public async Task<ActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
+        public async Task<ActionResult<RefreshTokenResult>> RefreshToken([FromBody] RefreshTokenRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.RefreshToken))
                 return Unauthorized();
 
+            var authorizationStr = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+            if (authorizationStr == null)
+                return Unauthorized();
+
+            var accessToken = authorizationStr.Split(" ").Last();
+            if (string.IsNullOrWhiteSpace(accessToken))
+                return Unauthorized();
+
             try
             {
-                var accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
-                var userMetaData = getUserFromAccessToken();
-
                 var jwtResult = jwtAuthManager.Refresh(request.RefreshToken, accessToken, DateTime.Now);
 
-                return Ok(new LoginResult
+                return Ok(new RefreshTokenResult
                 {
-                    UserName = userMetaData.UserName,
-                    Roles = userMetaData.Roles,
-                    AccessToken = jwtResult.AccessToken,
-                    RefreshToken = jwtResult.RefreshToken.TokenString
+                    AccessToken = jwtResult.AccessToken
                 });
             }
             catch (SecurityTokenException e)
@@ -117,7 +119,7 @@ namespace Web.Controllers
         }
 
         [HttpGet("check")]
-        public ActionResult VerifyJwtToken()
+        public async Task<ActionResult> VerifyJwtToken()
         {
             try
             {

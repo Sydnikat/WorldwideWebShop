@@ -1,7 +1,6 @@
 ﻿using Common;
 using Dal.Config;
 using Dal.Users.Converters;
-using Domain.Users;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -20,6 +19,21 @@ namespace Dal.Users
             var database = client.GetDatabase(settings.DatabaseName);
 
             _users = database.GetCollection<DbEntities.User>(settings.UsersCollectionName);
+        }
+
+        public async Task<List<Domain.Users.Email>> GetConfirmedEmails()
+        {
+            var projection = Builders<DbEntities.User>.Projection.Include(u => u.Email);
+            var options = new FindOptions<DbEntities.User>()
+            {
+                Projection = projection
+            };
+            var filter = Builders<DbEntities.User>.Filter.Where(u => u.Email.Confirmed == true);
+            var query = await _users.FindAsync(filter, options);
+            var emails = query.ToList().Select(u => u.Email);
+            return emails
+                .Select(e => new Domain.Users.Email(value: e.Value, confirmed: e.Confirmed))
+                .ToList();
         }
 
         public async Task<Domain.Users.User> FindByEmail(string emailStr)

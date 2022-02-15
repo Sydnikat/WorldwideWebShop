@@ -36,10 +36,10 @@ namespace Web.Controllers
             var order = await orderService.GetOrder(orderCode).ConfigureAwait(false);
 
             if (order == null)
-                throw new WWSSException("Order not found", StatusCodes.Status404NotFound);
+                throw new WWSException("Order not found", StatusCodes.Status404NotFound);
 
             if (order.CustomerId != customerId)
-                throw new WWSSException("Resource is not available", StatusCodes.Status403Forbidden);
+                throw new WWSException("Resource is not available", StatusCodes.Status403Forbidden);
 
             try
             {
@@ -52,11 +52,11 @@ namespace Web.Controllers
             }
             catch (OrderNotFoundException)
             {
-                throw new WWSSException("Order not found", StatusCodes.Status404NotFound);
+                throw new WWSException("Order not found", StatusCodes.Status404NotFound);
             }
             catch (OrderAlreadyProcessingException)
             {
-                throw new WWSSException("Order is already being processed", StatusCodes.Status400BadRequest);
+                throw new WWSException("Order is already being processed", StatusCodes.Status400BadRequest);
             }
         }
 
@@ -71,10 +71,10 @@ namespace Web.Controllers
             var order = await orderService.GetOrder(orderCode).ConfigureAwait(false);
 
             if (order == null)
-                throw new WWSSException("Order not found", StatusCodes.Status404NotFound);
+                throw new WWSException("Order not found", StatusCodes.Status404NotFound);
 
             if (order.CustomerId != customerId)
-                throw new WWSSException("Resource is not available", StatusCodes.Status403Forbidden);
+                throw new WWSException("Resource is not available", StatusCodes.Status403Forbidden);
 
             return Ok(OrderResponse.Of(order));
         }

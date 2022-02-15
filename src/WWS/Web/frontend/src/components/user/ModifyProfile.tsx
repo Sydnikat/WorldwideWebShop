@@ -2,10 +2,10 @@ import React, {useState} from "react";
 import {Box, Flex, FormControl, Heading, Input, InputGroup, Spinner, useToast, Text, Button} from "@chakra-ui/react";
 import UserAddress from "./UserAddress";
 import {useMutation, useQuery, useQueryClient} from "react-query";
-import {CartResponse} from "../../types/Cart";
-import {WWSError} from "../../types/Error";
+import {CartResponse} from "../../types/dto/Cart";
+import {WWSError} from "../../types/dto/Error";
 import {deleteMyCart, getMyCart, getMyProfile, updateMyProfile} from "../../services/queries";
-import {AddressUpdateRequest, UserResponse, UserUpdateRequest} from "../../types/User";
+import {AddressUpdateRequest, UserResponse, UserUpdateRequest} from "../../types/dto/User";
 import {AxiosError} from "axios";
 
 enum InputType {

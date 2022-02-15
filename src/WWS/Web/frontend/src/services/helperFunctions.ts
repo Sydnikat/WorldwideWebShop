@@ -1,5 +1,5 @@
-import {User} from "../types/User";
-import {WWSError} from "../types/Error";
+import {User} from "../types/dto/User";
+import {WWSError} from "../types/dto/Error";
 import {useToast} from "@chakra-ui/react";
 import {AxiosError} from "axios";
 

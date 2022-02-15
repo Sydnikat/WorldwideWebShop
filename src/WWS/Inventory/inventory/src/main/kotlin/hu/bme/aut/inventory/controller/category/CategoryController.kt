@@ -133,9 +133,8 @@ class CategoryController(
     ): ResponseEntity<List<ItemResponse>> {
         val pageable = PageRequest.of(offset ?: 0, size ?: 20)
         return ResponseEntity.ok(
-            itemService.getItems(pageable)
+            itemService.getItems(categoryId = id, pageable = pageable)
                 .asFlow()
-                .filter { it.categoryId == id }
                 .toList()
                 .map { ItemResponse.of(it) }
         )

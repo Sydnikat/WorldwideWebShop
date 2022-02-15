@@ -18,9 +18,21 @@ axiosInstance.interceptors.request.use((request: AxiosRequestConfig) => {
     };
   }
 
+  console.info(`Starting request: ${request?.method} ${request?.url}`);
+  console.info(request);
+  console.debug(request);
+
   return request;
 }, error => {
+  console.error("Request error:", error?.response);
   return Promise.reject(error);
 });
+
+axiosInstance.interceptors.response.use(
+  response => {
+    console.debug(response);
+    return response;
+  }
+);
 
 export {axiosInstance};

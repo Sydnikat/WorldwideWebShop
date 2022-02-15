@@ -42,21 +42,27 @@ namespace Web.Services
 
         public JwtAuthResult Refresh(string refreshToken, string accessToken, DateTime now)
         {
-            var (principal, jwtToken) = DecodeJwtToken(accessToken);
+            var (principal, jwtToken) = DecodeJwtToken(token: accessToken, validateLifteTime: false);
             if (jwtToken == null || !jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256Signature))
-                throw new SecurityTokenException("Invalid token");
+                throw new SecurityTokenException("Invalid jwt token");
 
-            var userName = principal.Identity.Name;
             if (!usersRefreshTokens.TryGetValue(refreshToken, out var existingRefreshToken))
-                throw new SecurityTokenException("Invalid token");
+                throw new SecurityTokenException("Refresh token not found");
 
+            var userName = jwtToken.Claims.First(x => x.Type == "sub").Value;
             if (existingRefreshToken.UserName != userName || existingRefreshToken.ExpireAt < now)
-                throw new SecurityTokenException("Invalid token");
+                throw new SecurityTokenException("Invalid refresh token");
 
-            return GenerateTokens(userName, principal.Claims.ToArray(), now);
+            var newAccessToken = genarateAccessTokenString(jwtToken.Claims.ToArray(), now);
+
+            return new JwtAuthResult
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = existingRefreshToken
+            };
         }
 
-        public (ClaimsPrincipal, JwtSecurityToken) DecodeJwtToken(string token)
+        public (ClaimsPrincipal, JwtSecurityToken) DecodeJwtToken(string token, bool validateLifteTime)
         {
             if (string.IsNullOrWhiteSpace(token))
                 throw new SecurityTokenException("Invalid token");
@@ -69,7 +75,7 @@ namespace Web.Services
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(secret),
                         ValidateAudience = false,
-                        ValidateLifetime = true,
+                        ValidateLifetime = validateLifteTime,
                         ClockSkew = TimeSpan.Zero
                     },
                     out var validatedToken);
@@ -78,16 +84,11 @@ namespace Web.Services
 
         private JwtAuthResult GenerateTokens(string username, Claim[] claims, DateTime now)
         {
-            var jwtToken = new JwtSecurityToken(
-                claims: claims,
-                expires: now.AddMinutes(jwtTokenConfig.AccessTokenExpiration),
-                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(secret), SecurityAlgorithms.HmacSha256Signature));
-            var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
-
+            var accessToken = genarateAccessTokenString(claims, now);
             var refreshToken = new RefreshToken
             {
                 UserName = username,
-                TokenString = GenerateRefreshTokenString(),
+                TokenString = generateRefreshTokenString(),
                 ExpireAt = now.AddMinutes(jwtTokenConfig.RefreshTokenExpiration)
             };
             usersRefreshTokens.AddOrUpdate(refreshToken.TokenString, refreshToken, (s, t) => refreshToken);
@@ -99,7 +100,17 @@ namespace Web.Services
             };
         }
 
-        private static string GenerateRefreshTokenString()
+        private string genarateAccessTokenString(Claim[] claims, DateTime now)
+        {
+            var jwtToken = new JwtSecurityToken(
+                claims: claims,
+                expires: now.AddMinutes(jwtTokenConfig.AccessTokenExpiration),
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(secret), SecurityAlgorithms.HmacSha256Signature));
+            var accessToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            return accessToken;
+        }
+
+        private static string generateRefreshTokenString()
         {
             var randomNumber = new byte[32];
             using var randomNumberGenerator = RandomNumberGenerator.Create();

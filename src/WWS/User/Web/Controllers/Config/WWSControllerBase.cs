@@ -22,11 +22,15 @@ namespace Web.Controllers
 
         protected UserMetaData getUserFromAccessToken()
         {
-            var accessToken = HttpContext.Request.Headers["Authorization"].FirstOrDefault().Split(" ").Last();
+            var authorizationStr = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+            if (authorizationStr == null)
+                return null;
+
+            var accessToken = authorizationStr.Split(" ").Last();
             if (string.IsNullOrWhiteSpace(accessToken))
                 return null;
 
-            var (principal, jwtToken) = jwtAuthManager.DecodeJwtToken(accessToken);
+            var (principal, jwtToken) = jwtAuthManager.DecodeJwtToken(token: accessToken, validateLifteTime: true);
 
             var user = new UserMetaData
             {

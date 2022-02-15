@@ -7,6 +7,7 @@ import hu.bme.aut.inventory.dal.Item
 import hu.bme.aut.inventory.dal.ItemRepository
 import hu.bme.aut.inventory.service.discount.exception.DiscountOutOfRangeException
 import hu.bme.aut.inventory.service.discount.exception.EndDateMustBeFutureDateException
+import hu.bme.aut.inventory.service.notification.NotificationService
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitSingle

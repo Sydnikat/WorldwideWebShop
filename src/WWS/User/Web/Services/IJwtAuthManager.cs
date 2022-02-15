@@ -25,6 +25,6 @@ namespace Web.Services
     {
         public JwtAuthResult GenerateTokens(User user);
         JwtAuthResult Refresh(string refreshToken, string accessToken, DateTime now);
-        public (ClaimsPrincipal, JwtSecurityToken) DecodeJwtToken(string token);
+        public (ClaimsPrincipal, JwtSecurityToken) DecodeJwtToken(string token, bool validateLifteTime);
     }
 }

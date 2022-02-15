@@ -3,5 +3,10 @@ import reactRefresh from '@vitejs/plugin-react-refresh'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [reactRefresh()]
+  plugins: [reactRefresh()],
+  server: {
+    hmr: {
+      port: 3001 //TODO: Check if it is indeed only needed for development
+    }
+  }
 })

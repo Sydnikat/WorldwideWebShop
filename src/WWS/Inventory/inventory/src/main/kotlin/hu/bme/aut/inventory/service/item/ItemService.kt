@@ -2,15 +2,20 @@ package hu.bme.aut.inventory.service.item
 
 import hu.bme.aut.inventory.dal.Item
 import hu.bme.aut.inventory.dal.ItemRepository
+import hu.bme.aut.inventory.dal.QueryRepository
 import hu.bme.aut.inventory.dal.Review
 import hu.bme.aut.inventory.dal.ReviewRepository
 import hu.bme.aut.inventory.service.item.exception.RatingOutOfRangeException
 import hu.bme.aut.inventory.util.increaseRating
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactive.awaitSingleOrNull
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Sort.Order.asc
+import org.springframework.data.domain.Sort.Order.desc
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
+import org.springframework.data.relational.core.query.Criteria
+import org.springframework.data.relational.core.query.Query
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -20,10 +25,43 @@ import kotlin.jvm.Throws
 @Service
 class ItemService(
     private val itemRepository: ItemRepository,
-    private val reviewRepository: ReviewRepository
+    private val reviewRepository: ReviewRepository,
+    private val queryRepository: QueryRepository
 ) {
     suspend fun getItem(itemId: Long): Mono<Item?> =
         itemRepository.findById(itemId)
+
+    suspend fun searchItems(
+        queryStr: String,
+        sortBy: SortingType,
+        sort: SortingDirection,
+        hasStock: Boolean,
+        price: List<Long>?,
+        categories: List<Long>?,
+        pageable: Pageable = Pageable.unpaged()
+    ): Flux<Item> {
+        val priceInterval = if (price != null && price.size == 2) {
+            Pair(price[0], price[1])
+        } else null
+
+        var skip: Long? = null
+        var limit: Int? = null
+        if (pageable.isPaged) {
+            skip = pageable.offset
+            limit = pageable.pageSize
+        }
+
+        return queryRepository.searchItemWithQuery(
+            queryStr = queryStr,
+            hasStock = hasStock,
+            categories = categories ?: listOf(),
+            price = priceInterval,
+            sortingBy = sortBy,
+            sortDirection = sort,
+            skip = skip,
+            limit = limit
+        )
+    }
 
     suspend fun getItems(pageable: Pageable = Pageable.unpaged()): Flux<Item> =
         itemRepository.findAllByIdNotNull(pageable)

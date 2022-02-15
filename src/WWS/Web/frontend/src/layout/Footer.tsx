@@ -8,7 +8,7 @@ const Footer: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
     <Box>
       <Flex alignItems="center" justifyContent="center"  >
         <Text color="white" fontWeight="bold" my="3">
-          WorldwideWebShop 2020
+          WorldwideWebShop @2020-2022
         </Text>
       </Flex>
     </Box>

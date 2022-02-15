@@ -4,3 +4,7 @@ export const profileRoute: string = "/profile";
 export const homeRoute: string = "/home";
 export const inspectRoute: string = "/inspect";
 export const orderRoute: string = "/order";
+export const notFoundRoute: string = "/notFound";
+export const searchRoute: string = "/search";
+export const adminRoute: string = "/login/dev";
+export const adminHomeRoute: string = "/main";

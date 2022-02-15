@@ -29,7 +29,7 @@ namespace Web.Services
 
             if (savedInvoice != null)
             {
-                await publishEndpoint.Publish(new OrderStataChangedEvent
+                await publishEndpoint.Publish(new OrderStateChangedEvent
                 {
                     OrderCode = savedInvoice.OrderCode,
                     Success = true

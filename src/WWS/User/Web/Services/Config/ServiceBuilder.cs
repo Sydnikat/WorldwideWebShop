@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Web.Services.Receivers;
 
 namespace Web.Services.Config
 {
@@ -14,6 +15,8 @@ namespace Web.Services.Config
             services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
             services.AddTransient<IUserService, UserService>();
             services.AddSingleton<INotificationService, NotificationService>();
+
+            services.AddHostedService<CategoryDiscountCreationReceiver>();
         }
     }
 }

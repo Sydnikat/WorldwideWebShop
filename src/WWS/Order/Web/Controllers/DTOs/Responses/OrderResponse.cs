@@ -64,7 +64,7 @@ namespace Web.Controllers.DTOs.Responses
                 orderCode: order.OrderCode,
                 customerId: order.CustomerId,
                 customerName: order.CustomerName,
-                totalPrice: order.TotalPrice,
+                totalPrice: Math.Round(order.TotalPrice, 2),
                 items: order.Items,
                 created: order.Created,
                 state: order.State,

@@ -7,14 +7,15 @@ import hu.bme.aut.inventory.controller.discount.response.DiscountResponse
 import hu.bme.aut.inventory.dal.Item
 import hu.bme.aut.inventory.exception.RequestError
 import hu.bme.aut.inventory.service.auth.AuthManager
+import hu.bme.aut.inventory.service.category.CategoryService
 import hu.bme.aut.inventory.service.discount.DiscountService
 import hu.bme.aut.inventory.service.discount.exception.DiscountOutOfRangeException
 import hu.bme.aut.inventory.service.discount.exception.EndDateMustBeFutureDateException
 import hu.bme.aut.inventory.service.item.ItemService
+import hu.bme.aut.inventory.service.notification.NotificationService
 import hu.bme.aut.inventory.util.requestError
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.data.domain.PageRequest
@@ -35,6 +36,8 @@ import javax.validation.Valid
 class DiscountController(
     private val discountService: DiscountService,
     private val itemService: ItemService,
+    private val notificationService: NotificationService,
+    private val categoryService: CategoryService,
     private val authManager: AuthManager
 ) {
 
@@ -66,7 +69,17 @@ class DiscountController(
                items = items
            ).awaitSingle()
 
-           // TODO: Possible email notification?
+           if (request.sendPromotion == true) {
+               if (request.categoryId != null) {
+                   val category = categoryService.getCategory(request.categoryId).awaitSingle()
+                   if (category != null) {
+                       notificationService.notifyCategoryDiscountCreation(
+                           discount = savedDiscount,
+                           category = category
+                       )
+                   }
+               }
+           }
 
            return ResponseEntity.ok(DiscountResponse.of(savedDiscount))
        } catch (e: DiscountOutOfRangeException) {

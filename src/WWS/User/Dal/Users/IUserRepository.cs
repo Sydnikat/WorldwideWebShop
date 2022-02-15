@@ -14,5 +14,6 @@ namespace Dal.Users
         public Task<User> FindByEmail(string emailStr);
         public Task<User> Save(User user);
         public Task<User> Update(User user);
+        public Task<List<Email>> GetConfirmedEmails();
     }
 }

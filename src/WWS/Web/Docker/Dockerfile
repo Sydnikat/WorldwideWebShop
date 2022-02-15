@@ -1,4 +1,4 @@
-﻿FROM node:14.7-alpine
+FROM node:14.7-alpine
 
 WORKDIR /code
 COPY Web/frontend/package*.json Web/frontend/tsconfig.json ./
@@ -9,4 +9,4 @@ COPY Web/frontend/tsconfig.json ./tsconfig.json
 
 EXPOSE 3000
 
-CMD [ "npm", "run", "dev" ]
+CMD [ "npm", "run", "build" ]

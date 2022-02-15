@@ -4,8 +4,8 @@ import NewReviewForm from "./NewReviewForm";
 import Review from "./Review";
 import React, { Fragment } from "react";
 import {useQuery} from "react-query";
-import {ReviewResponse} from "../../types/Review";
-import {WWSError} from "../../types/Error";
+import {ReviewResponse} from "../../types/dto/Review";
+import {WWSError} from "../../types/dto/Error";
 import {getItemReviews} from "../../services/queries";
 
 interface ReviewListProps {

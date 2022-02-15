@@ -7,4 +7,5 @@ enum class RequestError {
     UNAUTHORIZED,
     MALFORMED_JWT,
     CANNOT_ACCESS_REQUESTED_RESOURCE,
+    ITEM_NOT_FOUND
 }

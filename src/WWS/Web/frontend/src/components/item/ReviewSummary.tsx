@@ -1,7 +1,7 @@
 import {Box, Flex, Progress} from "@chakra-ui/react";
 import {StarIcon} from "@chakra-ui/icons";
 import React from "react";
-import {ReviewResponse} from "../../types/Review";
+import {ReviewResponse} from "../../types/dto/Review";
 
 interface ReviewSummaryProps {
   reviews: ReviewResponse[]

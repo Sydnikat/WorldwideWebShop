@@ -24,6 +24,9 @@ services:
     ports:
       - "8083:80"
   web:
+    build:
+      context: .
+      dockerfile: Web/Docker/Dockerfile.dev
     environment:
       CHOKIDAR_USEPOLLING: "true"
     ports:

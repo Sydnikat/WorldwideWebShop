@@ -34,7 +34,7 @@ namespace Web.Middlewares.Authentications
 
         public Task ForbidAsync(AuthenticationProperties properties)
         {
-            throw new WWSSException("User cannot access this resource", StatusCodes.Status403Forbidden);
+            throw new WWSException("User cannot access this resource", StatusCodes.Status403Forbidden);
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Web.Middlewares
             catch (WWSSException error)
             {
                 // TODO: Proper logging...
-                Console.WriteLine($"${error.Message} : ${error.Params}");
+                Console.WriteLine($"{error.Message} : {error.Params.ToList()}");
 
                 var response = context.Response;
                 response.ContentType = "application/json";
@@ -54,7 +54,7 @@ namespace Web.Middlewares
             catch (Exception e)
             {
                 // TODO: Proper logging...
-                Console.WriteLine($"Unhandled Exception : ${e.Message}");
+                Console.WriteLine($"Unhandled Exception : {e.Message}");
 
                 var response = context.Response;
                 response.ContentType = "application/json";

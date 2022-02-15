@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.convert.converter.Converter
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration
 import org.springframework.data.r2dbc.convert.R2dbcCustomConversions
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import java.time.LocalDateTime
 
@@ -44,4 +45,9 @@ class DatabaseConfiguration(
         .build()
     )
   }
+
+  @Bean
+  fun template(
+    factory: ConnectionFactory
+  ): R2dbcEntityTemplate = R2dbcEntityTemplate(factory)
 }

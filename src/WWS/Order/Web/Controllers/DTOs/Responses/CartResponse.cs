@@ -22,7 +22,7 @@ namespace Web.Controllers.DTOs.Responses
         public static CartResponse Of(Cart cart)
             => new CartResponse(
                 customerId: cart.CustomerId,
-                totalPrice: cart.TotalPrice,
+                totalPrice: Math.Round(cart.TotalPrice, 2),
                 items: cart.Items.Select(CartItemResponse.Of).ToList()
                 );
     }

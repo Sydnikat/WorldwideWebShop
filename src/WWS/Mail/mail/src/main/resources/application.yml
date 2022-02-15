@@ -23,3 +23,7 @@ rabbitmq:
     invoiceCreatedQueue: ${RABBITMQ_INVOICE_CREATED_QUEUE:invoiceCreated}
     invoiceCreatedExchange: ${RABBITMQ__INVOICE_CREATED_EXCHANGEE:invoiceCreatedQueue}
     invoiceCreatedRoutingkey: ${RABBITMQ__INVOICE_CREATED_ROUTINGKEY:invoice_created_queue}
+  promotion:
+    categoryPromotionQueue: ${RABBITMQ_CATEGORY_PROMOTION_QUEUE:categoryPromotion}
+    categoryPromotionExchange: ${RABBITMQ_CATEGORY_PROMOTION_EXCHANGE:categoryPromotionQueue}
+    categoryPromotionRoutingkey: ${RABBITMQ_CATEGORY_PROMOTION_ROUTINGKEY:category_promotion_queue}

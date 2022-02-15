@@ -1,11 +1,11 @@
 import {Box, Button, Flex, Text, useToast} from "@chakra-ui/react";
 import React from "react";
-import {ReviewResponse} from "../../types/Review";
+import {ReviewResponse} from "../../types/dto/Review";
 import {CloseIcon, StarIcon} from "@chakra-ui/icons";
 import {QueryObserverBaseResult, QueryObserverResult, RefetchOptions, useMutation, useQueryClient} from "react-query";
 import {deleteMyReview, postReview} from "../../services/queries";
 import {AxiosError, AxiosResponse} from "axios";
-import {WWSError} from "../../types/Error";
+import {WWSError} from "../../types/dto/Error";
 
 interface ReviewProps {
   review: ReviewResponse
@@ -35,6 +35,7 @@ const Review = (props: ReviewProps) => {
       }
     },
     onSuccess: async (r: AxiosResponse) => {
+      await client.invalidateQueries(['items', `${review.itemId}`]);
       await client.invalidateQueries(["reviews", review.itemId]);
     }
   });

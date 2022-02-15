@@ -4,8 +4,8 @@ import React, {useState} from "react";
 import {useMutation, useQueryClient} from "react-query";
 import {postReview, PostReviewBody, updateMyCart} from "../../services/queries";
 import {AxiosError} from "axios";
-import {WWSError} from "../../types/Error";
-import {NewReviewRequest, ReviewResponse} from "../../types/Review";
+import {WWSError} from "../../types/dto/Error";
+import {NewReviewRequest, ReviewResponse} from "../../types/dto/Review";
 import {getUser} from "../../services/helperFunctions";
 
 interface NewReviewFormProps {
@@ -38,6 +38,7 @@ const NewReviewForm = (props: NewReviewFormProps) => {
       }
     },
     onSuccess: async (r: ReviewResponse) => {
+      await client.invalidateQueries(['items', `${itemId}`]);
       client.setQueryData<ReviewResponse[]>(["reviews", itemId], (prev) => {
         if (prev === undefined) {
           return [r];

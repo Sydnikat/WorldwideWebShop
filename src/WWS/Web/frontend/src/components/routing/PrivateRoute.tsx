@@ -1,8 +1,8 @@
 import React from "react";
-import {PrivateRouteProps} from "../../types/Routing";
+import {PrivateRouteProps} from "../../types/frontend/Routing";
 import { Route, Redirect, RouteComponentProps } from 'react-router-dom';
 import {getUser} from "../../services/helperFunctions";
-import {User} from "../../types/User";
+import {User} from "../../types/dto/User";
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ roles, component, ...rest }: PrivateRouteProps) => {
   const user = getUser();

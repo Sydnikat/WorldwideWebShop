@@ -9,12 +9,13 @@ import hu.bme.aut.inventory.controller.review.response.ReviewResponse
 import hu.bme.aut.inventory.exception.RequestError
 import hu.bme.aut.inventory.service.auth.AuthManager
 import hu.bme.aut.inventory.service.item.ItemService
+import hu.bme.aut.inventory.service.item.SortingDirection
+import hu.bme.aut.inventory.service.item.SortingType
 import hu.bme.aut.inventory.service.item.exception.RatingOutOfRangeException
 import hu.bme.aut.inventory.service.review.ReviewService
 import hu.bme.aut.inventory.util.requestError
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.data.domain.PageRequest
@@ -44,9 +45,56 @@ class ItemController(
         id: Long
     ): ResponseEntity<ItemResponse> {
         val item = itemService.getItem(id).awaitFirstOrNull()
-            ?: return ResponseEntity.notFound().build()
+            ?: throw requestError(RequestError.ITEM_NOT_FOUND, HttpStatus.NOT_FOUND)
 
         return ResponseEntity.ok(ItemResponse.of(item))
+    }
+
+    @GetMapping("/search")
+    suspend fun searchItems(
+        @RequestParam(required = true)
+        q: String = "S",
+        @RequestParam(required = false)
+        cat: List<Long>?,
+        @RequestParam(required = false)
+        sort: String? = "",
+        @RequestParam(required = false)
+        sortBy: String? = "",
+        @RequestParam(required = false)
+        stock: Boolean = true,
+        @RequestParam(required = false)
+        price: List<Long>?,
+        @RequestParam(required = false)
+        offset: Int?,
+        @RequestParam(required = false)
+        size: Int?
+    ): ResponseEntity<List<ItemResponse>> {
+        val pageable = PageRequest.of(offset ?: 0, size ?: 20)
+        val sortingDirection = when (sort) {
+            "asc" -> SortingDirection.ASC
+            "desc" -> SortingDirection.DESC
+            else -> SortingDirection.UNSORTED
+        }
+        val sortingBy = when (sortBy) {
+            "price" -> SortingType.PRICE
+            "score" -> SortingType.RATING
+            else -> SortingType.UNSORTED
+        }
+
+        return ResponseEntity.ok(
+            itemService.searchItems(
+                queryStr = q,
+                sortBy = sortingBy,
+                sort = sortingDirection,
+                hasStock = stock,
+                price = price ?: listOf(),
+                categories = cat ?: listOf(),
+                pageable = pageable
+            )
+                .asFlow()
+                .toList()
+                .map { ItemResponse.of(it) }
+        )
     }
 
     @GetMapping
@@ -79,7 +127,7 @@ class ItemController(
         }
 
         val item = itemService.getItem(id).awaitFirstOrNull()
-            ?: return ResponseEntity.notFound().build()
+            ?: throw requestError(RequestError.ITEM_NOT_FOUND, HttpStatus.NOT_FOUND)
 
         val updatedItem = itemService.updateItem(item, request.toPatchData()).awaitSingle()
 
@@ -94,7 +142,7 @@ class ItemController(
         request: NewReviewRequest
     ): ResponseEntity<ReviewResponse> {
         val item = itemService.getItem(id).awaitFirstOrNull()
-            ?: return ResponseEntity.notFound().build()
+            ?: throw requestError(RequestError.ITEM_NOT_FOUND, HttpStatus.NOT_FOUND)
 
         try {
             val savedReview = itemService.saveNewReview(
@@ -125,7 +173,7 @@ class ItemController(
         size: Int?
     ): ResponseEntity<List<ReviewResponse>> {
         val item = itemService.getItem(id).awaitFirstOrNull()
-            ?: return ResponseEntity.notFound().build()
+            ?: throw requestError(RequestError.ITEM_NOT_FOUND, HttpStatus.NOT_FOUND)
 
         val pageable = PageRequest.of(offset ?: 0, size ?: 5)
 
