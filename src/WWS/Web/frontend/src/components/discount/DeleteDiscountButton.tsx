@@ -50,13 +50,16 @@ const DeleteDiscountButton = ({discount}: IDeleteDiscountButtonProps) => {
     }
   };
 
+  const backgroundColor = discount.expired ? "red.200" : "white"
+  const hoverBackgroundColor = discount.expired ? "red.400" : "#fafafa"
+
   return(
     <Box
       as="button"
-      _hover={{backgroundColor: "#e9e9e9"}}
+      _hover={{backgroundColor: hoverBackgroundColor}}
       w="100%"
       borderRadius="full"
-      bg="white"
+      bg={backgroundColor}
     >
       <div onClick={onDeleteButtonClick}>
         {deleteLoading ? <Spinner /> : <DeleteIcon /> }

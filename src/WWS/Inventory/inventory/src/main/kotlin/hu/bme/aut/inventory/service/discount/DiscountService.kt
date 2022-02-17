@@ -58,6 +58,18 @@ class DiscountService(
             categoryId = categoryId
         )
 
+        if (categoryId !== null) {
+            val expiringDiscounts = discountRepository
+                .findAllByExpiredAndCategoryIdOrderByEndDateDesc(expired = false, categoryId = categoryId)
+                .asFlow()
+                .toList()
+
+            if (expiringDiscounts.isNotEmpty()) {
+                expiringDiscounts.forEach { it.expired = true }
+                discountRepository.saveAll(expiringDiscounts).subscribe()
+            }
+        }
+
         val savedDiscount = discountRepository.save(newDiscount).awaitSingle()
 
         items.forEach {

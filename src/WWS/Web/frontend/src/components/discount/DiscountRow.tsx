@@ -10,8 +10,10 @@ interface IDiscountRowProps {
 }
 
 const DiscountRow = ({discount, category}: IDiscountRowProps) => {
+  const backgroundColor = discount.expired ? "red.200" : "white"
+  const hoverBackgroundColor = discount.expired ? "red.300" : "#fafafa"
   return(
-    <Box mx="auto" w="100%" _hover={{backgroundColor: "#fafafa"}} overflow="hidden" bg="white" boxShadow="sm">
+    <Box mx="auto" w="100%" _hover={{backgroundColor: hoverBackgroundColor}} overflow="hidden" bg={backgroundColor} boxShadow="sm">
       <Flex w="auto" h="50px" alignItems="center">
         <Flex width="85%" h="100%" alignItems="center" mr="2%">
           <Flex width="25%" h="100%" alignItems="center" ml="2%" >
