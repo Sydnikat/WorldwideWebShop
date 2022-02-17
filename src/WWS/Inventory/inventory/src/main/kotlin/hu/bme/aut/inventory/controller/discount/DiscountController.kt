@@ -66,7 +66,8 @@ class DiscountController(
            val savedDiscount = discountService.saveDiscount(
                discountValue = request.value,
                endDate = request.endDate,
-               items = items
+               items = items,
+               categoryId = request.categoryId
            ).awaitSingle()
 
            if (request.sendPromotion == true) {

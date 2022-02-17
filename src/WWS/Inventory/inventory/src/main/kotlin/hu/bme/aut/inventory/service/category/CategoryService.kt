@@ -2,6 +2,7 @@ package hu.bme.aut.inventory.service.category
 
 import hu.bme.aut.inventory.dal.Category
 import hu.bme.aut.inventory.dal.CategoryRepository
+import hu.bme.aut.inventory.dal.DiscountRepository
 import hu.bme.aut.inventory.dal.Item
 import hu.bme.aut.inventory.dal.ItemRepository
 import hu.bme.aut.inventory.dal.ReviewRepository
@@ -19,7 +20,8 @@ import java.time.LocalDate
 class CategoryService(
     private val categoryRepository: CategoryRepository,
     private val itemRepository: ItemRepository,
-    private val reviewRepository: ReviewRepository
+    private val reviewRepository: ReviewRepository,
+    private val discountRepository: DiscountRepository
 ) {
     suspend fun getCategory(categoryId: Long): Mono<Category?> =
         categoryRepository.findById(categoryId)
@@ -51,6 +53,18 @@ class CategoryService(
             stock = 0,
             lowLevel = 0
         )
+
+        val possibleDiscount = discountRepository
+            .findAllByExpiredAndCategoryIdOrderByEndDateDesc(expired = false, categoryId = category.id!!)
+            .asFlow()
+            .toList()
+            .firstOrNull()
+
+        if (possibleDiscount != null) {
+            newItem.discountId = possibleDiscount.id
+            newItem.discount = possibleDiscount.value.toLong()
+        }
+
         return itemRepository.save(newItem)
     }
 

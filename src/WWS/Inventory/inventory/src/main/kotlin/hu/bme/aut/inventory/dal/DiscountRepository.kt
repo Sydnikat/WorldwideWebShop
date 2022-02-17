@@ -10,5 +10,6 @@ import java.time.LocalDate
 interface DiscountRepository : ReactiveCrudRepository<Discount, Long> {
     fun findAllByIdIn(ids: List<Long>, pageable: Pageable = Pageable.unpaged()): Flux<Discount>
     fun findAllByIdNotNull(pageable: Pageable = Pageable.unpaged()): Flux<Discount>
-    fun findAllByExpiredFalseAndEndDateLessThanEqual(date: LocalDate): Flux<Discount>
+    fun findAllByExpiredAndEndDateLessThanEqual(expired: Boolean, date: LocalDate): Flux<Discount>
+    fun findAllByExpiredAndCategoryIdOrderByEndDateDesc(expired: Boolean, categoryId: Long): Flux<Discount>
 }

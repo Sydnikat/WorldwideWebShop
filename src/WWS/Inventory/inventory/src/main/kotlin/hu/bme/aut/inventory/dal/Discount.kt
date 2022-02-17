@@ -17,4 +17,6 @@ data class Discount(
     var endDate: LocalDate,
     @Column("Expired")
     var expired: Boolean,
+    @Column("CategoryId")
+    var categoryId: Long?,
 )

@@ -7,7 +7,6 @@ import hu.bme.aut.inventory.dal.Item
 import hu.bme.aut.inventory.dal.ItemRepository
 import hu.bme.aut.inventory.service.discount.exception.DiscountOutOfRangeException
 import hu.bme.aut.inventory.service.discount.exception.EndDateMustBeFutureDateException
-import hu.bme.aut.inventory.service.notification.NotificationService
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitSingle
@@ -34,13 +33,13 @@ class DiscountService(
         discountRepository.findAllByIdIn(ids = ids, pageable = pageable)
 
     suspend fun getAllExpiringDiscounts(date: LocalDate): Flux<Discount> =
-        discountRepository.findAllByExpiredFalseAndEndDateLessThanEqual(date = date)
+        discountRepository.findAllByExpiredAndEndDateLessThanEqual(expired = false, date = date)
 
     @Throws(
         DiscountOutOfRangeException::class,
         EndDateMustBeFutureDateException::class
     )
-    suspend fun saveDiscount(discountValue: Int, endDate: LocalDate, items: List<Item>): Mono<Discount> {
+    suspend fun saveDiscount(discountValue: Int, endDate: LocalDate, items: List<Item>, categoryId: Long? = null): Mono<Discount> {
         if (discountValue > 100) {
             throw DiscountOutOfRangeException(discountValue)
         }
@@ -55,7 +54,8 @@ class DiscountService(
             value = discountValue,
             startDate = startDate,
             endDate = endDate,
-            expired = false
+            expired = false,
+            categoryId = categoryId
         )
 
         val savedDiscount = discountRepository.save(newDiscount).awaitSingle()
