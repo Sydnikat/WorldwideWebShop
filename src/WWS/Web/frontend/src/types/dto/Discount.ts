@@ -12,4 +12,5 @@ export interface DiscountResponse {
   startDate: string;
   endDate: string;
   expired: boolean;
+  categoryId: number | null;
 }

@@ -2,12 +2,13 @@ import React, {Fragment, useEffect, useState} from "react";
 import {Box, Divider, Flex, Select, Spinner, Text} from "@chakra-ui/react";
 import {useQuery} from "react-query";
 import {WWSError} from "../../types/dto/Error";
-import {getDiscounts} from "../../services/queries";
+import {getCategories, getDiscounts} from "../../services/queries";
 import {DiscountResponse} from "../../types/dto/Discount";
 import AuthenticatedLayout from "../../layout/AuthenticatedLayout";
 import {AddIcon, ArrowLeftIcon, ArrowRightIcon} from "@chakra-ui/icons";
 import DiscountRow from "./DiscountRow";
 import CreateDiscountButton from "./CreateDiscountButton";
+import {CategoryResponse} from "../../types/dto/Category";
 
 interface IDiscountMainProps {
   reload: boolean;
@@ -23,9 +24,15 @@ const DiscountMain = ({reload, dispatchReloaded}: IDiscountMainProps) => {
     () => getDiscounts({page: page, number_per_page: items_per_page}),
   );
 
+  const { data: categories, refetch: refetchCategories } = useQuery<CategoryResponse[], WWSError>(
+    'categories',
+    getCategories,
+  );
+
   useEffect(() => {
     if (reload) {
       refetch();
+      refetchCategories();
       dispatchReloaded();
     }
   }, [reload]);
@@ -46,7 +53,7 @@ const DiscountMain = ({reload, dispatchReloaded}: IDiscountMainProps) => {
     }
   }
 
-  if (discounts === undefined || reload) {
+  if (discounts === undefined || categories === undefined || reload) {
     return(
       <AuthenticatedLayout>
         <Flex alignItems="center" justifyContent="center" mx="auto">
@@ -95,7 +102,7 @@ const DiscountMain = ({reload, dispatchReloaded}: IDiscountMainProps) => {
         <Flex grow={1} direction="column">
           {discounts.map(d =>
             <Fragment key={`discount_row${d.id}`}>
-              <DiscountRow discount={d} />
+              <DiscountRow discount={d} category={categories.find(c => c.id === d.categoryId)} />
             </Fragment>
           )}
           {discounts.length === 0 ?

@@ -8,6 +8,7 @@ data class DiscountResponse(
     val startDate: String,
     val endDate: String,
     val expired: Boolean,
+    val categoryId: Long?
 ) {
     companion object {
         fun of(discount: Discount): DiscountResponse = discount.run {
@@ -16,7 +17,8 @@ data class DiscountResponse(
                 value = value,
                 startDate = startDate.toString(),
                 endDate = endDate.toString(),
-                expired = expired
+                expired = expired,
+                categoryId = categoryId
             )
         }
     }

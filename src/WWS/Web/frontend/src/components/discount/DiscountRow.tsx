@@ -1,21 +1,22 @@
 import {Box, Flex, Text} from "@chakra-ui/react";
-import {DeleteIcon} from "@chakra-ui/icons";
 import React from "react";
 import {DiscountResponse} from "../../types/dto/Discount";
 import DeleteDiscountButton from "./DeleteDiscountButton";
+import {CategoryResponse} from "../../types/dto/Category";
 
 interface IDiscountRowProps {
   discount: DiscountResponse;
+  category?: CategoryResponse;
 }
 
-const DiscountRow = ({discount}: IDiscountRowProps) => {
+const DiscountRow = ({discount, category}: IDiscountRowProps) => {
   return(
     <Box mx="auto" w="100%" _hover={{backgroundColor: "#fafafa"}} overflow="hidden" bg="white" boxShadow="sm">
       <Flex w="auto" h="50px" alignItems="center">
         <Flex width="85%" h="100%" alignItems="center" mr="2%">
           <Flex width="25%" h="100%" alignItems="center" ml="2%" >
             <Text>
-              {discount.id}
+              {category !== undefined ? category.name : discount.id}
             </Text>
           </Flex>
           <Flex alignItems="center" w="25%" flexDirection="row-reverse">
