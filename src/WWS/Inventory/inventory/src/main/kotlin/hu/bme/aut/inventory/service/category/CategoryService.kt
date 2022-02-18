@@ -1,19 +1,15 @@
 package hu.bme.aut.inventory.service.category
 
-import hu.bme.aut.inventory.dal.Category
-import hu.bme.aut.inventory.dal.CategoryRepository
-import hu.bme.aut.inventory.dal.DiscountRepository
-import hu.bme.aut.inventory.dal.Item
-import hu.bme.aut.inventory.dal.ItemRepository
-import hu.bme.aut.inventory.dal.ReviewRepository
+import hu.bme.aut.inventory.domain.Category
+import hu.bme.aut.inventory.dal.category.CategoryRepository
+import hu.bme.aut.inventory.dal.discount.DiscountRepository
+import hu.bme.aut.inventory.domain.Item
+import hu.bme.aut.inventory.dal.item.ItemRepository
+import hu.bme.aut.inventory.dal.review.ReviewRepository
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.reactive.awaitSingle
-import kotlinx.coroutines.reactive.awaitSingleOrNull
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 import java.time.LocalDate
 
 @Service
@@ -23,22 +19,22 @@ class CategoryService(
     private val reviewRepository: ReviewRepository,
     private val discountRepository: DiscountRepository
 ) {
-    suspend fun getCategory(categoryId: Long): Mono<Category?> =
+    suspend fun getCategory(categoryId: Long): Category? =
         categoryRepository.findById(categoryId)
 
-    suspend fun getCategories(pageable: Pageable = Pageable.unpaged()): Flux<Category> =
+    suspend fun getCategories(pageable: Pageable = Pageable.unpaged()): List<Category> =
         categoryRepository.findAllByIdNotNull(pageable)
 
-    suspend fun getCategories(ids: List<Long>, pageable: Pageable = Pageable.unpaged()): Flux<Category> =
+    suspend fun getCategories(ids: List<Long>, pageable: Pageable = Pageable.unpaged()): List<Category> =
         categoryRepository.findAllByIdIn(ids = ids, pageable = pageable)
 
-    suspend fun getCategoriesWithName(name: String, pageable: Pageable = Pageable.unpaged()): Flux<Category> =
+    suspend fun getCategoriesWithName(name: String, pageable: Pageable = Pageable.unpaged()): List<Category> =
         categoryRepository.findAllByNameContaining(str = name, pageable = pageable)
 
-    suspend fun saveCategory(category: Category): Mono<Category> =
+    suspend fun saveCategory(category: Category): Category =
         categoryRepository.save(category)
 
-    suspend fun saveNewItem(category: Category, name: String, description: String, price: Float): Mono<Item> {
+    suspend fun saveNewItem(category: Category, name: String, description: String, price: Float): Item {
         val newItem = Item(
             id = null,
             categoryId = category.id!!,
@@ -51,13 +47,13 @@ class CategoryService(
             created = LocalDate.now(),
             price = price,
             stock = 0,
-            lowLevel = 0
+            lowLevel = 0,
+            reviews = listOf(),
+            listOfTechnicalSpecInfo = listOf()
         )
 
         val possibleDiscount = discountRepository
-            .findAllByExpiredAndCategoryIdOrderByEndDateDesc(expired = false, categoryId = category.id!!)
-            .asFlow()
-            .toList()
+            .findAllByExpiredAndCategoryIdOrderByEndDateDesc(expired = false, categoryId = category.id)
             .firstOrNull()
 
         if (possibleDiscount != null) {
@@ -69,12 +65,14 @@ class CategoryService(
     }
 
     suspend fun deleteCategory(category: Category) {
-        val items = itemRepository.findAllByCategoryId(categoryId = category.id!!).asFlow().toList()
+        val items = itemRepository.findAllByCategoryId(categoryId = category.id!!)
         val reviews = reviewRepository.findAllByItemIdIn(itemIds = items.map { it.id!! })
+        val categoryLevelDiscounts = discountRepository.findAllByCategoryId(category.id)
 
-        itemRepository.deleteAll(items).awaitSingleOrNull()
-        reviewRepository.deleteAll(reviews).awaitSingleOrNull()
+        discountRepository.deleteAll(categoryLevelDiscounts)
+        itemRepository.deleteAll(items)
+        reviewRepository.deleteAll(reviews)
 
-        categoryRepository.delete(category).awaitSingleOrNull()
+        categoryRepository.delete(category)
     }
 }

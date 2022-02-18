@@ -1,6 +1,6 @@
 package hu.bme.aut.inventory.controller.item.response
 
-import hu.bme.aut.inventory.dal.Item
+import hu.bme.aut.inventory.domain.Item
 import kotlin.math.roundToLong
 
 data class ItemResponse(
@@ -16,7 +16,8 @@ data class ItemResponse(
     val price: Float,
     val originalPrice: Float,
     val stock: Int,
-    val lowLevel: Int
+    val lowLevel: Int,
+    val listOfTechnicalSpecInfo: List<TechnicalSpecInfoResponse>
 ) {
     companion object {
         fun of(item: Item): ItemResponse = item.run {
@@ -35,7 +36,8 @@ data class ItemResponse(
                 price = (shownPrice * 100.0F).roundToLong() / 100.0F,
                 originalPrice = price,
                 stock = stock,
-                lowLevel = lowLevel
+                lowLevel = lowLevel,
+                listOfTechnicalSpecInfo = listOfTechnicalSpecInfo.map { TechnicalSpecInfoResponse.of(it) }
             )
         }
     }

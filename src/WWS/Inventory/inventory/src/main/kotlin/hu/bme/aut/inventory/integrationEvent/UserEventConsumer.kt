@@ -18,14 +18,14 @@ class OrderCreatedEventConsumer(
     fun orderCreatedEventListenerSpecific(event: OrderCreatedEvent) {
         runBlocking {
             val itemIds = event.items.map { it.itemId }
-            val existingItems = itemService.getItems(itemIds).asFlow().toList()
+            val existingItems = itemService.getItems(itemIds)
 
             event.items.forEach { i ->
                 val existingItem = existingItems.first { it.id == i.itemId }
                 existingItem.stock -= i.count
             }
 
-            itemService.saveItems(existingItems).asFlow().toList()
+            itemService.saveItems(existingItems)
         }
     }
 }

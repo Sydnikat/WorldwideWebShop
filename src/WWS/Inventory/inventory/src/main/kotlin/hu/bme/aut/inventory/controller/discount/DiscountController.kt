@@ -4,7 +4,7 @@ import hu.bme.aut.inventory.config.resolver.UserMetaData
 import hu.bme.aut.inventory.config.resolver.WWSUserMetaData
 import hu.bme.aut.inventory.controller.discount.request.NewDiscountRequest
 import hu.bme.aut.inventory.controller.discount.response.DiscountResponse
-import hu.bme.aut.inventory.dal.Item
+import hu.bme.aut.inventory.domain.Item
 import hu.bme.aut.inventory.exception.RequestError
 import hu.bme.aut.inventory.service.auth.AuthManager
 import hu.bme.aut.inventory.service.category.CategoryService
@@ -54,12 +54,12 @@ class DiscountController(
 
         val items = when {
             request.categoryId != null -> {
-                itemService.getItems(categoryId = request.categoryId).asFlow().toList()
+                itemService.getItems(categoryId = request.categoryId)
             }
             request.itemIds != null -> {
-                itemService.getItems(request.itemIds).asFlow().toList()
+                itemService.getItems(request.itemIds)
             }
-            else -> listOf<Item>()
+            else -> listOf()
         }
 
        try {
@@ -68,11 +68,11 @@ class DiscountController(
                endDate = request.endDate,
                items = items,
                categoryId = request.categoryId
-           ).awaitSingle()
+           )
 
            if (request.sendPromotion == true) {
                if (request.categoryId != null) {
-                   val category = categoryService.getCategory(request.categoryId).awaitSingle()
+                   val category = categoryService.getCategory(request.categoryId)
                    if (category != null) {
                        notificationService.notifyCategoryDiscountCreation(
                            discount = savedDiscount,
@@ -109,7 +109,7 @@ class DiscountController(
             requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
         }
 
-        val discount = discountService.getDiscount(id).awaitFirstOrNull()
+        val discount = discountService.getDiscount(id)
             ?: return ResponseEntity.notFound().build()
 
         return ResponseEntity.ok(DiscountResponse.of(discount))
@@ -131,8 +131,6 @@ class DiscountController(
         val pageable = PageRequest.of(offset ?: 0, size ?: 20)
         return ResponseEntity.ok(
             discountService.getDiscounts(pageable)
-                .asFlow()
-                .toList()
                 .map { DiscountResponse.of(it) }
         )
     }
@@ -148,7 +146,7 @@ class DiscountController(
             requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
         }
 
-        val discount = discountService.getDiscount(id).awaitFirstOrNull()
+        val discount = discountService.getDiscount(id)
             ?: return
 
         discountService.deleteDiscount(discount = discount)

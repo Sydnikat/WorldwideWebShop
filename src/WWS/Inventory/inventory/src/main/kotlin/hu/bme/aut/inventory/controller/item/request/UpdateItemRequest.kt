@@ -1,7 +1,7 @@
 package hu.bme.aut.inventory.controller.item.request
 
 import hu.bme.aut.inventory.controller.common.annotation.Trim
-import hu.bme.aut.inventory.dal.Item
+import hu.bme.aut.inventory.domain.Item
 import java.time.LocalDate
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.PositiveOrZero
@@ -28,7 +28,9 @@ data class UpdateItemRequest(
         created = LocalDate.now(),
         price = 0.0F,
         stock = stock,
-        lowLevel = lowLevel
+        lowLevel = lowLevel,
+        reviews = listOf(),
+        listOfTechnicalSpecInfo = listOf()
     )
 }
 

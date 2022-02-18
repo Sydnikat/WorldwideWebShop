@@ -1,8 +1,8 @@
 package hu.bme.aut.inventory.service.notification
 
 import hu.bme.aut.inventory.config.RabbitmqConfig
-import hu.bme.aut.inventory.dal.Category
-import hu.bme.aut.inventory.dal.Discount
+import hu.bme.aut.inventory.domain.Category
+import hu.bme.aut.inventory.domain.Discount
 import hu.bme.aut.inventory.integrationEvent.event.CategoryDiscountCreatedEvent
 import kotlinx.coroutines.runBlocking
 import org.springframework.amqp.core.Exchange

@@ -1,7 +1,11 @@
-package hu.bme.aut.inventory.dal
+package hu.bme.aut.inventory.dal.item
 
+import hu.bme.aut.inventory.dal.review.ReviewRepository
+import hu.bme.aut.inventory.dal.technicalSpecification.TechnicalSpecInfoCRUDRepository
 import hu.bme.aut.inventory.service.item.SortingDirection
 import hu.bme.aut.inventory.service.item.SortingType
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.reactive.asFlow
 import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Order.asc
 import org.springframework.data.domain.Sort.Order.desc
@@ -9,12 +13,13 @@ import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
 import org.springframework.data.relational.core.query.Criteria
 import org.springframework.data.relational.core.query.Query
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Flux
 
 @Service
 class QueryRepository(
-    private val template: R2dbcEntityTemplate
-) {
+    private val template: R2dbcEntityTemplate,
+    reviewRepository: ReviewRepository,
+    technicalSpecInfoCRUDRepository: TechnicalSpecInfoCRUDRepository
+) : ItemRepositoryBase(reviewRepository, technicalSpecInfoCRUDRepository) {
     suspend fun searchItemWithQuery(
         queryStr: String,
         hasStock: Boolean,
@@ -23,8 +28,9 @@ class QueryRepository(
         sortingBy: SortingType = SortingType.PRICE,
         sortDirection: SortingDirection = SortingDirection.ASC,
         skip: Long? = null,
-        limit: Int? = null
-    ): Flux<Item> {
+        limit: Int? = null,
+        witchReviews: Boolean = false
+    ): List<hu.bme.aut.inventory.domain.Item> {
         val listOfCriteria: MutableList<Criteria> = mutableListOf()
 
         listOfCriteria.add(
@@ -64,9 +70,15 @@ class QueryRepository(
             queries = queries.sort(sorting)
         }
 
-        return template.select(Item::class.java)
+        val dalItems = template.select(Item::class.java)
             .from("Item")
             .matching(queries)
             .all()
+            .asFlow()
+            .toList()
+
+        val reviews = if (witchReviews) findReviewsForItems(dalItems.map { it.id!! }) else listOf()
+
+        return toDomain(dalItems, reviews)
     }
 }

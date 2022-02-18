@@ -11,12 +11,9 @@ import hu.bme.aut.inventory.service.auth.AuthManager
 import hu.bme.aut.inventory.service.category.CategoryService
 import hu.bme.aut.inventory.service.item.ItemService
 import hu.bme.aut.inventory.util.requestError
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
-import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -48,7 +45,7 @@ class CategoryController(
             requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
         }
 
-        val savedCategory = categoryService.saveCategory(request.toNew()).awaitSingle()
+        val savedCategory = categoryService.saveCategory(request.toNew())
         return ResponseEntity.ok(CategoryResponse.of(savedCategory))
     }
 
@@ -57,7 +54,7 @@ class CategoryController(
         @PathVariable
         id: Long
     ): ResponseEntity<CategoryResponse> {
-        val category = categoryService.getCategory(id).awaitFirstOrNull()
+        val category = categoryService.getCategory(id)
             ?: return ResponseEntity.notFound().build()
 
         return ResponseEntity.ok(CategoryResponse.of(category))
@@ -73,8 +70,6 @@ class CategoryController(
         val pageable = PageRequest.of(offset ?: 0, size ?: 20)
         return ResponseEntity.ok(
             categoryService.getCategories(pageable)
-                .asFlow()
-                .toList()
                 .map { CategoryResponse.of(it) }
         )
     }
@@ -92,7 +87,7 @@ class CategoryController(
             requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
         }
 
-        val category = categoryService.getCategory(id).awaitFirstOrNull()
+        val category = categoryService.getCategory(id)
             ?: return ResponseEntity.notFound().build()
 
         val savedItem = categoryService.saveNewItem(
@@ -100,7 +95,7 @@ class CategoryController(
             name = request.name,
             description = request.description,
             price = request.price
-        ).awaitSingle()
+        )
 
         return ResponseEntity.ok(ItemResponse.of(savedItem))
     }
@@ -116,7 +111,7 @@ class CategoryController(
             requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
         }
 
-        val category = categoryService.getCategory(id).awaitFirstOrNull()
+        val category = categoryService.getCategory(id)
             ?: return
 
         categoryService.deleteCategory(category = category)
@@ -134,8 +129,6 @@ class CategoryController(
         val pageable = PageRequest.of(offset ?: 0, size ?: 20)
         return ResponseEntity.ok(
             itemService.getItems(categoryId = id, pageable = pageable)
-                .asFlow()
-                .toList()
                 .map { ItemResponse.of(it) }
         )
     }

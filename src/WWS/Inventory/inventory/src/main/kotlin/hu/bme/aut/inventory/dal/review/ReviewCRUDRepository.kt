@@ -1,4 +1,4 @@
-package hu.bme.aut.inventory.dal
+package hu.bme.aut.inventory.dal.review
 
 import org.springframework.data.domain.Pageable
 import org.springframework.data.r2dbc.repository.Query
@@ -8,7 +8,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @Repository
-interface ReviewRepository : ReactiveCrudRepository<Review, Long> {
+interface ReviewCRUDRepository : ReactiveCrudRepository<Review, Long> {
     fun findAllByIdIn(ids: List<Long>, pageable: Pageable = Pageable.unpaged()): Flux<Review>
     fun findAllByIdNotNull(pageable: Pageable = Pageable.unpaged()): Flux<Review>
     fun findAllByItemId(itemId: Long, pageable: Pageable = Pageable.unpaged()): Flux<Review>

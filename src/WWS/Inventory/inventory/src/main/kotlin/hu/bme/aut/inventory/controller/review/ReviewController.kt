@@ -31,7 +31,7 @@ class ReviewController(
         @PathVariable
         id: Long
     ): ResponseEntity<ReviewResponse> {
-        val review = reviewService.getReview(id).awaitFirstOrNull()
+        val review = reviewService.getReview(id)
             ?: return ResponseEntity.notFound().build()
 
         return ResponseEntity.ok(ReviewResponse.of(review))
@@ -47,8 +47,6 @@ class ReviewController(
         val pageable = PageRequest.of(offset ?: 0, size ?: 20)
         return ResponseEntity.ok(
             reviewService.getReviews(pageable)
-                .asFlow()
-                .toList()
                 .map { ReviewResponse.of(it) }
         )
     }
@@ -60,7 +58,7 @@ class ReviewController(
         @PathVariable
         id: Long
     ) {
-        val review = reviewService.getReview(reviewId = id).awaitFirstOrNull()
+        val review = reviewService.getReview(reviewId = id)
             ?: return
 
         if (review.reviewerId != user.userId) {

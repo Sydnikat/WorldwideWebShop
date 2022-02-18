@@ -1,16 +1,18 @@
 package hu.bme.aut.inventory.controller.category.response
 
-import hu.bme.aut.inventory.dal.Category
+import hu.bme.aut.inventory.domain.Category
 
 data class CategoryResponse(
     val id: Long,
-    val name: String
+    val name: String,
+    val technicalSpecifications: List<TechnicalSpecificationResponse>
 ) {
     companion object {
         fun of(category: Category) = category.run {
             CategoryResponse(
                 id = id!!,
-                name = name
+                name = name,
+                technicalSpecifications = technicalSpecifications.map { TechnicalSpecificationResponse.of(it) }
             )
         }
     }

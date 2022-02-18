@@ -44,7 +44,7 @@ class ItemController(
         @PathVariable
         id: Long
     ): ResponseEntity<ItemResponse> {
-        val item = itemService.getItem(id).awaitFirstOrNull()
+        val item = itemService.getItem(id)
             ?: throw requestError(RequestError.ITEM_NOT_FOUND, HttpStatus.NOT_FOUND)
 
         return ResponseEntity.ok(ItemResponse.of(item))
@@ -90,10 +90,7 @@ class ItemController(
                 price = price ?: listOf(),
                 categories = cat ?: listOf(),
                 pageable = pageable
-            )
-                .asFlow()
-                .toList()
-                .map { ItemResponse.of(it) }
+            ).map { ItemResponse.of(it) }
         )
     }
 
@@ -107,8 +104,6 @@ class ItemController(
         val pageable = PageRequest.of(offset ?: 0, size ?: 20)
         return ResponseEntity.ok(
             itemService.getItems(pageable)
-                .asFlow()
-                .toList()
                 .map { ItemResponse.of(it) }
         )
     }
@@ -126,10 +121,10 @@ class ItemController(
             requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
         }
 
-        val item = itemService.getItem(id).awaitFirstOrNull()
+        val item = itemService.getItem(id)
             ?: throw requestError(RequestError.ITEM_NOT_FOUND, HttpStatus.NOT_FOUND)
 
-        val updatedItem = itemService.updateItem(item, request.toPatchData()).awaitSingle()
+        val updatedItem = itemService.updateItem(item, request.toPatchData())
 
         return ResponseEntity.ok(ItemResponse.of(updatedItem))
     }
@@ -141,7 +136,7 @@ class ItemController(
         @RequestBody @Valid
         request: NewReviewRequest
     ): ResponseEntity<ReviewResponse> {
-        val item = itemService.getItem(id).awaitFirstOrNull()
+        val item = itemService.getItem(id)
             ?: throw requestError(RequestError.ITEM_NOT_FOUND, HttpStatus.NOT_FOUND)
 
         try {
@@ -151,7 +146,7 @@ class ItemController(
                 reviewerName = request.reviewerName,
                 summary = request.summary,
                 rating = request.rating
-            ).awaitSingle()
+            )
 
             return ResponseEntity.ok(ReviewResponse.of(savedReview))
         } catch (e: RatingOutOfRangeException) {
@@ -172,14 +167,12 @@ class ItemController(
         @RequestParam(required = false)
         size: Int?
     ): ResponseEntity<List<ReviewResponse>> {
-        val item = itemService.getItem(id).awaitFirstOrNull()
+        val item = itemService.getItem(id)
             ?: throw requestError(RequestError.ITEM_NOT_FOUND, HttpStatus.NOT_FOUND)
 
         val pageable = PageRequest.of(offset ?: 0, size ?: 5)
 
         val reviews = reviewService.getReviewsOfItem(item, pageable)
-            .asFlow()
-            .toList()
 
         return ResponseEntity.ok(
             reviews.map { ReviewResponse.of(it) }
@@ -197,7 +190,7 @@ class ItemController(
             requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
         }
 
-        val item = itemService.getItem(id).awaitFirstOrNull()
+        val item = itemService.getItem(id)
             ?: return
 
         itemService.deleteItem(item = item)

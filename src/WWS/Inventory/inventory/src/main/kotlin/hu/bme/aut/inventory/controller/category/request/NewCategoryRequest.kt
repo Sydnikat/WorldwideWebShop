@@ -1,7 +1,7 @@
 package hu.bme.aut.inventory.controller.category.request
 
 import hu.bme.aut.inventory.controller.common.annotation.Trim
-import hu.bme.aut.inventory.dal.Category
+import hu.bme.aut.inventory.domain.Category
 import javax.validation.constraints.NotBlank
 
 data class NewCategoryRequest(
@@ -10,6 +10,7 @@ data class NewCategoryRequest(
 ) {
     fun toNew() = Category(
         id = null,
-        name = name
+        name = name,
+        technicalSpecifications = mutableListOf()
     )
 }
