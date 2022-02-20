@@ -1,7 +1,7 @@
 package hu.bme.aut.inventory.controller.category.request
 
 import hu.bme.aut.inventory.controller.common.annotation.Trim
-import hu.bme.aut.inventory.domain.Category
+import hu.bme.aut.inventory.domain.category.Category
 import javax.validation.constraints.NotBlank
 
 data class NewCategoryRequest(

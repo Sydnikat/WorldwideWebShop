@@ -18,14 +18,14 @@ class ItemRepository(
     reviewRepository: ReviewRepository,
     technicalSpecInfoCRUDRepository: TechnicalSpecInfoCRUDRepository
 ) : ItemRepositoryBase(reviewRepository, technicalSpecInfoCRUDRepository) {
-    suspend fun save(item: hu.bme.aut.inventory.domain.Item): hu.bme.aut.inventory.domain.Item {
+    suspend fun save(item: hu.bme.aut.inventory.domain.item.Item): hu.bme.aut.inventory.domain.item.Item {
         return itemCRUDRepository
             .save(Item.toDal(item))
             .awaitSingle()
             .toDomain(item.reviews)
     }
 
-    suspend fun saveAll(items: List<hu.bme.aut.inventory.domain.Item>): List<hu.bme.aut.inventory.domain.Item> {
+    suspend fun saveAll(items: List<hu.bme.aut.inventory.domain.item.Item>): List<hu.bme.aut.inventory.domain.item.Item> {
         val reviews = items.flatMap { it.reviews }
         val dalItems = itemCRUDRepository
             .saveAll(items.map { Item.toDal(it) })
@@ -35,7 +35,7 @@ class ItemRepository(
         return toDomain(dalItems, reviews)
     }
 
-    suspend fun findById(itemId: Long, witchReviews: Boolean = true): hu.bme.aut.inventory.domain.Item? {
+    suspend fun findById(itemId: Long, witchReviews: Boolean = true): hu.bme.aut.inventory.domain.item.Item? {
         val dalItem = itemCRUDRepository.findById(itemId).awaitFirstOrNull() ?: return null
         val reviews = if (witchReviews) findReviewsForItems(listOf(dalItem.id!!)) else listOf()
         return toDomain(listOf(dalItem), reviews)[0]
@@ -45,7 +45,7 @@ class ItemRepository(
         ids: List<Long>,
         pageable: Pageable = Pageable.unpaged(),
         witchReviews: Boolean = false
-    ): List<hu.bme.aut.inventory.domain.Item> {
+    ): List<hu.bme.aut.inventory.domain.item.Item> {
         val dalItems = itemCRUDRepository.findAllByIdIn(ids, pageable).asFlow().toList()
         val reviews = if (witchReviews) findReviewsForItems(dalItems.map { it.id!! }) else listOf()
 
@@ -56,7 +56,7 @@ class ItemRepository(
         categoryId: Long,
         pageable: Pageable = Pageable.unpaged(),
         witchReviews: Boolean = false
-    ): List<hu.bme.aut.inventory.domain.Item> {
+    ): List<hu.bme.aut.inventory.domain.item.Item> {
         val dalItems = itemCRUDRepository.findAllByCategoryId(categoryId, pageable).asFlow().toList()
         val reviews = if (witchReviews) findReviewsForItems(dalItems.map { it.id!! }) else listOf()
 
@@ -66,7 +66,7 @@ class ItemRepository(
     suspend fun findAllByIdNotNull(
         pageable: Pageable = Pageable.unpaged(),
         witchReviews: Boolean = false
-    ): List<hu.bme.aut.inventory.domain.Item> {
+    ): List<hu.bme.aut.inventory.domain.item.Item> {
         val dalItems = itemCRUDRepository.findAllByIdNotNull(pageable).asFlow().toList()
         val reviews = if (witchReviews) findReviewsForItems(dalItems.map { it.id!! }) else listOf()
 
@@ -76,18 +76,18 @@ class ItemRepository(
     suspend fun findAllByDiscountId(
         discountId: Long,
         witchReviews: Boolean = false
-    ): List<hu.bme.aut.inventory.domain.Item> {
+    ): List<hu.bme.aut.inventory.domain.item.Item> {
         val dalItems = itemCRUDRepository.findAllByDiscountId(discountId).asFlow().toList()
         val reviews = if (witchReviews) findReviewsForItems(dalItems.map { it.id!! }) else listOf()
 
         return toDomain(dalItems, reviews)
     }
 
-    suspend fun delete(item: hu.bme.aut.inventory.domain.Item) {
+    suspend fun delete(item: hu.bme.aut.inventory.domain.item.Item) {
         itemCRUDRepository.delete(Item.toDal(item)).awaitSingleOrNull()
     }
 
-    suspend fun deleteAll(items: List<hu.bme.aut.inventory.domain.Item>) {
+    suspend fun deleteAll(items: List<hu.bme.aut.inventory.domain.item.Item>) {
         itemCRUDRepository.deleteAll(items.map { Item.toDal(it) }).awaitSingleOrNull()
     }
 }

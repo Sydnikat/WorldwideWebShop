@@ -1,10 +1,11 @@
 package hu.bme.aut.inventory.service.item
 
-import hu.bme.aut.inventory.domain.Item
+import hu.bme.aut.inventory.domain.item.Item
 import hu.bme.aut.inventory.dal.item.ItemRepository
 import hu.bme.aut.inventory.dal.item.QueryRepository
-import hu.bme.aut.inventory.domain.Review
+import hu.bme.aut.inventory.domain.review.Review
 import hu.bme.aut.inventory.dal.review.ReviewRepository
+import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecInfo
 import hu.bme.aut.inventory.service.item.exception.RatingOutOfRangeException
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -27,6 +28,7 @@ class ItemService(
         hasStock: Boolean,
         price: List<Long>?,
         categories: List<Long>?,
+        requestedSpecs: List<TechnicalSpecInfo>?,
         pageable: Pageable = Pageable.unpaged()
     ): List<Item> {
         val priceInterval = if (price != null && price.size == 2) {
@@ -47,6 +49,7 @@ class ItemService(
             price = priceInterval,
             sortingBy = sortBy,
             sortDirection = sort,
+            requestedSpecs = requestedSpecs,
             skip = skip,
             limit = limit
         )
@@ -64,7 +67,7 @@ class ItemService(
     suspend fun saveItem(item: Item): Item =
         itemRepository.save(item)
 
-    suspend fun updateItem(item:Item, patchData: Item): Item {
+    suspend fun updateItem(item: Item, patchData: Item): Item {
         item.apply {
             description = patchData.description
 

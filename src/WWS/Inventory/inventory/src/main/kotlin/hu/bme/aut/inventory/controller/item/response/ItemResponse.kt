@@ -1,6 +1,6 @@
 package hu.bme.aut.inventory.controller.item.response
 
-import hu.bme.aut.inventory.domain.Item
+import hu.bme.aut.inventory.domain.item.Item
 import kotlin.math.roundToLong
 
 data class ItemResponse(

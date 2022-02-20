@@ -1,7 +1,7 @@
 package hu.bme.aut.inventory.controller.item.request
 
 import hu.bme.aut.inventory.controller.common.annotation.Trim
-import hu.bme.aut.inventory.domain.Item
+import hu.bme.aut.inventory.domain.item.Item
 import java.time.LocalDate
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.PositiveOrZero

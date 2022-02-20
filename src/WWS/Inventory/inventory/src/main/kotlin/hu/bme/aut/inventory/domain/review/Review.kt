@@ -1,4 +1,4 @@
-package hu.bme.aut.inventory.domain
+package hu.bme.aut.inventory.domain.review
 import java.time.LocalDate
 
 data class Review(

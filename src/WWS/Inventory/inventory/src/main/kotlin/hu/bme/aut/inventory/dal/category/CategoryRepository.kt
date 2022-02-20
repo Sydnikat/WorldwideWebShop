@@ -2,6 +2,7 @@ package hu.bme.aut.inventory.dal.category
 
 import hu.bme.aut.inventory.dal.technicalSpecification.TechnicalSpecEnumListItemCRUDRepository
 import hu.bme.aut.inventory.dal.technicalSpecification.TechnicalSpecificationCRUDRepository
+import hu.bme.aut.inventory.domain.technicalSpecification.EnumListTechnicalSpecification
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirstOrNull
@@ -19,7 +20,7 @@ class CategoryRepository(
     suspend fun findById(
         categoryId: Long,
         witchTechSpecs: Boolean = true
-    ): hu.bme.aut.inventory.domain.Category? {
+    ): hu.bme.aut.inventory.domain.category.Category? {
         val dalCategory = categoryCRUDRepository
             .findById(categoryId).awaitFirstOrNull() ?: return null
 
@@ -30,7 +31,7 @@ class CategoryRepository(
         str: String,
         pageable: Pageable = Pageable.unpaged(),
         witchTechSpecs: Boolean = false
-    ): List<hu.bme.aut.inventory.domain.Category> {
+    ): List<hu.bme.aut.inventory.domain.category.Category> {
         val dalCategories = categoryCRUDRepository
             .findAllByNameContaining(str, pageable)
             .asFlow()
@@ -43,7 +44,7 @@ class CategoryRepository(
         ids: List<Long>,
         pageable: Pageable = Pageable.unpaged(),
         witchTechSpecs: Boolean = false
-    ): List<hu.bme.aut.inventory.domain.Category> {
+    ): List<hu.bme.aut.inventory.domain.category.Category> {
         val dalCategories = categoryCRUDRepository
             .findAllByIdIn(ids, pageable)
             .asFlow()
@@ -55,7 +56,7 @@ class CategoryRepository(
     suspend fun findAllByIdNotNull(
         pageable: Pageable = Pageable.unpaged(),
         witchTechSpecs: Boolean = false
-    ): List<hu.bme.aut.inventory.domain.Category> {
+    ): List<hu.bme.aut.inventory.domain.category.Category> {
         val dalCategories = categoryCRUDRepository
             .findAllByIdNotNull(pageable)
             .asFlow()
@@ -64,28 +65,28 @@ class CategoryRepository(
         return if (witchTechSpecs) toDomainWitchTechSpecs(dalCategories) else dalCategories.map { it.toDomain() }
     }
 
-    suspend fun save(category: hu.bme.aut.inventory.domain.Category): hu.bme.aut.inventory.domain.Category {
+    suspend fun save(category: hu.bme.aut.inventory.domain.category.Category): hu.bme.aut.inventory.domain.category.Category {
         return categoryCRUDRepository
             .save(Category.toDal(category))
             .awaitSingle()
             .toDomain(category.technicalSpecifications)
     }
 
-    suspend fun delete(category: hu.bme.aut.inventory.domain.Category) {
+    suspend fun delete(category: hu.bme.aut.inventory.domain.category.Category) {
         categoryCRUDRepository.delete(Category.toDal(category)).awaitSingleOrNull()
     }
 
     private suspend fun toDomainWitchTechSpecs(
         categories: List<Category>
-    ): List<hu.bme.aut.inventory.domain.Category> {
+    ): List<hu.bme.aut.inventory.domain.category.Category> {
         val techSpecs = technicalSpecificationCRUDRepository.findAllByCategoryIdIn(categories.map { it.id!! })
             .asFlow()
             .toList()
             .map { it.toDomain() }
 
-        val techSpecsWithoutEnumLists = techSpecs.filter { !it.isEnumList }
+        val techSpecsWithoutEnumLists = techSpecs.filter { it !is EnumListTechnicalSpecification }
 
-        val techSpecsWithEnumLists = techSpecs.filter { it.isEnumList }
+        val techSpecsWithEnumLists = techSpecs.filterIsInstance<EnumListTechnicalSpecification>()
         val techSpecsEnumListItems = technicalSpecEnumListItemCRUDRepository
             .findAllByTechnicalSpecificationIdIn(techSpecsWithEnumLists.map { it.id!! })
             .asFlow()

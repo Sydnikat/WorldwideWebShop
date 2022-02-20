@@ -2,6 +2,7 @@ package hu.bme.aut.inventory.controller.item
 
 import hu.bme.aut.inventory.config.resolver.UserMetaData
 import hu.bme.aut.inventory.config.resolver.WWSUserMetaData
+import hu.bme.aut.inventory.controller.item.request.TechnicalSpecInfoRequest
 import hu.bme.aut.inventory.controller.item.request.UpdateItemRequest
 import hu.bme.aut.inventory.controller.item.response.ItemResponse
 import hu.bme.aut.inventory.controller.review.request.NewReviewRequest
@@ -65,6 +66,8 @@ class ItemController(
         @RequestParam(required = false)
         price: List<Long>?,
         @RequestParam(required = false)
+        specs: String?,
+        @RequestParam(required = false)
         offset: Int?,
         @RequestParam(required = false)
         size: Int?
@@ -81,6 +84,10 @@ class ItemController(
             else -> SortingType.UNSORTED
         }
 
+        val requestedSpecs = if (specs != null) TechnicalSpecInfoRequest.toTechnicalSpecInfo(specs) else listOf()
+
+        println(requestedSpecs)
+
         return ResponseEntity.ok(
             itemService.searchItems(
                 queryStr = q,
@@ -89,6 +96,7 @@ class ItemController(
                 hasStock = stock,
                 price = price ?: listOf(),
                 categories = cat ?: listOf(),
+                requestedSpecs = requestedSpecs,
                 pageable = pageable
             ).map { ItemResponse.of(it) }
         )

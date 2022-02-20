@@ -1,6 +1,6 @@
 package hu.bme.aut.inventory.controller.item.response
 
-import hu.bme.aut.inventory.domain.TechnicalSpecInfo
+import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecInfo
 
 data class TechnicalSpecInfoResponse(
     val id: Long,

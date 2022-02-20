@@ -1,6 +1,6 @@
 package hu.bme.aut.inventory.controller.review.response
 
-import hu.bme.aut.inventory.domain.Review
+import hu.bme.aut.inventory.domain.review.Review
 
 data class ReviewResponse(
     val id: Long,

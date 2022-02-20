@@ -1,6 +1,6 @@
 package hu.bme.aut.inventory.controller.discount.response
 
-import hu.bme.aut.inventory.domain.Discount
+import hu.bme.aut.inventory.domain.discount.Discount
 
 data class DiscountResponse(
     val id: Long,

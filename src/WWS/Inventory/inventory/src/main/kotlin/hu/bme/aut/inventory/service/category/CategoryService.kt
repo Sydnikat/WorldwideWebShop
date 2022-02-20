@@ -1,13 +1,11 @@
 package hu.bme.aut.inventory.service.category
 
-import hu.bme.aut.inventory.domain.Category
+import hu.bme.aut.inventory.domain.category.Category
 import hu.bme.aut.inventory.dal.category.CategoryRepository
 import hu.bme.aut.inventory.dal.discount.DiscountRepository
-import hu.bme.aut.inventory.domain.Item
+import hu.bme.aut.inventory.domain.item.Item
 import hu.bme.aut.inventory.dal.item.ItemRepository
 import hu.bme.aut.inventory.dal.review.ReviewRepository
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.reactive.asFlow
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.time.LocalDate

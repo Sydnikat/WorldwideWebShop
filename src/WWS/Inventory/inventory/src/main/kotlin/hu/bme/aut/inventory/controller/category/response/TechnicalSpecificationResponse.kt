@@ -1,6 +1,10 @@
 package hu.bme.aut.inventory.controller.category.response
 
-import hu.bme.aut.inventory.domain.TechnicalSpecification
+import hu.bme.aut.inventory.domain.technicalSpecification.BooleanTechnicalSpecification
+import hu.bme.aut.inventory.domain.technicalSpecification.EnumListTechnicalSpecification
+import hu.bme.aut.inventory.domain.technicalSpecification.NumberTechnicalSpecification
+import hu.bme.aut.inventory.domain.technicalSpecification.StringTechnicalSpecification
+import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecification
 
 data class TechnicalSpecificationResponse(
     val id: Long,
@@ -20,11 +24,15 @@ data class TechnicalSpecificationResponse(
                 name = technicalSpecification.name,
                 unitOfMeasure = technicalSpecification.unitOfMeasure,
                 categoryId = technicalSpecification.categoryId,
-                isNumber = technicalSpecification.isNumber,
-                isBoolean = technicalSpecification.isBoolean,
-                isString = technicalSpecification.isString,
-                isEnumList = technicalSpecification.isEnumList,
-                listOfEnumItems = technicalSpecification.enumList.map { TechnicalSpecEnumListItemResponse.of(it) }
+                isNumber = technicalSpecification is NumberTechnicalSpecification,
+                isBoolean = technicalSpecification is BooleanTechnicalSpecification,
+                isString = technicalSpecification is StringTechnicalSpecification,
+                isEnumList = technicalSpecification is EnumListTechnicalSpecification,
+                listOfEnumItems = when (technicalSpecification) {
+                    is EnumListTechnicalSpecification ->
+                        technicalSpecification.enumList.map { TechnicalSpecEnumListItemResponse.of(it) }
+                    else -> listOf()
+                }
             )
     }
 }

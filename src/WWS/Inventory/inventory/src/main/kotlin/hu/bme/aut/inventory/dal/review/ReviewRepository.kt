@@ -12,18 +12,18 @@ import org.springframework.stereotype.Service
 class ReviewRepository(
     private val reviewCRUDRepository: ReviewCRUDRepository
 ) {
-    suspend fun findById(reviewId: Long): hu.bme.aut.inventory.domain.Review? {
+    suspend fun findById(reviewId: Long): hu.bme.aut.inventory.domain.review.Review? {
         return reviewCRUDRepository.findById(reviewId).awaitFirstOrNull()?.toDomain()
     }
 
-    suspend fun save(review: hu.bme.aut.inventory.domain.Review): hu.bme.aut.inventory.domain.Review {
+    suspend fun save(review: hu.bme.aut.inventory.domain.review.Review): hu.bme.aut.inventory.domain.review.Review {
         return reviewCRUDRepository.save(Review.toDal(review)).awaitSingle().toDomain()
     }
 
     suspend fun findAllByIdIn(
         ids: List<Long>,
         pageable: Pageable = Pageable.unpaged()
-    ): List<hu.bme.aut.inventory.domain.Review> {
+    ): List<hu.bme.aut.inventory.domain.review.Review> {
         return reviewCRUDRepository
             .findAllByIdIn(ids, pageable)
             .asFlow()
@@ -33,7 +33,7 @@ class ReviewRepository(
 
     suspend fun findAllByIdNotNull(
         pageable: Pageable = Pageable.unpaged()
-    ): List<hu.bme.aut.inventory.domain.Review> {
+    ): List<hu.bme.aut.inventory.domain.review.Review> {
         return reviewCRUDRepository
             .findAllByIdNotNull(pageable)
             .asFlow()
@@ -44,7 +44,7 @@ class ReviewRepository(
     suspend fun findAllByItemId(
         itemId: Long,
         pageable: Pageable = Pageable.unpaged()
-    ): List<hu.bme.aut.inventory.domain.Review> {
+    ): List<hu.bme.aut.inventory.domain.review.Review> {
         return reviewCRUDRepository
             .findAllByItemId(itemId, pageable)
             .asFlow()
@@ -55,7 +55,7 @@ class ReviewRepository(
     suspend fun findAllByItemIdIn(
         itemIds: List<Long>,
         pageable: Pageable = Pageable.unpaged()
-    ): List<hu.bme.aut.inventory.domain.Review> {
+    ): List<hu.bme.aut.inventory.domain.review.Review> {
         return reviewCRUDRepository
             .findAllByItemIdIn(itemIds, pageable)
             .asFlow()
@@ -71,11 +71,11 @@ class ReviewRepository(
         reviewCRUDRepository.deleteAllByItemId(itemId).awaitSingleOrNull()
     }
 
-    suspend fun delete(review: hu.bme.aut.inventory.domain.Review) {
+    suspend fun delete(review: hu.bme.aut.inventory.domain.review.Review) {
         reviewCRUDRepository.delete(Review.toDal(review)).awaitSingleOrNull()
     }
 
-    suspend fun deleteAll(reviews: List<hu.bme.aut.inventory.domain.Review>) {
+    suspend fun deleteAll(reviews: List<hu.bme.aut.inventory.domain.review.Review>) {
         reviewCRUDRepository.deleteAll(reviews.map { Review.toDal(it) }).awaitSingleOrNull()
     }
 }

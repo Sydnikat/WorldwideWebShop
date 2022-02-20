@@ -1,8 +1,8 @@
 package hu.bme.aut.inventory.service.review
 
-import hu.bme.aut.inventory.domain.Item
+import hu.bme.aut.inventory.domain.item.Item
 import hu.bme.aut.inventory.dal.item.ItemRepository
-import hu.bme.aut.inventory.domain.Review
+import hu.bme.aut.inventory.domain.review.Review
 import hu.bme.aut.inventory.dal.review.ReviewRepository
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service

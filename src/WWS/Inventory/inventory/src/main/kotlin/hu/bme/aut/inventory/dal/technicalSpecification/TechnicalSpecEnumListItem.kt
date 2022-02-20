@@ -13,15 +13,15 @@ data class TechnicalSpecEnumListItem(
     @Column("TechnicalSpecificationId")
     var technicalSpecificationId: Long,
 ) {
-    fun toDomain(): hu.bme.aut.inventory.domain.TechnicalSpecEnumListItem =
-        hu.bme.aut.inventory.domain.TechnicalSpecEnumListItem(
+    fun toDomain(): hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecEnumListItem =
+        hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecEnumListItem(
             id,
             enumName,
             technicalSpecificationId
         )
 
     companion object {
-        fun toDal(listItem: hu.bme.aut.inventory.domain.TechnicalSpecEnumListItem): TechnicalSpecEnumListItem = listItem.let {
+        fun toDal(listItem: hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecEnumListItem): TechnicalSpecEnumListItem = listItem.let {
             TechnicalSpecEnumListItem(
                 it.id,
                 it.enumName,

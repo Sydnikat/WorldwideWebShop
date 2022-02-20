@@ -22,8 +22,8 @@ data class Review(
     @Column("Created")
     var created: LocalDate
 ) {
-    fun toDomain(): hu.bme.aut.inventory.domain.Review =
-        hu.bme.aut.inventory.domain.Review(
+    fun toDomain(): hu.bme.aut.inventory.domain.review.Review =
+        hu.bme.aut.inventory.domain.review.Review(
             id = id,
             itemId = itemId,
             reviewerName = reviewerName,
@@ -34,7 +34,7 @@ data class Review(
         )
 
     companion object {
-        fun toDal(review: hu.bme.aut.inventory.domain.Review): Review = review.let {
+        fun toDal(review: hu.bme.aut.inventory.domain.review.Review): Review = review.let {
             Review(
                 id = it.id,
                 itemId = it.itemId,

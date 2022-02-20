@@ -15,8 +15,8 @@ data class TechnicalSpecInfo(
     @Column("ValueString")
     var value: String,
 ) {
-    fun toDomain(): hu.bme.aut.inventory.domain.TechnicalSpecInfo =
-        hu.bme.aut.inventory.domain.TechnicalSpecInfo(
+    fun toDomain(): hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecInfo =
+        hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecInfo(
             id = id,
             technicalSpecificationId = technicalSpecificationId,
             itemId = itemId,
@@ -24,7 +24,7 @@ data class TechnicalSpecInfo(
         )
 
     companion object {
-        fun toDal(specInfo: hu.bme.aut.inventory.domain.TechnicalSpecInfo): TechnicalSpecInfo = specInfo.let {
+        fun toDal(specInfo: hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecInfo): TechnicalSpecInfo = specInfo.let {
             TechnicalSpecInfo(
                 id = it.id,
                 technicalSpecificationId = it.technicalSpecificationId,

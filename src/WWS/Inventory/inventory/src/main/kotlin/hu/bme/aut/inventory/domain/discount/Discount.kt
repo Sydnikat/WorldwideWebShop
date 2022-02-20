@@ -1,4 +1,4 @@
-package hu.bme.aut.inventory.domain
+package hu.bme.aut.inventory.domain.discount
 
 import java.time.LocalDate
 

@@ -1,5 +1,6 @@
-package hu.bme.aut.inventory.domain
-import hu.bme.aut.inventory.domain.TechnicalSpecInfo
+package hu.bme.aut.inventory.domain.item
+import hu.bme.aut.inventory.domain.review.Review
+import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecInfo
 import java.time.LocalDate
 
 class Item(

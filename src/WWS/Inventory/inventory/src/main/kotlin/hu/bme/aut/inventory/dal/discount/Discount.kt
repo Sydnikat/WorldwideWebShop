@@ -20,8 +20,8 @@ data class Discount(
     @Column("CategoryId")
     var categoryId: Long?,
 ) {
-    fun toDomain(): hu.bme.aut.inventory.domain.Discount =
-        hu.bme.aut.inventory.domain.Discount(
+    fun toDomain(): hu.bme.aut.inventory.domain.discount.Discount =
+        hu.bme.aut.inventory.domain.discount.Discount(
             id = id,
             value = value,
             startDate = startDate,
@@ -31,7 +31,7 @@ data class Discount(
         )
 
     companion object {
-        fun toDal(discount: hu.bme.aut.inventory.domain.Discount): Discount = discount.let {
+        fun toDal(discount: hu.bme.aut.inventory.domain.discount.Discount): Discount = discount.let {
             Discount(
                 id = it.id,
                 value = it.value,

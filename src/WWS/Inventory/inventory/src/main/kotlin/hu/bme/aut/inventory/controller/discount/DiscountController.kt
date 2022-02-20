@@ -4,7 +4,6 @@ import hu.bme.aut.inventory.config.resolver.UserMetaData
 import hu.bme.aut.inventory.config.resolver.WWSUserMetaData
 import hu.bme.aut.inventory.controller.discount.request.NewDiscountRequest
 import hu.bme.aut.inventory.controller.discount.response.DiscountResponse
-import hu.bme.aut.inventory.domain.Item
 import hu.bme.aut.inventory.exception.RequestError
 import hu.bme.aut.inventory.service.auth.AuthManager
 import hu.bme.aut.inventory.service.category.CategoryService
@@ -14,10 +13,6 @@ import hu.bme.aut.inventory.service.discount.exception.EndDateMustBeFutureDateEx
 import hu.bme.aut.inventory.service.item.ItemService
 import hu.bme.aut.inventory.service.notification.NotificationService
 import hu.bme.aut.inventory.util.requestError
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.reactive.awaitFirstOrNull
-import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

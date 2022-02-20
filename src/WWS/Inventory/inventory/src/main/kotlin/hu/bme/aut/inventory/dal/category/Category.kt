@@ -1,5 +1,6 @@
 package hu.bme.aut.inventory.dal.category
 
+import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecification
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
@@ -12,16 +13,16 @@ data class Category(
     val name: String
 ) {
     fun toDomain(
-        techSpecs: List<hu.bme.aut.inventory.domain.TechnicalSpecification> = listOf()
-    ): hu.bme.aut.inventory.domain.Category =
-        hu.bme.aut.inventory.domain.Category(
+        techSpecs: List<TechnicalSpecification> = listOf()
+    ): hu.bme.aut.inventory.domain.category.Category =
+        hu.bme.aut.inventory.domain.category.Category(
             id,
             name,
             techSpecs.toMutableList()
         )
 
     companion object {
-        fun toDal(category: hu.bme.aut.inventory.domain.Category) = category.let {
+        fun toDal(category: hu.bme.aut.inventory.domain.category.Category) = category.let {
             Category(
                 it.id,
                 it.name

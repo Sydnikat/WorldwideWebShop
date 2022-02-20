@@ -1,9 +1,9 @@
 package hu.bme.aut.inventory.service.discount
 
 
-import hu.bme.aut.inventory.domain.Discount
+import hu.bme.aut.inventory.domain.discount.Discount
 import hu.bme.aut.inventory.dal.discount.DiscountRepository
-import hu.bme.aut.inventory.domain.Item
+import hu.bme.aut.inventory.domain.item.Item
 import hu.bme.aut.inventory.dal.item.ItemRepository
 import hu.bme.aut.inventory.service.discount.exception.DiscountOutOfRangeException
 import hu.bme.aut.inventory.service.discount.exception.EndDateMustBeFutureDateException

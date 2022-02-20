@@ -1,7 +1,7 @@
 package hu.bme.aut.inventory.dal.item
 
-import hu.bme.aut.inventory.domain.Review
-import hu.bme.aut.inventory.domain.TechnicalSpecInfo
+import hu.bme.aut.inventory.domain.review.Review
+import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecInfo
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
@@ -37,8 +37,8 @@ data class Item(
     fun toDomain(
         reviews: List<Review>? = null,
         listOfSpecInfo: List<TechnicalSpecInfo> = listOf()
-    ): hu.bme.aut.inventory.domain.Item =
-        hu.bme.aut.inventory.domain.Item(
+    ): hu.bme.aut.inventory.domain.item.Item =
+        hu.bme.aut.inventory.domain.item.Item(
             id,
             categoryId,
             name,
@@ -56,7 +56,7 @@ data class Item(
         )
 
     companion object {
-        fun toDal(item: hu.bme.aut.inventory.domain.Item): Item = item.let {
+        fun toDal(item: hu.bme.aut.inventory.domain.item.Item): Item = item.let {
             Item(
                 it.id,
                 it.categoryId,

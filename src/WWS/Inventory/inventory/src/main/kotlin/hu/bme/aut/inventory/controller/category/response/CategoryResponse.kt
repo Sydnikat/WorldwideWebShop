@@ -1,6 +1,6 @@
 package hu.bme.aut.inventory.controller.category.response
 
-import hu.bme.aut.inventory.domain.Category
+import hu.bme.aut.inventory.domain.category.Category
 
 data class CategoryResponse(
     val id: Long,
