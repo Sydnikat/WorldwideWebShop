@@ -4,6 +4,7 @@ import hu.bme.aut.inventory.config.resolver.UserMetaData
 import hu.bme.aut.inventory.config.resolver.WWSUserMetaData
 import hu.bme.aut.inventory.controller.item.request.TechnicalSpecInfoRequest
 import hu.bme.aut.inventory.controller.item.request.UpdateItemRequest
+import hu.bme.aut.inventory.controller.item.response.ItemQueryResultResponse
 import hu.bme.aut.inventory.controller.item.response.ItemResponse
 import hu.bme.aut.inventory.controller.review.request.NewReviewRequest
 import hu.bme.aut.inventory.controller.review.response.ReviewResponse
@@ -67,7 +68,7 @@ class ItemController(
         offset: Int?,
         @RequestParam(required = false)
         size: Int?
-    ): ResponseEntity<List<ItemResponse>> {
+    ): ResponseEntity<ItemQueryResultResponse> {
         val pageable = PageRequest.of(offset ?: 0, size ?: 20)
         val sortingDirection = when (sort) {
             "asc" -> SortingDirection.ASC
@@ -82,18 +83,18 @@ class ItemController(
 
         val requestedSpecs = if (specs != null) TechnicalSpecInfoRequest.toTechnicalSpecInfo(specs) else listOf()
 
-        return ResponseEntity.ok(
-            itemService.searchItems(
-                queryStr = q,
-                sortBy = sortingBy,
-                sort = sortingDirection,
-                hasStock = stock,
-                price = price ?: listOf(),
-                categories = cat ?: listOf(),
-                requestedSpecs = requestedSpecs,
-                pageable = pageable
-            ).map { ItemResponse.of(it) }
+        val result = itemService.searchItems(
+            queryStr = q,
+            sortBy = sortingBy,
+            sort = sortingDirection,
+            hasStock = stock,
+            price = price ?: listOf(),
+            categories = cat ?: listOf(),
+            requestedSpecs = requestedSpecs,
+            pageable = pageable
         )
+
+        return ResponseEntity.ok(ItemQueryResultResponse.of(result))
     }
 
     @GetMapping

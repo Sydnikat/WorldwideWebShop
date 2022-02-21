@@ -3,6 +3,7 @@ package hu.bme.aut.inventory.dal.item
 import hu.bme.aut.inventory.dal.review.ReviewRepository
 import hu.bme.aut.inventory.dal.technicalSpecification.TechnicalSpecInfoCRUDRepository
 import hu.bme.aut.inventory.dal.technicalSpecification.TechnicalSpecificationRepository
+import hu.bme.aut.inventory.domain.item.ItemQueryResult
 import hu.bme.aut.inventory.domain.technicalSpecification.NumberTechnicalSpecification
 import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecQuery
 import hu.bme.aut.inventory.service.item.SortingDirection
@@ -172,7 +173,7 @@ class QueryRepository(
         skip: Long? = null,
         limit: Int? = null,
         witchReviews: Boolean = false
-    ): List<hu.bme.aut.inventory.domain.item.Item> {
+    ): ItemQueryResult {
         val listOfCriteria: MutableList<Criteria> = mutableListOf()
 
         val regex = "[^A-Za-z0-9 ]".toRegex()
@@ -243,10 +244,12 @@ class QueryRepository(
             sortedRequests.forEach { listOfRequests ->
                 if (listOfRequests.isNotEmpty()) {
                     val techSpec = techSpecs.find { ts -> ts.id == listOfRequests[0].technicalSpecificationId }!!
-                    val itemsWithSpec = items.filter { i-> i.listOfTechnicalSpecInfo.any { it.technicalSpecificationId == techSpec.id } }
+                    val itemsWithSpec =
+                        items.filter { i -> i.listOfTechnicalSpecInfo.any { it.technicalSpecificationId == techSpec.id } }
                     if (techSpec is NumberTechnicalSpecification) {
                         itemsWithSpec.filter { item ->
-                            val info = item.listOfTechnicalSpecInfo.find { it.technicalSpecificationId == techSpec.id }!!
+                            val info =
+                                item.listOfTechnicalSpecInfo.find { it.technicalSpecificationId == techSpec.id }!!
                             if (listOfRequests.size == 1) {
                                 val request = listOfRequests[0]
                                 request.range.first <= info.value.toLong() && info.value.toLong() <= request.range.second
@@ -256,7 +259,8 @@ class QueryRepository(
                         }
                     } else {
                         itemsWithSpec.filter { item ->
-                            val info = item.listOfTechnicalSpecInfo.find { it.technicalSpecificationId == techSpec.id }!!
+                            val info =
+                                item.listOfTechnicalSpecInfo.find { it.technicalSpecificationId == techSpec.id }!!
                             listOfRequests.map { it.value }.contains(info.value)
                         }.also {
                             filterLists.add(it)
@@ -268,15 +272,15 @@ class QueryRepository(
             items.filter { item -> filterLists.all { list -> list.contains(item) } }
         } else items
 
-
         val offset: Int = if (skip != null && limit != null) (skip * limit).toInt() else 0
-        filteredItems
-            .drop(offset)
-            .apply {
-                if (skip != null && limit != null)
-                    take(limit)
-            }
+        val itemListWithOffset = filteredItems.drop(offset)
+        val pagedItems = if (skip != null && limit != null) itemListWithOffset.take(limit) else itemListWithOffset
 
-        return filteredItems
+        return ItemQueryResult(
+            items = pagedItems,
+            minPrice = filteredItems.minOf { it.price * ((100.0F - (it.discount ?: 0)) / 100.0F) },
+            maxPrice = filteredItems.maxOf { it.price * ((100.0F - (it.discount ?: 0)) / 100.0F) },
+            count = filteredItems.size
+        )
     }
 }

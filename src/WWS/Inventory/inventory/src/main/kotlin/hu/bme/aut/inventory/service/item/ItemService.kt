@@ -5,7 +5,7 @@ import hu.bme.aut.inventory.dal.item.ItemRepository
 import hu.bme.aut.inventory.dal.item.QueryRepository
 import hu.bme.aut.inventory.domain.review.Review
 import hu.bme.aut.inventory.dal.review.ReviewRepository
-import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecInfo
+import hu.bme.aut.inventory.domain.item.ItemQueryResult
 import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecQuery
 import hu.bme.aut.inventory.service.item.exception.RatingOutOfRangeException
 import org.springframework.data.domain.Pageable
@@ -31,7 +31,7 @@ class ItemService(
         categories: List<Long>?,
         requestedSpecs: List<TechnicalSpecQuery>?,
         pageable: Pageable = Pageable.unpaged()
-    ): List<Item> {
+    ): ItemQueryResult {
         val priceInterval = if (price != null && price.size == 2) {
             Pair(price[0], price[1])
         } else null
