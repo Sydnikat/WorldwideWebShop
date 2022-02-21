@@ -8,4 +8,5 @@ import reactor.core.publisher.Flux
 interface TechnicalSpecificationCRUDRepository : ReactiveCrudRepository<TechnicalSpecification, Long> {
     fun findAllByCategoryId(categoryId: Long): Flux<TechnicalSpecification>
     fun findAllByCategoryIdIn(categoryIds: List<Long>): Flux<TechnicalSpecification>
+    fun findAllByIdIn(techSpecIds: List<Long>): Flux<TechnicalSpecification>
 }

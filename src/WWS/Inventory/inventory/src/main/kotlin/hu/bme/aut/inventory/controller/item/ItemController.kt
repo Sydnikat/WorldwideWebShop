@@ -15,10 +15,6 @@ import hu.bme.aut.inventory.service.item.SortingType
 import hu.bme.aut.inventory.service.item.exception.RatingOutOfRangeException
 import hu.bme.aut.inventory.service.review.ReviewService
 import hu.bme.aut.inventory.util.requestError
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.reactive.awaitFirstOrNull
-import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -54,7 +50,7 @@ class ItemController(
     @GetMapping("/search")
     suspend fun searchItems(
         @RequestParam(required = true)
-        q: String = "S",
+        q: String = "",
         @RequestParam(required = false)
         cat: List<Long>?,
         @RequestParam(required = false)
@@ -85,8 +81,6 @@ class ItemController(
         }
 
         val requestedSpecs = if (specs != null) TechnicalSpecInfoRequest.toTechnicalSpecInfo(specs) else listOf()
-
-        println(requestedSpecs)
 
         return ResponseEntity.ok(
             itemService.searchItems(

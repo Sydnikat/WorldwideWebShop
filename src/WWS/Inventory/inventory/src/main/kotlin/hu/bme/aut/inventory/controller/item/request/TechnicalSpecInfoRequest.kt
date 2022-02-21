@@ -1,10 +1,10 @@
 package hu.bme.aut.inventory.controller.item.request
 
-import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecInfo
+import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecQuery
 
 object TechnicalSpecInfoRequest {
-    fun toTechnicalSpecInfo(queryStr: String): List<TechnicalSpecInfo> {
-        val specs = mutableListOf<TechnicalSpecInfo>()
+    fun toTechnicalSpecInfo(queryStr: String): List<TechnicalSpecQuery> {
+        val specs = mutableListOf<TechnicalSpecQuery>()
 
         if (queryStr.isBlank())
             return specs
@@ -23,15 +23,30 @@ object TechnicalSpecInfoRequest {
             val values = str.split(",")
             if (values.size == 2) {
                 if (values[0].contains("stId=") && values[1].contains("v=")) {
-                    specs.add(
-                        TechnicalSpecInfo(
-                            id = null,
-                            technicalSpecificationId = values[0].removePrefix("stId=").toLong(),
-                            value = values[1].removePrefix("v="),
-                            itemId = 0
+                    try {
+                        specs.add(
+                            TechnicalSpecQuery(
+                                technicalSpecificationId = values[0].removePrefix("stId=").toLong(),
+                                value = values[1].removePrefix("v="),
+                                range = Pair(0, 0)
+                            )
                         )
-                    )
+                    } catch (_: NumberFormatException) {}
+                } else if (values[0].contains("stId=") && values[1].contains("r=")) {
+                    try {
+                        val range = values[1].removePrefix("r=").split("-")
+                        if (range.size == 2) {
+                            specs.add(
+                                TechnicalSpecQuery(
+                                    technicalSpecificationId = values[0].removePrefix("stId=").toLong(),
+                                    value = "",
+                                    range = Pair(range[0].toLong(), range[1].toLong())
+                                )
+                            )
+                        }
+                    } catch (_: NumberFormatException) {}
                 }
+
             }
         }
 

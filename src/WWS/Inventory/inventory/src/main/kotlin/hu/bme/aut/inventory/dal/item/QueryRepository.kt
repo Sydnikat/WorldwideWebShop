@@ -2,29 +2,35 @@ package hu.bme.aut.inventory.dal.item
 
 import hu.bme.aut.inventory.dal.review.ReviewRepository
 import hu.bme.aut.inventory.dal.technicalSpecification.TechnicalSpecInfoCRUDRepository
-import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecInfo
+import hu.bme.aut.inventory.dal.technicalSpecification.TechnicalSpecificationRepository
+import hu.bme.aut.inventory.domain.technicalSpecification.NumberTechnicalSpecification
+import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecQuery
 import hu.bme.aut.inventory.service.item.SortingDirection
 import hu.bme.aut.inventory.service.item.SortingType
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
+import org.springframework.data.domain.Sort
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate
+import org.springframework.data.relational.core.query.Criteria
+import org.springframework.data.relational.core.query.Query
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
 class QueryRepository(
     private val template: R2dbcEntityTemplate,
+    private val technicalSpecificationRepository: TechnicalSpecificationRepository,
     reviewRepository: ReviewRepository,
     technicalSpecInfoCRUDRepository: TechnicalSpecInfoCRUDRepository
 ) : ItemRepositoryBase(reviewRepository, technicalSpecInfoCRUDRepository) {
-    suspend fun searchItemWithQuery(
+    suspend fun searchItemWithQueryOld(
         queryStr: String,
         hasStock: Boolean,
-        categories: List<Long>,
+        categoryIds: List<Long>,
         price: Pair<Long, Long>? = null,
         sortingBy: SortingType = SortingType.PRICE,
         sortDirection: SortingDirection = SortingDirection.ASC,
-        requestedSpecs: List<TechnicalSpecInfo>? = null,
+        requestedSpecs: List<TechnicalSpecQuery>? = null,
         skip: Long? = null,
         limit: Int? = null,
         witchReviews: Boolean = false
@@ -38,14 +44,45 @@ class QueryRepository(
         } else ""
 
         val specsFilter = if (requestedSpecs != null && requestedSpecs.isNotEmpty()) {
-            val query = requestedSpecs.fold("") { acc, request ->
-                val value = regex.replace(request.value, "")
-                acc + """
-                    OR (TechnicalSpecInfo.TechnicalSpecificationId = ${request.technicalSpecificationId} AND TechnicalSpecInfo.ValueString LIKE '$value')
-                    """.trimIndent()
+            val uniqueSpecIds = requestedSpecs.map { it.technicalSpecificationId }.distinct()
+            val techSpecs = technicalSpecificationRepository
+                .findAllByIdIn(uniqueSpecIds)
+
+            val sortedRequests = uniqueSpecIds.map { id ->
+                requestedSpecs.filter { it.technicalSpecificationId == id }
             }
 
-            "AND (" + query.drop(3) + ")"
+            val query = sortedRequests.fold("") { listAcc, listOfRequests ->
+                if (listOfRequests.isNotEmpty()) {
+                    val techSpec = techSpecs.find { ts -> ts.id == listOfRequests[0].technicalSpecificationId }!!
+                    val listQuery = listOfRequests.fold("") { acc, request ->
+                        val value = regex.replace(request.value, "")
+                        if (techSpec is NumberTechnicalSpecification) {
+                            acc + """
+                        OR (
+                            TechnicalSpecInfo.TechnicalSpecificationId = ${request.technicalSpecificationId} 
+                        AND CASE WHEN ISNUMERIC(TechnicalSpecInfo.ValueString) = 1 THEN 
+                                convert(float, TechnicalSpecInfo.ValueString) 
+                            ELSE 
+                                0 
+                            END 
+                            BETWEEN ${request.range.first} AND ${request.range.second}
+                        )
+                    """.trimIndent()
+                        } else {
+                            acc + """
+                        OR (
+                            TechnicalSpecInfo.TechnicalSpecificationId = ${request.technicalSpecificationId} 
+                        AND TechnicalSpecInfo.ValueString LIKE '$value'
+                        )
+                    """.trimIndent()
+                        }
+                    }
+                    listAcc + "AND (" + listQuery.drop(3) + ")"
+                } else listAcc
+            }
+
+            "AND " + query.drop(3)
         } else ""
 
         val nameStr = regex.replace(queryStr, "")
@@ -59,8 +96,8 @@ class QueryRepository(
             """AND ( (Price * ((100.0 - ISNULL(Discount, 0))/100.0)) BETWEEN ${price.first} AND ${price.second} )"""
         } else ""
 
-        val categoryFilter = if (categories.isNotEmpty()) {
-            val categoriesStr = categories.fold("") { acc, c -> "$acc,$c" }.drop(1)
+        val categoryFilter = if (categoryIds.isNotEmpty()) {
+            val categoriesStr = categoryIds.fold("") { acc, c -> "$acc,$c" }.drop(1)
 
             """AND ( Item.CategoryID IN ($categoriesStr) )"""
         } else ""
@@ -122,5 +159,124 @@ class QueryRepository(
         val reviews = if (witchReviews) findReviewsForItems(dalItems.map { it.id!! }) else listOf()
 
         return toDomain(dalItems, reviews)
+    }
+
+    suspend fun searchItemWithQuery(
+        queryStr: String,
+        hasStock: Boolean,
+        categoryIds: List<Long>,
+        price: Pair<Long, Long>? = null,
+        sortingBy: SortingType = SortingType.PRICE,
+        sortDirection: SortingDirection = SortingDirection.ASC,
+        requestedSpecs: List<TechnicalSpecQuery>? = null,
+        skip: Long? = null,
+        limit: Int? = null,
+        witchReviews: Boolean = false
+    ): List<hu.bme.aut.inventory.domain.item.Item> {
+        val listOfCriteria: MutableList<Criteria> = mutableListOf()
+
+        val regex = "[^A-Za-z0-9 ]".toRegex()
+        val nameStr = regex.replace(queryStr, "")
+        if (nameStr.isNotBlank()) {
+            listOfCriteria.add(
+                Criteria.from(Criteria.where("Name").like("$nameStr%").ignoreCase(true))
+            )
+        }
+
+        if (hasStock) {
+            listOfCriteria.add(
+                Criteria.from(Criteria.where("Stock").greaterThan(0))
+            )
+        }
+
+        if (price != null) {
+            val expression = "Price * ((100.0 - ISNULL(Discount, 0))/100.0)"
+            listOfCriteria.add(
+                Criteria.from(Criteria.where(expression).between(price.first, price.second))
+            )
+        }
+
+        if (categoryIds.isNotEmpty()) {
+            listOfCriteria.add(
+                Criteria.from(Criteria.where("CategoryId").`in`(categoryIds))
+            )
+        }
+
+        val criteria = Criteria.from(listOfCriteria)
+
+        var queries = Query.query(criteria)
+
+        if (sortingBy != SortingType.UNSORTED) {
+            val expression = "Price * ((100.0 - ISNULL(Discount, 0))/100.0)"
+            val sortByValue = if (sortingBy == SortingType.PRICE) expression else "Rating"
+            val sorting = Sort.by(
+                if (sortDirection == SortingDirection.ASC)
+                    Sort.Order.asc(sortByValue)
+                else Sort.Order.desc(sortByValue)
+            )
+            queries = queries.sort(sorting)
+        }
+
+
+        val dalItems = template.select(Item::class.java)
+            .from("Item")
+            .matching(queries)
+            .all()
+            .asFlow()
+            .toList()
+
+
+        val reviews = if (witchReviews) findReviewsForItems(dalItems.map { it.id!! }) else listOf()
+
+        val items = toDomain(dalItems, reviews)
+
+        val filteredItems = if (requestedSpecs != null && requestedSpecs.isNotEmpty()) {
+            val uniqueSpecIds = requestedSpecs.map { it.technicalSpecificationId }.distinct()
+            val techSpecs = technicalSpecificationRepository
+                .findAllByIdIn(uniqueSpecIds)
+
+            val sortedRequests = uniqueSpecIds.map { id ->
+                requestedSpecs.filter { it.technicalSpecificationId == id }
+            }
+
+            val filterLists: MutableList<List<hu.bme.aut.inventory.domain.item.Item>> = mutableListOf()
+            sortedRequests.forEach { listOfRequests ->
+                if (listOfRequests.isNotEmpty()) {
+                    val techSpec = techSpecs.find { ts -> ts.id == listOfRequests[0].technicalSpecificationId }!!
+                    val itemsWithSpec = items.filter { i-> i.listOfTechnicalSpecInfo.any { it.technicalSpecificationId == techSpec.id } }
+                    if (techSpec is NumberTechnicalSpecification) {
+                        itemsWithSpec.filter { item ->
+                            val info = item.listOfTechnicalSpecInfo.find { it.technicalSpecificationId == techSpec.id }!!
+                            if (listOfRequests.size == 1) {
+                                val request = listOfRequests[0]
+                                request.range.first <= info.value.toLong() && info.value.toLong() <= request.range.second
+                            } else false
+                        }.also {
+                            filterLists.add(it)
+                        }
+                    } else {
+                        itemsWithSpec.filter { item ->
+                            val info = item.listOfTechnicalSpecInfo.find { it.technicalSpecificationId == techSpec.id }!!
+                            listOfRequests.map { it.value }.contains(info.value)
+                        }.also {
+                            filterLists.add(it)
+                        }
+                    }
+                }
+            }
+
+            items.filter { item -> filterLists.all { list -> list.contains(item) } }
+        } else items
+
+
+        val offset: Int = if (skip != null && limit != null) (skip * limit).toInt() else 0
+        filteredItems
+            .drop(offset)
+            .apply {
+                if (skip != null && limit != null)
+                    take(limit)
+            }
+
+        return filteredItems
     }
 }

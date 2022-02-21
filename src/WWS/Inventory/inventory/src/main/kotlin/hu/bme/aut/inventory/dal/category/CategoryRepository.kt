@@ -1,8 +1,6 @@
 package hu.bme.aut.inventory.dal.category
 
-import hu.bme.aut.inventory.dal.technicalSpecification.TechnicalSpecEnumListItemCRUDRepository
-import hu.bme.aut.inventory.dal.technicalSpecification.TechnicalSpecificationCRUDRepository
-import hu.bme.aut.inventory.domain.technicalSpecification.EnumListTechnicalSpecification
+import hu.bme.aut.inventory.dal.technicalSpecification.TechnicalSpecificationRepository
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitFirstOrNull
@@ -14,8 +12,7 @@ import org.springframework.stereotype.Service
 @Service
 class CategoryRepository(
     private val categoryCRUDRepository: CategoryCRUDRepository,
-    private val technicalSpecificationCRUDRepository: TechnicalSpecificationCRUDRepository,
-    private val technicalSpecEnumListItemCRUDRepository: TechnicalSpecEnumListItemCRUDRepository
+    private val technicalSpecificationRepository: TechnicalSpecificationRepository
 ) {
     suspend fun findById(
         categoryId: Long,
@@ -79,29 +76,10 @@ class CategoryRepository(
     private suspend fun toDomainWitchTechSpecs(
         categories: List<Category>
     ): List<hu.bme.aut.inventory.domain.category.Category> {
-        val techSpecs = technicalSpecificationCRUDRepository.findAllByCategoryIdIn(categories.map { it.id!! })
-            .asFlow()
-            .toList()
-            .map { it.toDomain() }
-
-        val techSpecsWithoutEnumLists = techSpecs.filter { it !is EnumListTechnicalSpecification }
-
-        val techSpecsWithEnumLists = techSpecs.filterIsInstance<EnumListTechnicalSpecification>()
-        val techSpecsEnumListItems = technicalSpecEnumListItemCRUDRepository
-            .findAllByTechnicalSpecificationIdIn(techSpecsWithEnumLists.map { it.id!! })
-            .asFlow()
-            .toList()
-            .map { it.toDomain() }
-
-        techSpecsEnumListItems.forEach { item ->
-            val enumList = techSpecsWithEnumLists.find { it.id == item.technicalSpecificationId }!!
-            enumList.enumList.add(item)
-        }
+        val techSpecs = technicalSpecificationRepository.findAllByCategoryIdIn(categories.map { it.id!! })
 
         return categories.map {
-            val possibleTechSpecs =
-                techSpecsWithEnumLists.filter { ts -> ts.categoryId == it.id } +
-                        techSpecsWithoutEnumLists.filter { ts -> ts.categoryId == it.id }
+            val possibleTechSpecs = techSpecs.filter { ts -> ts.categoryId == it.id }
             it.toDomain(possibleTechSpecs)
         }
     }

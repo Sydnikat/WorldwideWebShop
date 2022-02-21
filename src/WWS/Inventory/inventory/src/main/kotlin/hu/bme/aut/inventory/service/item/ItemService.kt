@@ -6,6 +6,7 @@ import hu.bme.aut.inventory.dal.item.QueryRepository
 import hu.bme.aut.inventory.domain.review.Review
 import hu.bme.aut.inventory.dal.review.ReviewRepository
 import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecInfo
+import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecQuery
 import hu.bme.aut.inventory.service.item.exception.RatingOutOfRangeException
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -28,7 +29,7 @@ class ItemService(
         hasStock: Boolean,
         price: List<Long>?,
         categories: List<Long>?,
-        requestedSpecs: List<TechnicalSpecInfo>?,
+        requestedSpecs: List<TechnicalSpecQuery>?,
         pageable: Pageable = Pageable.unpaged()
     ): List<Item> {
         val priceInterval = if (price != null && price.size == 2) {
@@ -45,7 +46,7 @@ class ItemService(
         return queryRepository.searchItemWithQuery(
             queryStr = queryStr,
             hasStock = hasStock,
-            categories = categories ?: listOf(),
+            categoryIds = categories ?: listOf(),
             price = priceInterval,
             sortingBy = sortBy,
             sortDirection = sort,
