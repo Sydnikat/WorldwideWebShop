@@ -2,7 +2,7 @@ package hu.bme.aut.inventory.controller.item
 
 import hu.bme.aut.inventory.config.resolver.UserMetaData
 import hu.bme.aut.inventory.config.resolver.WWSUserMetaData
-import hu.bme.aut.inventory.controller.item.request.TechnicalSpecInfoRequest
+import hu.bme.aut.inventory.controller.item.request.TechnicalSpecInfoRequestValidator
 import hu.bme.aut.inventory.controller.item.request.UpdateItemRequest
 import hu.bme.aut.inventory.controller.item.response.ItemQueryResultResponse
 import hu.bme.aut.inventory.controller.item.response.ItemResponse
@@ -10,6 +10,10 @@ import hu.bme.aut.inventory.controller.review.request.NewReviewRequest
 import hu.bme.aut.inventory.controller.review.response.ReviewResponse
 import hu.bme.aut.inventory.exception.RequestError
 import hu.bme.aut.inventory.service.auth.AuthManager
+import hu.bme.aut.inventory.service.category.CategoryService
+import hu.bme.aut.inventory.service.common.exception.MultipleTechnicalSpecificationReference
+import hu.bme.aut.inventory.service.common.exception.TechnicalSpecificationInfoValueIsInvalid
+import hu.bme.aut.inventory.service.common.exception.TechnicalSpecificationNotFoundForInfo
 import hu.bme.aut.inventory.service.item.ItemService
 import hu.bme.aut.inventory.service.item.SortingDirection
 import hu.bme.aut.inventory.service.item.SortingType
@@ -35,7 +39,8 @@ import javax.validation.Valid
 class ItemController(
     private val itemService: ItemService,
     private val reviewService: ReviewService,
-    private val authManager: AuthManager
+    private val authManager: AuthManager,
+    private val categoryService: CategoryService
 ) {
     @GetMapping("{id}")
     suspend fun getItem(
@@ -50,8 +55,8 @@ class ItemController(
 
     @GetMapping("/search")
     suspend fun searchItems(
-        @RequestParam(required = true)
-        q: String = "",
+        @RequestParam(required = false)
+        q: String? = "",
         @RequestParam(required = false)
         cat: List<Long>?,
         @RequestParam(required = false)
@@ -61,15 +66,10 @@ class ItemController(
         @RequestParam(required = false)
         stock: Boolean = true,
         @RequestParam(required = false)
-        price: List<Long>?,
+        price: List<Float>?,
         @RequestParam(required = false)
-        specs: String?,
-        @RequestParam(required = false)
-        offset: Int?,
-        @RequestParam(required = false)
-        size: Int?
+        specs: String?
     ): ResponseEntity<ItemQueryResultResponse> {
-        val pageable = PageRequest.of(offset ?: 0, size ?: 20)
         val sortingDirection = when (sort) {
             "asc" -> SortingDirection.ASC
             "desc" -> SortingDirection.DESC
@@ -81,20 +81,32 @@ class ItemController(
             else -> SortingType.UNSORTED
         }
 
-        val requestedSpecs = if (specs != null) TechnicalSpecInfoRequest.toTechnicalSpecInfo(specs) else listOf()
+        val requestedSpecs = if (specs != null) TechnicalSpecInfoRequestValidator.toTechnicalSpecInfo(specs) else listOf()
 
         val result = itemService.searchItems(
-            queryStr = q,
+            queryStr = q ?: "",
             sortBy = sortingBy,
             sort = sortingDirection,
             hasStock = stock,
             price = price ?: listOf(),
             categories = cat ?: listOf(),
-            requestedSpecs = requestedSpecs,
-            pageable = pageable
+            requestedSpecs = requestedSpecs
         )
 
         return ResponseEntity.ok(ItemQueryResultResponse.of(result))
+    }
+
+    @GetMapping("/search/name")
+    suspend fun searchItemNames(
+        @RequestParam(required = true)
+        q: String = "",
+        @RequestParam(required = false)
+        cat: Long?,
+        @RequestParam(required = false)
+        size: Int?
+    ): ResponseEntity<List<String>> {
+        val pageable = PageRequest.of(0, size ?: 10)
+        return ResponseEntity.ok(itemService.searchForNames(queryStr = q, categoryId = cat, pageable = pageable))
     }
 
     @GetMapping
@@ -127,9 +139,35 @@ class ItemController(
         val item = itemService.getItem(id)
             ?: throw requestError(RequestError.ITEM_NOT_FOUND, HttpStatus.NOT_FOUND)
 
-        val updatedItem = itemService.updateItem(item, request.toPatchData())
+        val category = categoryService.getCategory(item.categoryId)!!
 
-        return ResponseEntity.ok(ItemResponse.of(updatedItem))
+        try {
+            val updatedItem = itemService.updateItem(category, item, request.toPatchData(item.id!!))
+
+            return ResponseEntity.ok(ItemResponse.of(updatedItem))
+        } catch (e: TechnicalSpecificationNotFoundForInfo) {
+            requestError(
+                RequestError.SPEC_INFO_INVALID,
+                HttpStatus.BAD_REQUEST,
+                "missing techSpecId" to e.missingTechSpecId,
+                "invalid value" to e.value
+            )
+        } catch (e: TechnicalSpecificationInfoValueIsInvalid) {
+            requestError(
+                RequestError.SPEC_INFO_INVALID,
+                HttpStatus.BAD_REQUEST,
+                "techSpecId" to e.techSpecId,
+                "invalid value" to e.value
+            )
+        } catch (e: MultipleTechnicalSpecificationReference) {
+            requestError(
+                RequestError.SPEC_INFO_INVALID,
+                HttpStatus.BAD_REQUEST,
+                "techSpecId" to e.techSpecId,
+                "multiple values" to e.values.joinToString(", ")
+            )
+        }
+
     }
 
     @PostMapping("{id}/reviews")

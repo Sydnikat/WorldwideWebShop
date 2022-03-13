@@ -24,7 +24,6 @@ const TextInput = (props: ITextInputProps) => {
       <InputGroup>
         <Textarea
           onChange={onTextAreaChange}
-          type="text"
           placeholder={placeholder}
           value={value}
         />

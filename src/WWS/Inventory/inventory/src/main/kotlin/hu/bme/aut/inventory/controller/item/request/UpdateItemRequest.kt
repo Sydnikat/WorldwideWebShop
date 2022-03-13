@@ -3,6 +3,7 @@ package hu.bme.aut.inventory.controller.item.request
 import hu.bme.aut.inventory.controller.common.annotation.Trim
 import hu.bme.aut.inventory.domain.item.Item
 import java.time.LocalDate
+import javax.validation.Valid
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.PositiveOrZero
 
@@ -14,9 +15,12 @@ data class UpdateItemRequest(
     val stock: Int,
 
     @field:[PositiveOrZero]
-    val lowLevel: Int
+    val lowLevel: Int,
+
+    @field:Valid
+    val listOfTechnicalSpecInfo: List<TechnicalSpecInfoRequest>
 ) {
-    fun toPatchData() = Item(
+    fun toPatchData(itemId: Long) = Item(
         id = null,
         categoryId = -1,
         name = "",
@@ -30,7 +34,7 @@ data class UpdateItemRequest(
         stock = stock,
         lowLevel = lowLevel,
         reviews = listOf(),
-        listOfTechnicalSpecInfo = listOf()
+        listOfTechnicalSpecInfo = listOfTechnicalSpecInfo.map { it.to(itemId) }
     )
 }
 

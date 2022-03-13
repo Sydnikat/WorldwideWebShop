@@ -3,7 +3,7 @@ import hu.bme.aut.inventory.domain.review.Review
 import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecInfo
 import java.time.LocalDate
 
-class Item(
+data class Item(
     val id: Long?,
     val categoryId: Long,
     val name: String,

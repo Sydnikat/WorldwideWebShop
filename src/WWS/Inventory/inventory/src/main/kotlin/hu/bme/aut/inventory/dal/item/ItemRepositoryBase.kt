@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service
 
 @Service
 abstract class ItemRepositoryBase(
-    private val reviewRepository: ReviewRepository,
-    private val technicalSpecInfoCRUDRepository: TechnicalSpecInfoCRUDRepository
+    protected val reviewRepository: ReviewRepository,
+    protected val technicalSpecInfoCRUDRepository: TechnicalSpecInfoCRUDRepository
 ) {
     protected suspend fun findReviewsForItems(itemIds: List<Long>): List<Review> =
         reviewRepository.findAllByItemIdIn(itemIds)

@@ -6,6 +6,7 @@ import {faSignOutAlt, faUserAlt} from "@fortawesome/free-solid-svg-icons";
 import {cleanUser} from "../../services/helperFunctions";
 import {loginRoute} from "../../constants/routeConstants";
 import ModifyProfile from "../../components/user/ModifyProfile";
+import {IconProp} from "@fortawesome/fontawesome-svg-core";
 
 const AdminNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
   const history = useHistory();
@@ -28,7 +29,7 @@ const AdminNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProps) 
 
               <Button w="100%" h="100%" colorScheme="blue.300" _hover={{ bg: "blue.500" }} variant="solid">
                 <FontAwesomeIcon
-                  icon={faUserAlt}
+                  icon={faUserAlt as IconProp}
                   size={"4x"}
                   color="white"
                 />
@@ -45,7 +46,7 @@ const AdminNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProps) 
           <Tooltip label="Kijelentkezés" fontSize="md" placement="left" >
             <Button w="100%" h="100%" onClick={logout} colorScheme="blue.300" _hover={{ bg: "blue.500" }} variant="solid">
               <FontAwesomeIcon
-                icon={faSignOutAlt}
+                icon={faSignOutAlt as IconProp}
                 size={"4x"}
                 color="white"
               />

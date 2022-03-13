@@ -11,8 +11,14 @@ import {axiosInstance} from "./config/axios";
 import {authServiceUrl, baseUrl, inventoryServiceUrl, orderServiceUrl, userServiceUrl} from "../constants/url";
 import {AxiosError, AxiosResponse} from "axios";
 import {WWSError} from "../types/dto/Error";
-import {CategoryResponse, NewCategoryRequest} from "../types/dto/Category";
-import {ItemResponse, NewItemRequest, UpdateItemRequest} from "../types/dto/InventoryItem";
+import {CategoryResponse, NewCategoryRequest, TechnicalSpecificationUpdateRequest} from "../types/dto/Category";
+import {
+  ItemQueryResultResponse,
+  ItemResponse,
+  NewItemRequest,
+  TechnicalSpecInfoQueryRequest,
+  UpdateItemRequest
+} from "../types/dto/InventoryItem";
 import {NewReviewRequest, ReviewResponse} from "../types/dto/Review";
 import {cleanUser, getUser, saveUser} from "./helperFunctions";
 import {CartResponse, UpdateCartRequest} from "../types/dto/Cart";
@@ -92,6 +98,19 @@ export const createCategory = async (request: NewCategoryRequest): Promise<Categ
   }
 }
 
+export interface UpdateTechSpecsBody {
+  categoryId: number;
+  requests: TechnicalSpecificationUpdateRequest[];
+}
+export const updateTechnicalSpecifications = async (body: UpdateTechSpecsBody): Promise<CategoryResponse> => {
+  try {
+    const response = await axiosInstance.post(`${inventoryServiceUrl}/categories${body.categoryId}/techSpecs`, body.requests);
+    return  response.data as CategoryResponse;
+  } catch (e: any) {
+    throw await maskError(e);
+  }
+}
+
 export const deleteCategory = async (categoryId: number): Promise<AxiosResponse> => {
   try {
     return await axiosInstance.delete(`${inventoryServiceUrl}/categories/${categoryId}`);
@@ -165,17 +184,28 @@ export const deleteItem = async (itemId: number): Promise<AxiosResponse> => {
   }
 }
 
-export const searchItems = async (
-  itemName: string,
+interface SearchItemsBody {
+  itemName?: string,
   categories?: number[],
   sortDirection?: SortingDirection,
   sortBy?: SortingType,
   hasStock?: boolean,
   priceRange?: number[],
-  pageNumber?: number,
-  itemPerPage?: number
-): Promise<ItemResponse[]> => {
-  let query = `q=${itemName}`;
+  techSpecRequests?: TechnicalSpecInfoQueryRequest[],
+}
+export const searchItems = async (
+  body: SearchItemsBody
+): Promise<ItemQueryResultResponse> => {
+  const {
+    itemName,
+    categories,
+    sortDirection,
+    sortBy,
+    hasStock,
+    priceRange,
+    techSpecRequests
+  } = body;
+  let query = itemName !== undefined ? `q=${itemName}` : "";
   if (categories !== undefined && categories.length > 0) {
     let cats = "";
     categories.forEach(c => cats += `${c},`);
@@ -194,7 +224,7 @@ export const searchItems = async (
   if (sortBy !== undefined) {
     let sortByValue = "unsorted"
     switch (sortBy) {
-      case SortingType.RATING: sortByValue = "rating"; break;
+      case SortingType.RATING: sortByValue = "score"; break;
       case SortingType.PRICE: sortByValue = "price"; break;
       default: break;
     }
@@ -206,24 +236,32 @@ export const searchItems = async (
   if (priceRange !== undefined && priceRange.length === 2) {
     query += `&price=${priceRange[0]},${priceRange[1]}`
   }
-  if (pageNumber !== undefined) {
-    query += `&offset=${pageNumber}`
-  }
-  if (itemPerPage !== undefined) {
-    query += `&size=${itemPerPage}`
+  if (techSpecRequests !== undefined && techSpecRequests.length > 0) {
+    let elements = "";
+    techSpecRequests.map(r => {
+      if (r.value !== undefined) {
+        elements += `stId=${r.stId},v=${r.value};`
+      }
+      if (r.range !== undefined && r.range.length === 2) {
+        elements += `stId=${r.stId},r=${r.range[0]}-${r.range[1]};`
+      }
+    });
+    if (elements !== "") {
+      query += `&specs=(${elements.substring(0, elements.length - 1)})`
+    }
   }
   try {
     const response = await axiosInstance.get(`${inventoryServiceUrl}/items/search?${query}`);
-    return  response.data as ItemResponse[];
+    return  response.data as ItemQueryResultResponse
   } catch (e: any) {
     throw await maskError(e);
   }
 }
 
-export const searchItemsFromURI = async (searchStr: string): Promise<ItemResponse[]> => {
+export const searchItemsFromURI = async (searchStr: string): Promise<ItemQueryResultResponse> => {
   try {
     const response = await axiosInstance.get(`${inventoryServiceUrl}/items/search${searchStr}`);
-    return  response.data as ItemResponse[];
+    return  response.data as ItemQueryResultResponse;
   } catch (e: any) {
     throw await maskError(e);
   }

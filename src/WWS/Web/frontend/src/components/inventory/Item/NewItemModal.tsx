@@ -18,7 +18,7 @@ const NewItemModal = ({isOpen, onClose, onSaveCallback, inTransaction}: INewItem
 
   const onSave = () => {
     if (itemName.length > 0 && description.length > 0 && price >= 0) {
-      const request: NewItemRequest = {name: itemName, description: description, price: price};
+      const request: NewItemRequest = {name: itemName, description: description, price: price, listOfTechnicalSpecInfo: []};
       onSaveCallback(request);
     }
   }

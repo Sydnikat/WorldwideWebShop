@@ -29,7 +29,7 @@ const NewCategoryModal = (props: INewCategoryModalProps) => {
 
   const onSave = () => {
     if (categoryName.length > 0) {
-      const request: NewCategoryRequest = {name: categoryName};
+      const request: NewCategoryRequest = {name: categoryName, technicalSpecificationRequests: []};
       onSaveCallback(request);
     }
   }

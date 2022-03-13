@@ -24,6 +24,7 @@ services:
     ports:
       - "8083:80"
   web:
+    image: ${REGISTRY_URL:-wws}/web-dev:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: Web/Docker/Dockerfile.dev

@@ -1,4 +1,4 @@
-FROM node:14.7-alpine
+FROM node:17-alpine
 
 WORKDIR /code
 COPY Web/frontend/package*.json Web/frontend/tsconfig.json ./

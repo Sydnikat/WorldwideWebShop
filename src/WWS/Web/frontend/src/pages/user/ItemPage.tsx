@@ -46,6 +46,7 @@ import ReviewList from "../../components/item/ReviewList";
 import CustomerNavigationStepper from "../../layout/navbar/CustomerNavigationStepper";
 import {NavigationContext} from "../../providers/NavigationContext";
 import NavigationStepperProxy from "../../layout/navbar/NavigationStepperProxy";
+import ItemTechnicalSpecifications from "../../components/item/ItemTechnicalSpecifications";
 
 const test = {
   imageUrl: "https://images-na.ssl-images-amazon.com/images/I/71z7ztyH1LL._AC_SX466_.jpg",
@@ -70,7 +71,7 @@ const ItemPage: React.FC<RouteComponentProps<ItemPageParams>> = (props: RouteCom
   const [newCount, setNewCount] = useState<number>(1);
   const [myRating, setMyRating] = useState<number>(0);
 
-  const {setChosenItem} = useContext(NavigationContext);
+  const {setChosenItem, chosenCategory, chosenCategoryId, setChosenCategoryId} = useContext(NavigationContext);
 
   const { isLoading, error, data } = useQuery<ItemResponse, AxiosError<WWSError>>(
     ['items', itemId], () => getItem(parseInt(itemId, 10)),
@@ -127,6 +128,13 @@ const ItemPage: React.FC<RouteComponentProps<ItemPageParams>> = (props: RouteCom
       setNewCount(1);
     }
   });
+
+  useEffect(() => {
+    if (data !== undefined && chosenCategoryId === -1) {
+      setChosenCategoryId(data.categoryId);
+    }
+  }, [chosenCategoryId, data]);
+
 
   const putItemIntoCart = async () => {
     const request: UpdateCartRequest = {
@@ -331,6 +339,13 @@ const ItemPage: React.FC<RouteComponentProps<ItemPageParams>> = (props: RouteCom
               </Flex>
             </Flex>
           </Flex>
+        </Flex>
+
+        <Flex mx="20%" mt="3%" alignItems="center" justifyContent="center">
+          <ItemTechnicalSpecifications
+            listOfTechSpecInfo={data.listOfTechnicalSpecInfo}
+            technicalSpecifications={chosenCategory.technicalSpecifications}
+          />
         </Flex>
 
         <Flex mx="3%" mt="3%" alignItems="center" justifyContent="center">

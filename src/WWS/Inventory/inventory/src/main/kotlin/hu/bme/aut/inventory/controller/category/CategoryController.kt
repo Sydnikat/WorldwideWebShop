@@ -3,17 +3,20 @@ package hu.bme.aut.inventory.controller.category
 import hu.bme.aut.inventory.config.resolver.UserMetaData
 import hu.bme.aut.inventory.config.resolver.WWSUserMetaData
 import hu.bme.aut.inventory.controller.category.request.NewCategoryRequest
+import hu.bme.aut.inventory.controller.category.request.TechnicalSpecificationUpdateRequest
 import hu.bme.aut.inventory.controller.category.response.CategoryResponse
 import hu.bme.aut.inventory.controller.item.request.NewItemRequest
 import hu.bme.aut.inventory.controller.item.response.ItemResponse
+import hu.bme.aut.inventory.domain.technicalSpecification.EnumListTechnicalSpecification
+import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecEnumListItem
 import hu.bme.aut.inventory.exception.RequestError
 import hu.bme.aut.inventory.service.auth.AuthManager
 import hu.bme.aut.inventory.service.category.CategoryService
+import hu.bme.aut.inventory.service.common.exception.MultipleTechnicalSpecificationReference
+import hu.bme.aut.inventory.service.common.exception.TechnicalSpecificationInfoValueIsInvalid
+import hu.bme.aut.inventory.service.common.exception.TechnicalSpecificationNotFoundForInfo
 import hu.bme.aut.inventory.service.item.ItemService
 import hu.bme.aut.inventory.util.requestError
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.reactive.asFlow
-import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -46,7 +50,54 @@ class CategoryController(
         }
 
         val savedCategory = categoryService.saveCategory(request.toNew())
+
+        val savedTechSpecs = request.technicalSpecificationRequests.map { techSpecRequest ->
+            categoryService
+                .saveTechnicalSpecification(techSpecRequest.toNew(savedCategory.id!!))
+                .let { techSpec ->
+                    if (techSpec is EnumListTechnicalSpecification && techSpecRequest.listOfEnumNames.isNotEmpty()) {
+                        techSpecRequest.listOfEnumNames
+                            .map { TechnicalSpecEnumListItem(null, it, techSpec.id!!) }
+                            .also { techSpec.enumList.addAll(it) }
+                        categoryService.saveTechnicalSpecification(techSpec)
+                    } else {
+                        techSpec
+                    }
+                }
+        }
+
+        savedCategory.technicalSpecifications.addAll(savedTechSpecs)
+
         return ResponseEntity.ok(CategoryResponse.of(savedCategory))
+    }
+
+    @PutMapping("{id}/techSpecs")
+    suspend fun updateTechnicalSpecifications(
+        @WWSUserMetaData
+        user: UserMetaData,
+        @PathVariable
+        id: Long,
+        @RequestBody
+        techSpecsRequests: List<TechnicalSpecificationUpdateRequest>
+    ): ResponseEntity<CategoryResponse> {
+        if (!authManager.canManageResource(user)) {
+            requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
+        }
+
+        val category = categoryService.getCategory(id)
+            ?: requestError(RequestError.CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND)
+
+        category.technicalSpecifications
+            .filter { ts -> !techSpecsRequests.map { it.id }.contains(ts.id) }
+            .also { categoryService.deleteTechnicalSpecifications(it) }
+
+        val savedTechSpecs = techSpecsRequests.map { techSpecRequest ->
+            categoryService.saveTechnicalSpecification(techSpecRequest.to(id))
+        }.toMutableList()
+
+        val updatedCategory = category.copy(technicalSpecifications = savedTechSpecs)
+
+        return ResponseEntity.ok(CategoryResponse.of(updatedCategory))
     }
 
     @GetMapping("{id}")
@@ -55,7 +106,7 @@ class CategoryController(
         id: Long
     ): ResponseEntity<CategoryResponse> {
         val category = categoryService.getCategory(id)
-            ?: return ResponseEntity.notFound().build()
+            ?: requestError(RequestError.CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND)
 
         return ResponseEntity.ok(CategoryResponse.of(category))
     }
@@ -88,16 +139,42 @@ class CategoryController(
         }
 
         val category = categoryService.getCategory(id)
-            ?: return ResponseEntity.notFound().build()
+            ?: requestError(RequestError.CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND)
 
-        val savedItem = categoryService.saveNewItem(
-            category = category,
-            name = request.name,
-            description = request.description,
-            price = request.price
-        )
+        try {
+            val savedItem = categoryService.saveNewItem(category, request.toNew(category.id!!))
 
-        return ResponseEntity.ok(ItemResponse.of(savedItem))
+            val updatedItem = if (request.listOfTechnicalSpecInfo.isNotEmpty()) {
+                val listOfTechSpecInfo = request.listOfTechnicalSpecInfo.map { it.to(savedItem.id!!) }
+                val patchData = savedItem.copy(listOfTechnicalSpecInfo = listOfTechSpecInfo)
+
+                itemService.updateItem(category = category, item = savedItem, patchData = patchData)
+            } else savedItem
+
+            return ResponseEntity.ok(ItemResponse.of(updatedItem))
+        } catch (e: TechnicalSpecificationNotFoundForInfo) {
+            requestError(
+                RequestError.SPEC_INFO_INVALID,
+                HttpStatus.BAD_REQUEST,
+                "missing techSpecId" to e.missingTechSpecId,
+                "invalid value" to e.value
+            )
+        } catch (e: TechnicalSpecificationInfoValueIsInvalid) {
+            requestError(
+                RequestError.SPEC_INFO_INVALID,
+                HttpStatus.BAD_REQUEST,
+                "techSpecId" to e.techSpecId,
+                "invalid value" to e.value
+            )
+        } catch (e: MultipleTechnicalSpecificationReference) {
+            requestError(
+                RequestError.SPEC_INFO_INVALID,
+                HttpStatus.BAD_REQUEST,
+                "techSpecId" to e.techSpecId,
+                "multiple values" to e.values.joinToString(", ")
+            )
+        }
+
     }
 
     @DeleteMapping("{id}")

@@ -5,8 +5,13 @@ import hu.bme.aut.inventory.dal.item.ItemRepository
 import hu.bme.aut.inventory.dal.item.QueryRepository
 import hu.bme.aut.inventory.domain.review.Review
 import hu.bme.aut.inventory.dal.review.ReviewRepository
+import hu.bme.aut.inventory.domain.category.Category
 import hu.bme.aut.inventory.domain.item.ItemQueryResult
 import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecQuery
+import hu.bme.aut.inventory.service.common.TechSpecInfoValidator
+import hu.bme.aut.inventory.service.common.exception.MultipleTechnicalSpecificationReference
+import hu.bme.aut.inventory.service.common.exception.TechnicalSpecificationInfoValueIsInvalid
+import hu.bme.aut.inventory.service.common.exception.TechnicalSpecificationNotFoundForInfo
 import hu.bme.aut.inventory.service.item.exception.RatingOutOfRangeException
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -27,21 +32,13 @@ class ItemService(
         sortBy: SortingType,
         sort: SortingDirection,
         hasStock: Boolean,
-        price: List<Long>?,
+        price: List<Float>?,
         categories: List<Long>?,
-        requestedSpecs: List<TechnicalSpecQuery>?,
-        pageable: Pageable = Pageable.unpaged()
+        requestedSpecs: List<TechnicalSpecQuery>?
     ): ItemQueryResult {
         val priceInterval = if (price != null && price.size == 2) {
             Pair(price[0], price[1])
         } else null
-
-        var skip: Long? = null
-        var limit: Int? = null
-        if (pageable.isPaged) {
-            skip = pageable.offset
-            limit = pageable.pageSize
-        }
 
         return queryRepository.searchItemWithQuery(
             queryStr = queryStr,
@@ -50,11 +47,17 @@ class ItemService(
             price = priceInterval,
             sortingBy = sortBy,
             sortDirection = sort,
-            requestedSpecs = requestedSpecs,
-            skip = skip,
-            limit = limit
+            requestedSpecs = requestedSpecs
         )
     }
+
+    suspend fun searchForNames(
+        queryStr: String,
+        categoryId: Long?,
+        pageable: Pageable = Pageable.unpaged(),
+    ): List<String> = itemRepository
+        .findAllByNameAndCategory(name = queryStr, categoryId = categoryId, pageable = pageable)
+        .map { it.name }
 
     suspend fun getItems(pageable: Pageable = Pageable.unpaged()): List<Item> =
         itemRepository.findAllByIdNotNull(pageable)
@@ -68,7 +71,12 @@ class ItemService(
     suspend fun saveItem(item: Item): Item =
         itemRepository.save(item)
 
-    suspend fun updateItem(item: Item, patchData: Item): Item {
+    @Throws(
+        TechnicalSpecificationNotFoundForInfo::class,
+        TechnicalSpecificationInfoValueIsInvalid::class,
+        MultipleTechnicalSpecificationReference::class
+    )
+    suspend fun updateItem(category: Category, item: Item, patchData: Item): Item {
         item.apply {
             description = patchData.description
 
@@ -81,7 +89,13 @@ class ItemService(
             }
         }
 
-        return itemRepository.save(item)
+
+        val patchedItem = if (patchData.listOfTechnicalSpecInfo.isNotEmpty()) {
+            TechSpecInfoValidator.validateListOfTechSpecInfo(category, patchData.listOfTechnicalSpecInfo)
+            item.copy(listOfTechnicalSpecInfo = patchData.listOfTechnicalSpecInfo)
+        } else item
+
+        return itemRepository.save(patchedItem)
     }
 
     suspend fun saveItems(items: List<Item>): List<Item> {
@@ -122,7 +136,6 @@ class ItemService(
     }
 
     suspend fun deleteItem(item: Item) {
-        reviewRepository.deleteAllByItemId(itemId = item.id!!)
         itemRepository.delete(item)
     }
 }

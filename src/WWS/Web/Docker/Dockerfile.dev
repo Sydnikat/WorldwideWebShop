@@ -1,11 +1,14 @@
-﻿FROM node:14.7-alpine
+﻿FROM node:17-alpine3.14
 
 WORKDIR /code
-COPY Web/frontend/package*.json Web/frontend/tsconfig.json ./
+COPY Web/frontend/package*.json ./
+COPY Web/frontend/tsconfig.json ./
+
 RUN npm install
 
 COPY Web/frontend .
 COPY Web/frontend/tsconfig.json ./tsconfig.json
+
 
 EXPOSE 3000
 

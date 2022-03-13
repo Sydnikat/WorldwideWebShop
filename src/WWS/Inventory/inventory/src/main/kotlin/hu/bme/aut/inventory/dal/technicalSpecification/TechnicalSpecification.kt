@@ -75,8 +75,8 @@ data class TechnicalSpecification(
                 categoryId = it.categoryId,
                 isNumber = it is NumberTechnicalSpecification,
                 isBoolean = it is BooleanTechnicalSpecification,
-                isString = it is EnumListTechnicalSpecification,
-                isEnumList = it is StringTechnicalSpecification,
+                isString = it is StringTechnicalSpecification,
+                isEnumList = it is EnumListTechnicalSpecification,
             )
         }
     }

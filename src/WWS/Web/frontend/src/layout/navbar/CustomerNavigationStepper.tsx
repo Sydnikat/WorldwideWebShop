@@ -14,7 +14,13 @@ interface CustomerNavigationStepperProps {
 
 const CustomerNavigationStepper = (props: CustomerNavigationStepperProps) => {
   const history = useHistory();
-  const {chosenItem, chosenCategory, resetChosenItem, resetChosenCategory, toggleResetSearch} = useNavigationContext();
+  const {
+    chosenItem,
+    chosenCategory,
+    resetChosenItem,
+    resetChosenCategory,
+    toggleResetSearch
+  } = useNavigationContext();
 
   const onMainPageSelectedClick = async () => {
     resetChosenItem();

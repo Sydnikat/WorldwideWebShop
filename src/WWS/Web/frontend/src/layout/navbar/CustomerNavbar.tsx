@@ -12,13 +12,14 @@ import {WWSError} from "../../types/dto/Error";
 import {getCategories, getCategory, getItemsOfCategory, searchItems} from "../../services/queries";
 import {CategoryResponse} from "../../types/dto/Category";
 import {cleanUser} from "../../services/helperFunctions";
-import {ItemResponse} from "../../types/dto/InventoryItem";
+import {ItemQueryResultResponse, ItemResponse} from "../../types/dto/InventoryItem";
 import ModifyProfile from "../../components/user/ModifyProfile";
 import {Typeahead} from "react-bootstrap-typeahead";
 import {useNavigationContext} from "../../providers/NavigationContext";
+import {IconProp} from "@fortawesome/fontawesome-svg-core";
 
 const CustomerNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProps) => {
-  const [searchCategory, setSearchCategory] = useState<CategoryResponse>({id: -1, name: ""});
+  const [searchCategory, setSearchCategory] = useState<CategoryResponse>({id: -1, name: "", technicalSpecifications: []});
   const [searchText, setSearchText] = useState<string>("");
   const [canStartSearch, setCanStartSearch] = useState<boolean>(false);
   const [canUpdate, setCanUpdate] = useState<boolean>(true);
@@ -26,33 +27,36 @@ const CustomerNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProp
   const history = useHistory();
   const client = useQueryClient();
   const {
+    chosenCategoryId,
     chosenCategory,
     setChosenCategory,
+    setChosenCategoryId,
     resetChosenItem,
     resetChosenCategory,
     toggleResetSearch,
     isResetSearch,
+    resetAll: resetNavigation,
   } = useNavigationContext();
 
   const {refetch, isFetched} = useQuery(
     'chosenCategory',
-    () => getCategory(chosenCategory.id),
+    () => getCategory(chosenCategoryId),
     {
       retry: false,
       onSuccess: async (data) => {
-        setCanUpdate(false);
+        setChosenCategoryId(data.id);
         setChosenCategory(data);
       },
-      enabled: canUpdate
+      //enabled: canUpdate
     });
 
-  const {data: searchResults, refetch: refertchSearch} = useQuery<ItemResponse[], WWSError>(
+  const {data: searchResult, refetch: refertchSearch} = useQuery<ItemQueryResultResponse, WWSError>(
     'searchItems',
-    () => searchItems(searchText, searchCategory.id !== -1 ? [searchCategory.id] : []),
+    () => searchItems({itemName: searchText, categories: searchCategory.id !== -1 ? [searchCategory.id] : []}),
     {
       retry: false,
       onSuccess: async (data) => {
-        setSearchOptions(data);
+        setSearchOptions(data.items);
       },
       enabled: canStartSearch
     });
@@ -64,21 +68,12 @@ const CustomerNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProp
       retry: 1
     }
   );
-  const { data: items, refetch: refetchItems } = useQuery<ItemResponse[], WWSError>(
-    'items',
-    () => getItemsOfCategory({categoryId: chosenCategory.id}),
-    {
-      enabled: chosenCategory !== null
-    }
-  );
 
   useEffect(() => {
-    if (isFetched) {
+    if (isFetched && chosenCategoryId !== chosenCategory.id) {
       refetch();
-      refetchItems();
-      setCanUpdate(true);
     }
-  }, [chosenCategory]);
+  }, [chosenCategoryId]);
 
   useEffect(() => {
     if (canStartSearch) {
@@ -88,7 +83,7 @@ const CustomerNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProp
 
   useEffect(() => {
     if (isResetSearch) {
-      setSearchCategory({id: -1, name: ""});
+      setSearchCategory({id: -1, name: "", technicalSpecifications: []});
       setSearchText("");
       setSearchOptions([]);
       toggleResetSearch();
@@ -108,7 +103,7 @@ const CustomerNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProp
       const selected = categories.find(c => c.id === parseInt(idStr, 10));
       if (selected !== undefined) {
         resetChosenItem();
-        setChosenCategory(selected);
+        setChosenCategoryId(selected.id);
         history.push(homeRoute);
       }
     }
@@ -119,7 +114,7 @@ const CustomerNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProp
     if (categories !== undefined) {
       const selected = categories.find(c => c.id === parseInt(idStr, 10));
       if (selected !== undefined) {
-        setSearchCategory(selected);
+        setSearchCategory({id: selected.id, name: "", technicalSpecifications: []});
       }
     }
   }
@@ -138,6 +133,7 @@ const CustomerNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProp
 
   const logout = () => {
     cleanUser();
+    resetNavigation();
     history.push(loginRoute);
   };
 
@@ -155,6 +151,7 @@ const CustomerNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProp
       resetChosenCategory();
       resetChosenItem();
       history.push(`${searchRoute}?q=${text}`);
+      window.location.reload();
     }
   };
 
@@ -167,6 +164,7 @@ const CustomerNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProp
       resetChosenCategory();
       resetChosenItem();
       history.push(`${searchRoute}?${searchUrl}`);
+      window.location.reload();
     }
   };
 
@@ -179,6 +177,7 @@ const CustomerNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProp
       resetChosenCategory();
       resetChosenItem();
       history.push(`${searchRoute}?${searchUrl}`);
+      window.location.reload();
     }
   };
 
@@ -258,7 +257,7 @@ const CustomerNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProp
           />
           <Button h="100%" width="20%" borderRightRadius="full" onClick={onSearchButtonClicked}>
             <FontAwesomeIcon
-              icon={faSearch}
+              icon={faSearch as IconProp}
             />
           </Button>
         </Flex>
@@ -272,7 +271,7 @@ const CustomerNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProp
 
                 <Button w="100%" h="100%" colorScheme="blue.300" _hover={{ bg: "blue.500" }} variant="solid">
                   <FontAwesomeIcon
-                    icon={faUserAlt}
+                    icon={faUserAlt as IconProp}
                     size={"4x"}
                     color="white"
                   />
@@ -293,7 +292,7 @@ const CustomerNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProp
             <PopoverTrigger>
               <Button w="100%" h="100%" colorScheme="blue.300" _hover={{ bg: "blue.500" }} variant="solid">
                 <FontAwesomeIcon
-                  icon={faShoppingCart}
+                  icon={faShoppingCart as IconProp}
                   size={"4x"}
                   color="white"
                 />
@@ -309,7 +308,7 @@ const CustomerNavbar: React.FC<RouteComponentProps> = (props: RouteComponentProp
           <Tooltip label="Kijelentkezés" fontSize="md" placement="left" >
             <Button w="100%" h="100%" onClick={logout} colorScheme="blue.300" _hover={{ bg: "blue.500" }} variant="solid">
               <FontAwesomeIcon
-                icon={faSignOutAlt}
+                icon={faSignOutAlt as IconProp}
                 size={"4x"}
                 color="white"
               />

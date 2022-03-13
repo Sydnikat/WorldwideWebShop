@@ -1,26 +1,35 @@
-import React, {useEffect, useState} from "react";
+import React, {Fragment, useRef, useState} from "react";
 import AuthenticatedLayout from "../../layout/AuthenticatedLayout";
-import {Badge, Box, Flex, Grid, GridItem, Heading, Spinner, Text} from "@chakra-ui/react";
-import ItemCard from "../../components/item/ItemCard";
-import {useQuery, useQueryClient} from "react-query";
-import {axiosInstance} from "../../services/config/axios";
-import {getCategory, getItemsOfCategory} from "../../services/queries";
+import {Flex, SimpleGrid, Spinner} from "@chakra-ui/react";
+import {useQuery} from "react-query";
+import {getCategories} from "../../services/queries";
 import {WWSError} from "../../types/dto/Error";
-import {ItemResponse} from "../../types/dto/InventoryItem";
-import {CategoryResponse} from "../../types/dto/Category";
-import CustomerNavigationStepper from "../../layout/navbar/CustomerNavigationStepper";
+import {TechnicalSpecInfoQueryRequest} from "../../types/dto/InventoryItem";
 import {useNavigationContext} from "../../providers/NavigationContext";
-import NavigationStepperProxy from "../../layout/navbar/NavigationStepperProxy";
+import {Sorting, SortingDirection} from "../../types/enum/SortingDirection";
+import {SortingType} from "../../types/enum/SortingType";
+import {CategoryResponse} from "../../types/dto/Category";
+import CategoryCard from "../../components/category/CategoryCard";
+import ItemsSearchMain from "../../components/search/ItemsSearchMain";
+
+
 
 const CustomerMainPage = () => {
   const {chosenCategory} = useNavigationContext();
+  const categoryListRef = useRef<HTMLDivElement>(null);
+  const [categoryPerRow, setCategoryPerRow] = useState<number>(Math.floor((categoryListRef.current?.clientWidth ?? (window.innerWidth * 0.8)) / 310));
 
-  const { data } = useQuery<ItemResponse[], WWSError>(
-    'items',
-    () => getItemsOfCategory({categoryId: chosenCategory.id}),
-  );
+  const { isFetched: categoriesFetched, data: categories } = useQuery<CategoryResponse[], WWSError>('categories', getCategories);
 
-  if (data === undefined) {
+  const handleResize = () => {
+    if (categoryListRef.current !== null) {
+      setCategoryPerRow(Math.floor(categoryListRef.current.clientWidth / 310));
+    }
+  }
+
+  window.addEventListener('resize', handleResize);
+
+  if (!categoriesFetched) {
     return(
       <AuthenticatedLayout>
         <Flex alignItems="center" justifyContent="center" mx="auto">
@@ -30,36 +39,32 @@ const CustomerMainPage = () => {
     )
   }
 
-  if (data.length === 0) {
+  if (chosenCategory.id === -1 && categoriesFetched && categories !== undefined) {
     return(
       <AuthenticatedLayout>
-        <NavigationStepperProxy />
-        <Flex alignItems="center" justifyContent="center" mx="auto" my="20%">
-          <Heading size="lg" color="grey">
-            Nincsenek árucikkek ebben a kategóriában...
-          </Heading>
+        <Flex alignItems="center" justifyContent="center" mx="auto" ref={categoryListRef}>
+          <SimpleGrid
+            columns={categoryPerRow}
+            spacing="20px"
+            m="2%"
+          >
+            {categories.map((c: CategoryResponse, idx: number) => (
+              <Fragment key={`cat_card_${idx}`}>
+                <CategoryCard category={c} />
+              </Fragment>
+            ))}
+          </SimpleGrid>
         </Flex>
       </AuthenticatedLayout>
     )
   }
 
-  return(
-      <AuthenticatedLayout>
-        <NavigationStepperProxy />
-        <Box>
-          <Grid
-            templateColumns="repeat(6, 1fr)"
-            gap="1em"
-          >
-            {data.map((i: ItemResponse, idx: number) => (
-              <GridItem key={`item_${idx}`}>
-                <ItemCard item={i} />
-              </GridItem>
-            ))}
-          </Grid>
-        </Box>
-      </AuthenticatedLayout>
-  );
+  if (chosenCategory.id !== -1) {
+    return(
+      <ItemsSearchMain />
+    )
+  }
+
 }
 
 export default CustomerMainPage;

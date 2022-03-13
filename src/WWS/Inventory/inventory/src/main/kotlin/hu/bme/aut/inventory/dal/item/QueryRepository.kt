@@ -106,7 +106,7 @@ class QueryRepository(
 
         val orderFilter = if (sortingBy != SortingType.UNSORTED) {
             val expression = "Price * ((100.0 - ISNULL(Discount, 0))/100.0)"
-            val sortByValue = if (sortingBy == SortingType.PRICE) expression else "Rating"
+            val sortByValue = if (sortingBy == SortingType.PRICE) expression else "ISNULL(Rating, 0)"
 
             val sortingDirectionStr = if (sortDirection == SortingDirection.ASC) "ASC" else "DESC"
             """
@@ -166,12 +166,10 @@ class QueryRepository(
         queryStr: String,
         hasStock: Boolean,
         categoryIds: List<Long>,
-        price: Pair<Long, Long>? = null,
+        price: Pair<Float, Float>? = null,
         sortingBy: SortingType = SortingType.PRICE,
         sortDirection: SortingDirection = SortingDirection.ASC,
         requestedSpecs: List<TechnicalSpecQuery>? = null,
-        skip: Long? = null,
-        limit: Int? = null,
         witchReviews: Boolean = false
     ): ItemQueryResult {
         val listOfCriteria: MutableList<Criteria> = mutableListOf()
@@ -187,13 +185,6 @@ class QueryRepository(
         if (hasStock) {
             listOfCriteria.add(
                 Criteria.from(Criteria.where("Stock").greaterThan(0))
-            )
-        }
-
-        if (price != null) {
-            val expression = "Price * ((100.0 - ISNULL(Discount, 0))/100.0)"
-            listOfCriteria.add(
-                Criteria.from(Criteria.where(expression).between(price.first, price.second))
             )
         }
 
@@ -231,7 +222,7 @@ class QueryRepository(
 
         val items = toDomain(dalItems, reviews)
 
-        val filteredItems = if (requestedSpecs != null && requestedSpecs.isNotEmpty()) {
+        val techSpecFilteredItems = if (requestedSpecs != null && requestedSpecs.isNotEmpty()) {
             val uniqueSpecIds = requestedSpecs.map { it.technicalSpecificationId }.distinct()
             val techSpecs = technicalSpecificationRepository
                 .findAllByIdIn(uniqueSpecIds)
@@ -252,7 +243,7 @@ class QueryRepository(
                                 item.listOfTechnicalSpecInfo.find { it.technicalSpecificationId == techSpec.id }!!
                             if (listOfRequests.size == 1) {
                                 val request = listOfRequests[0]
-                                request.range.first <= info.value.toLong() && info.value.toLong() <= request.range.second
+                                request.range.first <= info.value.toDouble() && info.value.toDouble() <= request.range.second
                             } else false
                         }.also {
                             filterLists.add(it)
@@ -272,15 +263,27 @@ class QueryRepository(
             items.filter { item -> filterLists.all { list -> list.contains(item) } }
         } else items
 
-        val offset: Int = if (skip != null && limit != null) (skip * limit).toInt() else 0
-        val itemListWithOffset = filteredItems.drop(offset)
-        val pagedItems = if (skip != null && limit != null) itemListWithOffset.take(limit) else itemListWithOffset
+        val priceFilteredItems = if (price != null) {
+            techSpecFilteredItems.filter {
+                val actualPrice = it.price * ((100.0F - (it.discount ?: 0)) / 100.0F)
+                price.first <= actualPrice && actualPrice <= price.second
+            }
+        } else techSpecFilteredItems
+
+        if (techSpecFilteredItems.isEmpty()) {
+            return ItemQueryResult(
+                items = listOf(),
+                minPrice = 0.0F,
+                maxPrice = 0.0F,
+                count = 0
+            )
+        }
 
         return ItemQueryResult(
-            items = pagedItems,
-            minPrice = filteredItems.minOf { it.price * ((100.0F - (it.discount ?: 0)) / 100.0F) },
-            maxPrice = filteredItems.maxOf { it.price * ((100.0F - (it.discount ?: 0)) / 100.0F) },
-            count = filteredItems.size
+            items = priceFilteredItems,
+            minPrice = techSpecFilteredItems.minOf { it.price * ((100.0F - (it.discount ?: 0)) / 100.0F) },
+            maxPrice = techSpecFilteredItems.maxOf { it.price * ((100.0F - (it.discount ?: 0)) / 100.0F) },
+            count = techSpecFilteredItems.size
         )
     }
 }

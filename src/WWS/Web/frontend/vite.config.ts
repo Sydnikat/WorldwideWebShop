@@ -5,6 +5,7 @@ import reactRefresh from '@vitejs/plugin-react-refresh'
 export default defineConfig({
   plugins: [reactRefresh()],
   server: {
+    host: "0.0.0.0",
     hmr: {
       port: 3001 //TODO: Check if it is indeed only needed for development
     }

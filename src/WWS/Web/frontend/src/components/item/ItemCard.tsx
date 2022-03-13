@@ -44,7 +44,7 @@ const ItemCard = (props: ItemCardProps) => {
   const {item} = props;
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const history = useHistory();
-  const {toggleResetSearch, setChosenCategory} = useNavigationContext();
+  const {toggleResetSearch, setChosenCategoryId} = useNavigationContext();
 
   const property = (item === null) ? test : {
     imageUrl: "https://images-na.ssl-images-amazon.com/images/I/71z7ztyH1LL._AC_SX466_.jpg",
@@ -59,7 +59,7 @@ const ItemCard = (props: ItemCardProps) => {
 
   const inspectItem = async () => {
     if (item !== null) {
-      setChosenCategory({id: item.categoryId, name: ""});
+      setChosenCategoryId(item.categoryId);
       toggleResetSearch();
       history.push(`${inspectRoute}/${item.id}`)
     }

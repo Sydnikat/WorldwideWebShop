@@ -19,7 +19,7 @@ const EditItemModal = ({isOpen, onClose, onSaveCallback, inTransaction, item}: I
 
   const onSave = () => {
     if (description.length > 0 && stock >= 0 && lowLevel >= 0) {
-      const request: UpdateItemRequest = {description: description, stock: stock, lowLevel: lowLevel};
+      const request: UpdateItemRequest = {description: description, stock: stock, lowLevel: lowLevel, listOfTechnicalSpecInfo: []};
       onSaveCallback(request);
     }
   }

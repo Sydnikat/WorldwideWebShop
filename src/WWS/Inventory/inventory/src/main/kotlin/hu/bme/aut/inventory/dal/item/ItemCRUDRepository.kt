@@ -11,4 +11,9 @@ interface ItemCRUDRepository : ReactiveSortingRepository<Item, Long> {
     fun findAllByCategoryId(categoryId: Long, pageable: Pageable = Pageable.unpaged()): Flux<Item>
     fun findAllByIdNotNull(pageable: Pageable = Pageable.unpaged()): Flux<Item>
     fun findAllByDiscountId(discountId: Long): Flux<Item>
+    fun findAllByNameIsStartingWithAndCategoryIdIn(
+        name: String,
+        categoryIds: List<Long>,
+        pageable: Pageable = Pageable.unpaged()
+    ): Flux<Item>
 }
