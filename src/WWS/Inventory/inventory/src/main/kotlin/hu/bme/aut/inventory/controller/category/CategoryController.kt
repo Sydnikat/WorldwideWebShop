@@ -92,7 +92,19 @@ class CategoryController(
             .also { categoryService.deleteTechnicalSpecifications(it) }
 
         val savedTechSpecs = techSpecsRequests.map { techSpecRequest ->
-            categoryService.saveTechnicalSpecification(techSpecRequest.to(id))
+            categoryService
+                .saveTechnicalSpecification(techSpecRequest.to(id))
+                .let { techSpec ->
+                    if (techSpec is EnumListTechnicalSpecification && techSpecRequest.listOfEnumItems.isNotEmpty()) {
+                        techSpecRequest.listOfEnumItems
+                            .filter { it.technicalSpecificationId == null }
+                            .map { TechnicalSpecEnumListItem(null, it.enumName, techSpec.id!!) }
+                            .also { techSpec.enumList.addAll(it) }
+                        categoryService.saveTechnicalSpecification(techSpec)
+                    } else {
+                        techSpec
+                    }
+                }
         }.toMutableList()
 
         val updatedCategory = category.copy(technicalSpecifications = savedTechSpecs)

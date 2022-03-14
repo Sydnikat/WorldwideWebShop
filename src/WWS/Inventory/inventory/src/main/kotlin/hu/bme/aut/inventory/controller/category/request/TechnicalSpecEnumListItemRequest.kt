@@ -8,12 +8,12 @@ data class TechnicalSpecEnumListItemRequest(
     val id: Long?,
     @field:[Trim NotBlank]
     val enumName: String,
-    val technicalSpecificationId: Long
+    val technicalSpecificationId: Long?
 ) {
     fun to(): TechnicalSpecEnumListItem =
         TechnicalSpecEnumListItem(
             id = id,
             enumName = enumName,
-            technicalSpecificationId = technicalSpecificationId
+            technicalSpecificationId = technicalSpecificationId!!
         )
 }

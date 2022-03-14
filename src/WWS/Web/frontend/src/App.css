@@ -55,9 +55,11 @@ button {
   background: white;
   width: 50%;
   height: auto;
+  max-height: 700px;
   top:20%;
   left:50%;
   transform: translate(-50%);
+  overflow: scroll;
 }
 
 .display-block {

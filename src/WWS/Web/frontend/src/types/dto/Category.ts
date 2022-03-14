@@ -17,11 +17,11 @@ export interface NewTechnicalSpecificationRequest {
 export interface TechnicalSpecEnumListItemRequest {
   id: number | null;
   enumName: string;
-  technicalSpecificationId: number;
+  technicalSpecificationId: number | null;
 }
 
 export interface TechnicalSpecificationUpdateRequest {
-  id: number;
+  id: number | null;
   name: string;
   unitOfMeasure: string | null;
   categoryId: number;

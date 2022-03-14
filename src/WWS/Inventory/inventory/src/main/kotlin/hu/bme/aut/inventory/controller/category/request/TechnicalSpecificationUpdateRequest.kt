@@ -25,10 +25,11 @@ data class TechnicalSpecificationUpdateRequest(
             isNumber -> NumberTechnicalSpecification(id, name, unitOfMeasure, categoryId)
             isBoolean -> BooleanTechnicalSpecification(id, name, unitOfMeasure, categoryId)
             isEnumList -> EnumListTechnicalSpecification(
-                id,
-                name,
-                unitOfMeasure,
-                categoryId, enumList = listOfEnumItems.map { it.to() }.toMutableList()
+                id = id,
+                name = name,
+                unitOfMeasure = unitOfMeasure,
+                categoryId = categoryId,
+                enumList = listOfEnumItems.filter { it.technicalSpecificationId != null }.map { it.to() }.toMutableList()
             )
             else -> StringTechnicalSpecification(id, name, unitOfMeasure, categoryId)
         }

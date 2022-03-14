@@ -6,10 +6,11 @@ interface ITextInputProps {
   setValue: (v: string) => void;
   placeholder: string;
   isTextArea?: boolean;
+  disabled?: boolean;
 }
 
 const TextInput = (props: ITextInputProps) => {
-  const {value, setValue, placeholder, isTextArea} = props;
+  const {value, setValue, placeholder, isTextArea, disabled} = props;
 
   const onTextChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
@@ -26,6 +27,7 @@ const TextInput = (props: ITextInputProps) => {
           onChange={onTextAreaChange}
           placeholder={placeholder}
           value={value}
+          disabled={disabled}
         />
       </InputGroup>
     );
@@ -38,6 +40,7 @@ const TextInput = (props: ITextInputProps) => {
         type="text"
         placeholder={placeholder}
         value={value}
+        disabled={disabled}
       />
     </InputGroup>
   );

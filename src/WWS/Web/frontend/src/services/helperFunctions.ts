@@ -36,6 +36,8 @@ export const getSortDirection = (v: Sorting): SortingDirection | undefined => {
   }
 }
 
+export const generateInnerId = (): number => Date.now()
+
 /*
 export const createErrorToast = (error: AxiosError<WWSError>, defaultTest: string, uptime = 2000) => {
   const toast = useToast();

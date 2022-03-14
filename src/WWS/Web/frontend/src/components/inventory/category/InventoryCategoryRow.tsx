@@ -6,6 +6,8 @@ import {Box, Divider, Flex, Heading, Spinner, Text} from "@chakra-ui/react";
 import InventoryItemRow from "../Item/InventoryItemRow";
 import DeleteCategoryButton from "./DeleteCategoryButton";
 import CreateItemButton from "../Item/CreateItemButton";
+import {EditIcon} from "@chakra-ui/icons";
+import EditCategoryButton from "./EditCategoryButton";
 
 interface IInventoryCategoryRowProps {
   category: CategoryResponse;
@@ -22,6 +24,9 @@ const InventoryCategoryRow = ({category, items}: IInventoryCategoryRowProps) => 
               <Text>
                 <b>{category.name}</b>
               </Text>
+              <Flex w="15%" ml="2" mr="auto">
+                <EditCategoryButton category={category} />
+              </Flex>
             </Flex>
             <Flex alignItems="center" w="15%" flexDirection="row-reverse">
               <Text>

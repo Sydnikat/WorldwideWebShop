@@ -10,6 +10,7 @@ import InventoryCategoryRow from "./category/InventoryCategoryRow";
 import {ArrowLeftIcon, ArrowRightIcon} from "@chakra-ui/icons";
 import CreateCategoryButton from "./category/CreateCategoryButton";
 import {useInventoryContext} from "../../providers/InventoryContext";
+import {Typeahead} from "react-bootstrap-typeahead";
 
 interface IInventoryMainProps {
   reload: boolean;

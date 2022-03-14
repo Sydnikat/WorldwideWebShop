@@ -104,7 +104,7 @@ export interface UpdateTechSpecsBody {
 }
 export const updateTechnicalSpecifications = async (body: UpdateTechSpecsBody): Promise<CategoryResponse> => {
   try {
-    const response = await axiosInstance.post(`${inventoryServiceUrl}/categories${body.categoryId}/techSpecs`, body.requests);
+    const response = await axiosInstance.put(`${inventoryServiceUrl}/categories/${body.categoryId}/techSpecs`, body.requests);
     return  response.data as CategoryResponse;
   } catch (e: any) {
     throw await maskError(e);

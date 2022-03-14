@@ -1,5 +1,5 @@
 import {
-  Button,
+  Button, Flex,
   FormControl, FormLabel,
   Modal,
   ModalBody,
@@ -9,10 +9,10 @@ import {
   ModalOverlay, PortalProps, Spinner
 } from "@chakra-ui/react";
 import TextInput from "../../input/TextInput";
-import {Fragment, useEffect, useState} from "react";
-import {NewCategoryRequest} from "../../../types/dto/Category";
+import {Fragment, useState} from "react";
+import {NewCategoryRequest, NewTechnicalSpecificationRequest} from "../../../types/dto/Category";
 import React from "react";
-import {FocusableElement} from "@chakra-ui/utils";
+import TechnicalSpecificationCreator from "./TechnicalSpecificationCreator";
 
 interface INewCategoryModalProps {
   isOpen: boolean;
@@ -24,14 +24,26 @@ interface INewCategoryModalProps {
 const NewCategoryModal = (props: INewCategoryModalProps) => {
   const {isOpen, onClose, onSaveCallback, inTransaction} = props;
   const [categoryName, setCategoryName] = useState<string>("");
+  const [newTechSpecRequests, setNewTechSpecRequests] = useState<NewTechnicalSpecificationRequest[]>([]);
 
   const modalOpen = (): boolean => isOpen && !inTransaction;
 
+  const validateRequest = (): boolean => {
+    return categoryName.length > 0 &&
+      newTechSpecRequests.find(ts => !ts.isEnumList && !ts.isBoolean && !ts.isNumber && !ts.isString) === undefined &&
+      newTechSpecRequests.find(ts => ts.name.length === 0) === undefined &&
+      newTechSpecRequests.find(ts => ts.isEnumList && ts.listOfEnumNames.length === 0) === undefined
+  }
+
   const onSave = () => {
-    if (categoryName.length > 0) {
-      const request: NewCategoryRequest = {name: categoryName, technicalSpecificationRequests: []};
+    if (validateRequest()) {
+      const request: NewCategoryRequest = {name: categoryName, technicalSpecificationRequests: newTechSpecRequests};
       onSaveCallback(request);
     }
+  }
+
+  const handleTechSpecCreatorCallback = (requests: NewTechnicalSpecificationRequest[]) => {
+    setNewTechSpecRequests(requests);
   }
 
   const showHideClassName = modalOpen() ? "modal display-block" : "modal display-none";
@@ -53,10 +65,14 @@ const NewCategoryModal = (props: INewCategoryModalProps) => {
                 <FormLabel>Kategória neve</FormLabel>
                 <TextInput value={categoryName} setValue={setCategoryName} placeholder={"Kategória 1"} />
               </FormControl>
+
+              <Flex mt="5%">
+                <TechnicalSpecificationCreator callback={handleTechSpecCreatorCallback} />
+              </Flex>
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme='blue' mr={3} onClick={onSave} disabled={inTransaction}>
+              <Button colorScheme='blue' mr={3} onClick={onSave} disabled={!validateRequest() || inTransaction}>
                 {inTransaction ? <Spinner /> : "Mentés" }
               </Button>
               <Button onClick={onClose} disabled={inTransaction}>Vissza</Button>
