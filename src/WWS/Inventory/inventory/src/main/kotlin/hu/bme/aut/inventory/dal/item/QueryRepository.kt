@@ -234,27 +234,29 @@ class QueryRepository(
             val filterLists: MutableList<List<hu.bme.aut.inventory.domain.item.Item>> = mutableListOf()
             sortedRequests.forEach { listOfRequests ->
                 if (listOfRequests.isNotEmpty()) {
-                    val techSpec = techSpecs.find { ts -> ts.id == listOfRequests[0].technicalSpecificationId }!!
-                    val itemsWithSpec =
-                        items.filter { i -> i.listOfTechnicalSpecInfo.any { it.technicalSpecificationId == techSpec.id } }
-                    if (techSpec is NumberTechnicalSpecification) {
-                        itemsWithSpec.filter { item ->
-                            val info =
-                                item.listOfTechnicalSpecInfo.find { it.technicalSpecificationId == techSpec.id }!!
-                            if (listOfRequests.size == 1) {
-                                val request = listOfRequests[0]
-                                request.range.first <= info.value.toDouble() && info.value.toDouble() <= request.range.second
-                            } else false
-                        }.also {
-                            filterLists.add(it)
-                        }
-                    } else {
-                        itemsWithSpec.filter { item ->
-                            val info =
-                                item.listOfTechnicalSpecInfo.find { it.technicalSpecificationId == techSpec.id }!!
-                            listOfRequests.map { it.value }.contains(info.value)
-                        }.also {
-                            filterLists.add(it)
+                    val techSpec = techSpecs.find { ts -> ts.id == listOfRequests[0].technicalSpecificationId }
+                    if (techSpec != null) {
+                        val itemsWithSpec =
+                            items.filter { i -> i.listOfTechnicalSpecInfo.any { it.technicalSpecificationId == techSpec.id } }
+                        if (techSpec is NumberTechnicalSpecification) {
+                            itemsWithSpec.filter { item ->
+                                val info =
+                                    item.listOfTechnicalSpecInfo.find { it.technicalSpecificationId == techSpec.id }!!
+                                if (listOfRequests.size == 1) {
+                                    val request = listOfRequests[0]
+                                    request.range.first <= info.value.toDouble() && info.value.toDouble() <= request.range.second
+                                } else false
+                            }.also {
+                                filterLists.add(it)
+                            }
+                        } else {
+                            itemsWithSpec.filter { item ->
+                                val info =
+                                    item.listOfTechnicalSpecInfo.find { it.technicalSpecificationId == techSpec.id }!!
+                                listOfRequests.map { it.value }.contains(info.value)
+                            }.also {
+                                filterLists.add(it)
+                            }
                         }
                     }
                 }
