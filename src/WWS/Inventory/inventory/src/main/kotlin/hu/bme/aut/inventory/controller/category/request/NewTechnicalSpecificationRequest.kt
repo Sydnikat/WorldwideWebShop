@@ -25,4 +25,6 @@ data class NewTechnicalSpecificationRequest(
             isEnumList -> EnumListTechnicalSpecification(null, name, unitOfMeasure, categoryId, mutableListOf())
             else -> StringTechnicalSpecification(null, name, unitOfMeasure, categoryId)
         }
+
+    fun isValid(): Boolean = isBoolean || isNumber || isString || isEnumList
 }

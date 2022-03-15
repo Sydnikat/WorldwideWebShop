@@ -33,4 +33,6 @@ data class TechnicalSpecificationUpdateRequest(
             )
             else -> StringTechnicalSpecification(id, name, unitOfMeasure, categoryId)
         }
+
+    fun isValid(): Boolean = isBoolean || isNumber || isString || isEnumList
 }

@@ -7,6 +7,7 @@ import hu.bme.aut.inventory.controller.category.request.TechnicalSpecificationUp
 import hu.bme.aut.inventory.controller.category.response.CategoryResponse
 import hu.bme.aut.inventory.controller.item.request.NewItemRequest
 import hu.bme.aut.inventory.controller.item.response.ItemResponse
+import hu.bme.aut.inventory.domain.item.Item
 import hu.bme.aut.inventory.domain.technicalSpecification.EnumListTechnicalSpecification
 import hu.bme.aut.inventory.domain.technicalSpecification.TechnicalSpecEnumListItem
 import hu.bme.aut.inventory.exception.RequestError
@@ -49,6 +50,15 @@ class CategoryController(
             requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
         }
 
+        request.technicalSpecificationRequests.forEach { r ->
+            if (!r.isValid())
+                requestError(
+                    RequestError.TECH_SPEC_HAS_NO_TYPE,
+                    HttpStatus.BAD_REQUEST,
+                    "techSpec name" to r.name
+                )
+        }
+
         val savedCategory = categoryService.saveCategory(request.toNew())
 
         val savedTechSpecs = request.technicalSpecificationRequests.map { techSpecRequest ->
@@ -82,6 +92,15 @@ class CategoryController(
     ): ResponseEntity<CategoryResponse> {
         if (!authManager.canManageResource(user)) {
             requestError(RequestError.CANNOT_ACCESS_REQUESTED_RESOURCE, HttpStatus.FORBIDDEN)
+        }
+
+        techSpecsRequests.forEach { r ->
+            if (!r.isValid())
+                requestError(
+                    RequestError.TECH_SPEC_HAS_NO_TYPE,
+                    HttpStatus.BAD_REQUEST,
+                    "techSpec name" to r.name
+                )
         }
 
         val category = categoryService.getCategory(id)
@@ -153,8 +172,9 @@ class CategoryController(
         val category = categoryService.getCategory(id)
             ?: requestError(RequestError.CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND)
 
+        var savedItem: Item? = null
         try {
-            val savedItem = categoryService.saveNewItem(category, request.toNew(category.id!!))
+            savedItem = categoryService.saveNewItem(category, request.toNew(category.id!!))
 
             val updatedItem = if (request.listOfTechnicalSpecInfo.isNotEmpty()) {
                 val listOfTechSpecInfo = request.listOfTechnicalSpecInfo.map { it.to(savedItem.id!!) }
@@ -165,6 +185,9 @@ class CategoryController(
 
             return ResponseEntity.ok(ItemResponse.of(updatedItem))
         } catch (e: TechnicalSpecificationNotFoundForInfo) {
+            if (savedItem != null) {
+                itemService.deleteItem(savedItem)
+            }
             requestError(
                 RequestError.SPEC_INFO_INVALID,
                 HttpStatus.BAD_REQUEST,
@@ -172,6 +195,9 @@ class CategoryController(
                 "invalid value" to e.value
             )
         } catch (e: TechnicalSpecificationInfoValueIsInvalid) {
+            if (savedItem != null) {
+                itemService.deleteItem(savedItem)
+            }
             requestError(
                 RequestError.SPEC_INFO_INVALID,
                 HttpStatus.BAD_REQUEST,
@@ -179,6 +205,9 @@ class CategoryController(
                 "invalid value" to e.value
             )
         } catch (e: MultipleTechnicalSpecificationReference) {
+            if (savedItem != null) {
+                itemService.deleteItem(savedItem)
+            }
             requestError(
                 RequestError.SPEC_INFO_INVALID,
                 HttpStatus.BAD_REQUEST,
