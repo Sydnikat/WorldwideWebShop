@@ -1,29 +1,72 @@
-import {Button, FormControl, FormLabel, Modal, ModalBody, ModalFooter, ModalHeader, Spinner} from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Spinner
+} from "@chakra-ui/react";
 import TextInput from "../../input/TextInput";
 import React, {Fragment, useState} from "react";
-import {NewItemRequest} from "../../../types/dto/InventoryItem";
+import {NewItemRequest, TechnicalSpecInfoRequest} from "../../../types/dto/InventoryItem";
 import FloatNumberInput from "../../input/FloatNumberInput";
+import TechnicalSpecificationCreator from "../category/TechnicalSpecificationCreator";
+import TechSpecInfoEditor from "./TechSpecInfoEditor";
+import {
+  CategoryResponse,
+  TechnicalSpecEnumListItemRequest,
+  TechnicalSpecificationUpdateRequest
+} from "../../../types/dto/Category";
+import {useQuery} from "react-query";
+import {getCategory} from "../../../services/queries";
+import AuthenticatedLayout from "../../../layout/AuthenticatedLayout";
 
 interface INewItemModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSaveCallback: (value: NewItemRequest) => void;
   inTransaction: boolean;
+  categoryId: number;
 }
 
-const NewItemModal = ({isOpen, onClose, onSaveCallback, inTransaction}: INewItemModalProps) => {
+const NewItemModal = ({isOpen, onClose, onSaveCallback, inTransaction, categoryId}: INewItemModalProps) => {
   const [itemName, setItemName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [price, setPrice] = useState<number>(0);
+  const [specInfoRequests, setSpecInfoRequests] = useState<TechnicalSpecInfoRequest[]>([]);
+
+  const {data: category} = useQuery('relevantCategory', () => getCategory(categoryId));
 
   const onSave = () => {
-    if (itemName.length > 0 && description.length > 0 && price >= 0) {
-      const request: NewItemRequest = {name: itemName, description: description, price: price, listOfTechnicalSpecInfo: []};
+    if (itemName.length > 0 && description.length > 0 && price >= 0 && specInfoRequests.find(r => r.value === "") === undefined) {
+      const request: NewItemRequest = {
+        name: itemName,
+        description: description,
+        price: price,
+        listOfTechnicalSpecInfo: specInfoRequests
+      };
       onSaveCallback(request);
     }
   }
 
+  const handleTechSpecInfoEditorCallback = (requests: TechnicalSpecInfoRequest[]) => {
+    setSpecInfoRequests(requests);
+  }
+
   const showHideClassName = (isOpen && !inTransaction) ? "modal display-block" : "modal display-none";
+
+  if (category === undefined) {
+    return(
+      <AuthenticatedLayout>
+        <Flex alignItems="center" justifyContent="center" mx="auto">
+          <Spinner size="xl" />
+        </Flex>
+      </AuthenticatedLayout>
+    )
+  }
 
   return(
     <Fragment>
@@ -50,6 +93,14 @@ const NewItemModal = ({isOpen, onClose, onSaveCallback, inTransaction}: INewItem
                 <FormLabel>Termék ára</FormLabel>
                 <FloatNumberInput value={price} setValue={setPrice} />
               </FormControl>
+
+              <Flex mt="5%" mb="4">
+                <TechSpecInfoEditor
+                  technicalSpecifications={category.technicalSpecifications}
+                  listOfTechSpecInfo={[]}
+                  callback={handleTechSpecInfoEditorCallback}
+                />
+              </Flex>
             </ModalBody>
 
             <ModalFooter>

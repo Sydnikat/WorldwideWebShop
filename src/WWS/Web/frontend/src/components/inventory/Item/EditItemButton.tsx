@@ -90,6 +90,7 @@ const EditItemButton = ({item}: IEditItemButtonProps) => {
           inTransaction={isLoading}
           onSaveCallback={onSaveUpdateItem}
           item={item}
+          categoryId={item.categoryId}
         />
         : null}
     </Fragment>

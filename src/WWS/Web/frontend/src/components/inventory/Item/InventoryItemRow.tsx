@@ -7,6 +7,7 @@ import DeleteItemButton from "./DeleteItemButton";
 import EditItemButton from "./EditItemButton";
 import {useHistory} from "react-router-dom";
 import {inspectRoute} from "../../../constants/routeConstants";
+import {CategoryResponse} from "../../../types/dto/Category";
 
 interface IInventoryItemRowProps {
   item: ItemResponse;

@@ -77,6 +77,7 @@ const CreateItemButton = ({category}: ICreateItemButtonProps) => {
           onClose={onClose}
           inTransaction={isLoading}
           onSaveCallback={onSaveNewItem}
+          categoryId={category.id}
         />
         : null}
     </Fragment>
