@@ -14,10 +14,10 @@ jobs:
     - name: Build and Publish image to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: sydnikat/development
+        name: sydnikat/worldwidewebshop
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         dockerfile: Web/Docker/Dockerfile.dev
         context: .
         workdir: src/WWS
-        tags: "latest"
+        tags: "wws-web-latest"
