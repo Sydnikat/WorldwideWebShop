@@ -11,13 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Build and Publish image to Registry
+    - name: Build and Publish dev image to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: sydnikat/worldwidewebshop
+        name: sydnikat/wws-web
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         dockerfile: Web/Docker/Dockerfile.dev
         context: .
         workdir: src/WWS
-        tags: "wws-web-latest"
+        tags: "dev-latest"
