@@ -20,4 +20,4 @@ jobs:
         dockerfile: Dockerfile.dev
         context: .
         workdir: src/WWS
-        tags: "latest, {{$(date +%s)}}"
+        tags: "latest"
