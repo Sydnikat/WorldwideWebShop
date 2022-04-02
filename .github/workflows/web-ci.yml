@@ -1,0 +1,23 @@
+name: web-ci
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "src/WWS/Web/**"
+      - ".github/workflows/web-ci.yml"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build and Publish image to Registry
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: sydnikat/development
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        dockerfile: Dockerfile.dev
+        context: .
+        workdir: src/WWS
+        tags: "latest, {{$(date +%s)}}"
