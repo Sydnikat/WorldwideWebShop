@@ -17,7 +17,7 @@ jobs:
         name: sydnikat/wws-mail
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        dockerfile: Dockerfile
+        dockerfile: ./Mail/mail/Dockerfile
         context: ./Mail/mail
         workdir: src/WWS
         tags: "dev-latest"
