@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Mapping;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
@@ -12,9 +13,28 @@ namespace Web.Config
     {
         public static void AddRabbitmqSettings(this IServiceCollection services, IConfiguration config)
         {
-            services.Configure<RabbimqSettings>(config.GetSection(nameof(RabbimqSettings)));
+            var hostname = Environment.GetEnvironmentVariable(EnvironmentVariables.RabbimqHost);
+            var username = Environment.GetEnvironmentVariable(EnvironmentVariables.RabbimqUsername);
+            var password = Environment.GetEnvironmentVariable(EnvironmentVariables.RabbimqPassword);
+            var fullHostName = Environment.GetEnvironmentVariable(EnvironmentVariables.RabbimqFullHost);
 
-            services.AddSingleton<IRabbimqSettings>(sp => sp.GetRequiredService<IOptions<RabbimqSettings>>().Value);
+            var orderStateChangedQueue = Environment.GetEnvironmentVariable(EnvironmentVariables.RabbimqOrderStateChangedQueue);
+
+            var invoiceCreatedQueue = Environment.GetEnvironmentVariable(EnvironmentVariables.RabbimqInvoiceCreatedQueue);
+            var invoiceCreatedExchange = Environment.GetEnvironmentVariable(EnvironmentVariables.RabbimqInvoiceCreatedExchange);
+            var invoiceCreatedRoutingkey = Environment.GetEnvironmentVariable(EnvironmentVariables.RabbimqInvoiceCreatedRoutingkey);
+
+            services.AddSingleton<IRabbimqSettings>(new RabbimqSettings()
+            {
+                Host = hostname,
+                Username = username,
+                Password = password,
+                FullHost = fullHostName,
+                OrderStateChangedQueue = orderStateChangedQueue,
+                InvoiceCreatedQueue = invoiceCreatedQueue,
+                InvoiceCreatedExchange = invoiceCreatedExchange,
+                InvoiceCreatedRoutingkey = invoiceCreatedRoutingkey,
+            });
         }
     }
 }

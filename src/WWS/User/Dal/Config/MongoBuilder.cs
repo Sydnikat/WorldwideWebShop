@@ -1,4 +1,5 @@
 ﻿using Dal.Users;
+using Mapping;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -21,10 +22,16 @@ namespace Dal.Config
 
         private static void configureMongodb(IServiceCollection services, IConfiguration config)
         {
-            services.Configure<UserDatabaseSettings>(config.GetSection(nameof(UserDatabaseSettings)));
+            var databaseName = Environment.GetEnvironmentVariable(EnvironmentVariables.MongodbDatabaseName);
+            var connectionString = Environment.GetEnvironmentVariable(EnvironmentVariables.MongodbConnectionString);
+            var collectionName = Environment.GetEnvironmentVariable(EnvironmentVariables.MongodbUsersCollectionName);
 
-            services.AddSingleton<IUserDatabaseSettings>(sp =>
-                sp.GetRequiredService<IOptions<UserDatabaseSettings>>().Value);
+            services.AddSingleton<IUserDatabaseSettings>(new UserDatabaseSettings()
+            {
+                DatabaseName = databaseName,
+                ConnectionString = connectionString,
+                UsersCollectionName = collectionName,
+            });
         }
     }
 }

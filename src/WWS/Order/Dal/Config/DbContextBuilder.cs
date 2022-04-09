@@ -1,4 +1,5 @@
 ﻿using Dal.Orders;
+using Mapping;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,9 +32,12 @@ namespace Dal.Config
 
         private static void configureSqlServer(IServiceCollection services, IConfiguration config)
         {
-            services.Configure<DatabaseSettings>(config.GetSection(nameof(DatabaseSettings)));
+            var mssqlConnection = Environment.GetEnvironmentVariable(EnvironmentVariables.MSSQLConnection);
 
-            services.AddSingleton<IDatabaseSettings>(sp => sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
+            services.AddSingleton<IDatabaseSettings>(new DatabaseSettings()
+            {
+                MSSQLConnection = mssqlConnection,
+            });
         }
     }
 }

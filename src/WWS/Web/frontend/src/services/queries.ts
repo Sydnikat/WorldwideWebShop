@@ -8,7 +8,6 @@ import {
   UserUpdateRequest
 } from "../types/dto/User";
 import {axiosInstance} from "./config/axios";
-import {authServiceUrl, baseUrl, inventoryServiceUrl, orderServiceUrl, userServiceUrl} from "../constants/url";
 import {AxiosError, AxiosResponse} from "axios";
 import {WWSError} from "../types/dto/Error";
 import {CategoryResponse, NewCategoryRequest, TechnicalSpecificationUpdateRequest} from "../types/dto/Category";
@@ -26,6 +25,13 @@ import {OrderResponse} from "../types/dto/Order";
 import {SortingDirection} from "../types/enum/SortingDirection";
 import {SortingType} from "../types/enum/SortingType";
 import {DiscountResponse, NewDiscountRequest} from "../types/dto/Discount";
+import Config from "../common/config";
+
+const authServiceUrl = Config.authServiceUrl;
+const baseUrl = Config.baseUrl;
+const inventoryServiceUrl = Config.inventoryServiceUrl;
+const orderServiceUrl = Config.orderServiceUrl;
+const userServiceUrl = Config.userServiceUrl;
 
 const maskError = async (e: any): Promise<AxiosError<WWSError>> => {
   const err = await e as AxiosError<WWSError>;

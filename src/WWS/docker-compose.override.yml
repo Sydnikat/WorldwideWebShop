@@ -2,9 +2,44 @@ version: '3.4'
 
 services:
   inventory:
+    environment:
+    - RABBITMQ_HOST=wws_rabbitmq
+    - RABBITMQ_PORT=5672
+    - RABBITMQ_USERNAME=guest
+    - RABBITMQ_PASSWORD=guest
+    - RABBITMQ_ORDER_CREATED_QUEUE=orderCreated
+    - RABBITMQ_ORDER_CREATED_EXCHANGE=orderCreatedQueue
+    - RABBITMQ_ORDER_CREATED_ROUTINGKEY=order_created_queue
+    - RABBITMQ_CATEGORY_DISCOUNT_QUEUE=categoryDiscount
+    - RABBITMQ_CATEGORY_DISCOUNT_EXCHANGE=categoryDiscountQueue
+    - RABBITMQ_CATEGORY_DISCOUNT_ROUTINGKEY=category_Discount_queue
+    - MSSQL_HOST=wws_mssql
+    - MSSQL_PORT=1433
+    - MSSQL_DATABASE=WWS
+    - MSSQL_USERNAME=sa
+    - MSSQL_PASSWORD=WWSPass420*
     ports:
     - "8081:8080"
   mail:
+    environment:
+    - SMTP_HOST=smtp.gmail.com
+    - SMTP_PORT=587
+    - SMTP_USER=bme.aut.wws.dev@gmail.com
+    - SMTP_PASS=wwsDEV_bmeaut69*
+    - SMTP_NO_REPLY=bme.aut.wws.dev@gmail.com
+    - RABBITMQ_HOST=wws_rabbitmq
+    - RABBITMQ_PORT=5672
+    - RABBITMQ_USERNAME=guest
+    - RABBITMQ_PASSWORD=guest
+    - RABBITMQ_MAILQUEUE=mail
+    - RABBITMQ_EXCHANGE=mailQueue
+    - RABBITMQ_ROUTINGKEY=mail_queue
+    - RABBITMQ_INVOICE_CREATED_QUEUE=invoiceCreated
+    - RABBITMQ_INVOICE_CREATED_EXCHANGE=invoiceCreatedQueue
+    - RABBITMQ_INVOICE_CREATED_ROUTINGKEY=invoice_created_queue
+    - RABBITMQ_CATEGORY_PROMOTION_QUEUE=categoryPromotion
+    - RABBITMQ_CATEGORY_PROMOTION_EXCHANGE=categoryPromotionQueue
+    - RABBITMQ_CATEGORY_PROMOTION_ROUTINGKEY=category_promotion_queue
     ports:
     - "8084:8080"
   mssql:
@@ -15,12 +50,40 @@ services:
       - "27018:27017"
   order:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - RABBITMQ_HOST=wws_rabbitmq
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+      - RABBITMQ_FULL_HOST=rabbitmq://wws_rabbitmq:/
+      - RABBITMQ_ORDER_STATE_CHANGED_QUEUE_FULL_URL=rabbitmq://wws_rabbitmq:/OrderStateChanged
+      - RABBITMQ_ORDER_STATE_CHANGED_QUEUE_NAME=OrderStateChanged
+      - RABBITMQ_ORDER_CREATED_QUEUE=orderCreated
+      - RABBITMQ_ORDER_CREATED_EXCHANGE=orderCreatedQueue
+      - RABBITMQ_ORDER_CREATED_ROUTINGKEY=order_created_queue
+      - REDIS_URL=redis:6379
+      - REDIS_CARTS_INSTANCE=carts
+      - MSSQL_CONNECTION=Server=mssql;User Id=sa;Password=WWSPass420*;Database=WWS;
     ports:
       - "8082:80"
   user:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - MONGODB_USER_COLLECTION_NAME=users
+      - MONGODB_CONNECTION_STRING=mongodb://wws_mongodb:27017
+      - MONGODB_DATABASE_NAME=wws-users
+      - JWT_TOKEN_SECRET=This is the WorldwideWebShop secret
+      - JWT_TOKEN_ACCESS_TOKEN_EXP=5
+      - JWT_TOKEN_REFRESH_TOKEN_EXP=60
+      - RABBITMQ_HOST=wws_rabbitmq
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+      - RABBITMQ_MAIL_QUEUE=mail
+      - RABBITMQ_MAIL_EXCHANGE=mailQueue
+      - RABBITMQ_MAIL_ROUTINGKEY=mail_queue
+      - RABBITMQ_CATEGORY_DISCOUNT_QUEUE=categoryDiscount
+      - RABBITMQ_CATEGORY_DISCOUNT_EXCHANGE=categoryDiscountQueue
+      - RABBITMQ_CATEGORY_DISCOUNT_ROUTINGKEY=category_Discount_queue
+      - RABBITMQ_CATEGORY_PROMOTION_QUEUE=categoryPromotion
+      - RABBITMQ_CATEGORY_PROMOTION_EXCHANGE=categoryPromotionQueue
+      - RABBITMQ_CATEGORY_PROMOTION_ROUTINGKEY=category_promotion_queue
     ports:
       - "8083:80"
   web:
@@ -38,6 +101,16 @@ services:
       - "15672:15672"
   invoice:
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - RABBITMQ_HOST=wws_rabbitmq
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
+      - RABBITMQ_FULL_HOST=rabbitmq://wws_rabbitmq:/
+      - RABBITMQ_ORDER_STATE_CHANGED_QUEUE_FULL_URL=rabbitmq://wws_rabbitmq:/OrderStateChanged
+      - MONGODB_INVOICE_COLLECTION_NAME=invoices
+      - MONGODB_CONNECTION_STRING=mongodb://wws_mongodb:27017
+      - MONGODB_DATABASE_NAME=wws-invoices
+      - RABBITMQ_INVOICE_CREATED_QUEUE=invoiceCreated
+      - RABBITMQ_INVOICE_CREATED_EXCHANGE=invoiceCreatedQueue
+      - RABBITMQ_INVOICE_CREATED_ROUTINGKEY=invoice_created_queue
     ports:
       - "8085:80"

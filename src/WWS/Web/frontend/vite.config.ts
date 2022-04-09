@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     hmr: {
-      port: 3001 //TODO: Check if it is indeed only needed for development
+      clientPort: 3001, //TODO: Check if it is indeed only needed for development
     }
   }
 })

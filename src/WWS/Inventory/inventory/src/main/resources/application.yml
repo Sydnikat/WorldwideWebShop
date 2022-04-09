@@ -1,11 +1,11 @@
 spring:
   data:
     mssql:
-      host: ${MSSQL_HOST:wws_mssql}
-      port: ${MSSQL_PORT:1433}
-      database: ${MSSQL_DATABASE:WWS}
-      username: ${MSSQL_USERNAME:sa}
-      password: ${MSSQL_PASSWORD:WWSPass420*}
+      host: ${MSSQL_HOST}
+      port: ${MSSQL_PORT}
+      database: ${MSSQL_DATABASE}
+      username: ${MSSQL_USERNAME}
+      password: ${MSSQL_PASSWORD}
     r2dbc:
       repositories:
         enabled: true
@@ -20,15 +20,15 @@ logging:
        r2dbc: TRACE
 
 rabbitmq:
-  host: ${RABBITMQ_HOST:wws_rabbitmq}
-  port: ${RABBITMQ_PORT:5672}
-  username: ${RABBITMQ_USERNAME:guest}
-  password: ${RABBITMQ_PASSWORD:guest}
+  host: ${RABBITMQ_HOST}
+  port: ${RABBITMQ_PORT}
+  username: ${RABBITMQ_USERNAME}
+  password: ${RABBITMQ_PASSWORD}
   order:
-    orderCreatedQueue: ${RABBITMQ_ORDER_CREATED_QUEUE:orderCreated}
-    orderCreatedExchange: ${RABBITMQ__ORDER_CREATED_EXCHANGE:orderCreatedQueue}
-    orderCreatedRoutingkey: ${RABBITMQ_ORDER_CREATED_ROUTINGKEY:order_created_queue}
+    orderCreatedQueue: ${RABBITMQ_ORDER_CREATED_QUEUE}
+    orderCreatedExchange: ${RABBITMQ_ORDER_CREATED_EXCHANGE}
+    orderCreatedRoutingkey: ${RABBITMQ_ORDER_CREATED_ROUTINGKEY}
   discount:
-    categoryDiscountQueue: ${RABBITMQ_CATEGORY_DISCOUNT_QUEUE:categoryDiscount}
-    categoryDiscountExchange: ${RABBITMQ_CATEGORY_DISCOUNT_EXCHANGE:categoryDiscountQueue}
-    categoryDiscountRoutingkey: ${RABBITMQ_CATEGORY_DISCOUNT_ROUTINGKEY:category_Discount_queue}
+    categoryDiscountQueue: ${RABBITMQ_CATEGORY_DISCOUNT_QUEUE}
+    categoryDiscountExchange: ${RABBITMQ_CATEGORY_DISCOUNT_EXCHANGE}
+    categoryDiscountRoutingkey: ${RABBITMQ_CATEGORY_DISCOUNT_ROUTINGKEY}

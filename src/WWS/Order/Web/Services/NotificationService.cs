@@ -57,8 +57,8 @@ namespace Web.Services
                 props.ContentEncoding = "UTF-8";
                 props.DeliveryMode = 2;
 
-                channel.QueueDeclare(queue: rabbimqSettings.orderCreatedQueue, durable: true, exclusive: false, autoDelete: false, arguments: null);
-                channel.BasicPublish(exchange: rabbimqSettings.orderCreatedExchange, routingKey: rabbimqSettings.orderCreatedRoutingkey, basicProperties: props, body: body);
+                channel.QueueDeclare(queue: rabbimqSettings.OrderCreatedQueue, durable: true, exclusive: false, autoDelete: false, arguments: null);
+                channel.BasicPublish(exchange: rabbimqSettings.OrderCreatedExchange, routingKey: rabbimqSettings.OrderCreatedRoutingkey, basicProperties: props, body: body);
             }
 
             return Task.CompletedTask;

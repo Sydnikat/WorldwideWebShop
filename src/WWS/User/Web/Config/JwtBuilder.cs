@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Mapping;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -19,9 +20,16 @@ namespace Web.Config
 
         private static void configureJwtParams(IServiceCollection services, IConfiguration config)
         {
-            services.Configure<JwtTokenConfig>(config.GetSection(nameof(JwtTokenConfig)));
+            var secret = Environment.GetEnvironmentVariable(EnvironmentVariables.JwtTokenSecret);
+            var accessTokenExp = Environment.GetEnvironmentVariable(EnvironmentVariables.JwtTokenAccessTokenExpiration);
+            var refreshTokenExp = Environment.GetEnvironmentVariable(EnvironmentVariables.JwtTokenRefreshTokenExpiration);
 
-            services.AddSingleton<IJwtTokenConfig>(sp => sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<JwtTokenConfig>>().Value);
+            services.AddSingleton<IJwtTokenConfig>(new JwtTokenConfig()
+            {
+                Secret = secret,
+                AccessTokenExpiration = Int32.Parse(accessTokenExp),
+                RefreshTokenExpiration = Int32.Parse(refreshTokenExp),
+            });
         }
     }
 }

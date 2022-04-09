@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Mapping;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
@@ -29,9 +30,14 @@ namespace Web.Cache
 
         private static void configureRedis(IServiceCollection services, IConfiguration config)
         {
-            services.Configure<RedisSettings>(config.GetSection(nameof(RedisSettings)));
+            var url = Environment.GetEnvironmentVariable(EnvironmentVariables.RedisUrl);
+            var instance = Environment.GetEnvironmentVariable(EnvironmentVariables.RedisCartsInstance);
 
-            services.AddSingleton<IRedisSettings>(sp => sp.GetRequiredService<IOptions<RedisSettings>>().Value);
+            services.AddSingleton<IRedisSettings>(new RedisSettings()
+            {
+                Url = url,
+                CartsInstance = instance,
+            });
         }
     }
 }

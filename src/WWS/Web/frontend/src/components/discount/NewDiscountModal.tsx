@@ -31,7 +31,7 @@ const NewItemModal = ({isOpen, onClose, onSaveCallback, inTransaction}: INewItem
   const [sendPromotion, setSendPromotion] = useState<boolean>(true);
   const [endDate, setEndDate] = useState<string>("");
   const [value, setValue] = useState<number>(0);
-  const [selectedCategory, setSelectedCategory] = useState<CategoryResponse>({id: -1, name: ""});
+  const [selectedCategory, setSelectedCategory] = useState<CategoryResponse>({id: -1, name: "", technicalSpecifications: []});
 
   const { data: categories, } = useQuery<CategoryResponse[], WWSError>(
     'categories',

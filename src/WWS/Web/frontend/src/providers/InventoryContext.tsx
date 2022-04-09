@@ -11,7 +11,7 @@ interface IInventoryContext {
 }
 
 const defaultValues: IInventoryContext = {
-  selectedCategory: {id: -1, name: ""},
+  selectedCategory: {id: -1, name: "", technicalSpecifications: []},
   setSelectedCategory: value => {},
   resetSelectedCategory: () => {},
   toggleReloadCategories: () => {},
@@ -21,14 +21,14 @@ const defaultValues: IInventoryContext = {
 const InventoryContext = createContext<IInventoryContext>(defaultValues);
 
 const InventoryContextProvider: React.FC = ({children}) => {
-  const [selectedCategory, setSelectedCategory] = useState<CategoryResponse>({id: 0, name: ""});
+  const [selectedCategory, setSelectedCategory] = useState<CategoryResponse>({id: 0, name: "", technicalSpecifications: []});
   const [isReloadCalled, setIsReloadCalled] = useState<boolean>(false);
 
   const handleSelectedCategoryChange = (value: CategoryResponse) => setSelectedCategory(value);
-  const handleResetSelectedCategory = () => setSelectedCategory({id: 0, name: ""});
+  const handleResetSelectedCategory = () => setSelectedCategory({id: 0, name: "", technicalSpecifications: []});
 
   const handleToggleReloadCategories = () => {
-    setSelectedCategory({id: 0, name: ""});
+    setSelectedCategory({id: 0, name: "", technicalSpecifications: []});
     setIsReloadCalled(!isReloadCalled);
   }
 

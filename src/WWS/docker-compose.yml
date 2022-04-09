@@ -23,6 +23,8 @@ services:
     build:
       context: ./Mail/mail
       dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
     networks:
       - wws-network
       

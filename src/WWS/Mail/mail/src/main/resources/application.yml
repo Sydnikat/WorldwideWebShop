@@ -4,26 +4,26 @@ spring:
     web-application-type: reactive
 
 mail:
-  smtpHost: ${SMTP_HOST:smtp.gmail.com}
-  smtpPort: ${SMTP_PORT:587}
-  smtpUser: ${SMTP_USER:bme.aut.wws.dev@gmail.com}
-  smtpPass: ${SMTP_PASS:wwsDEV_bmeaut69*}
-  noReplyAddress: ${SMTP_FROM:bme.aut.wws.dev@gmail.com}
+  smtpHost: ${SMTP_HOST}
+  smtpPort: ${SMTP_PORT}
+  smtpUser: ${SMTP_USER}
+  smtpPass: ${SMTP_PASS}
+  noReplyAddress: ${SMTP_NO_REPLY}
 
 rabbitmq:
-  host: ${RABBITMQ_HOST:wws_rabbitmq}
-  port: ${RABBITMQ_PORT:5672}
-  username: ${RABBITMQ_USERNAME:guest}
-  password: ${RABBITMQ_PASSWORD:guest}
+  host: ${RABBITMQ_HOST}
+  port: ${RABBITMQ_PORT}
+  username: ${RABBITMQ_USERNAME}
+  password: ${RABBITMQ_PASSWORD}
   mail:
-    queue: ${RABBITMQ_MAILQUEUE:mail}
-    exchange: ${RABBITMQ_MAILQUEUE:mailQueue}
-    routingkey: ${RABBITMQ_MAILQUEUE:mail_queue}
+    queue: ${RABBITMQ_MAILQUEUE}
+    exchange: ${RABBITMQ_EXCHANGE}
+    routingkey: ${RABBITMQ_ROUTINGKEY}
   invoice:
-    invoiceCreatedQueue: ${RABBITMQ_INVOICE_CREATED_QUEUE:invoiceCreated}
-    invoiceCreatedExchange: ${RABBITMQ__INVOICE_CREATED_EXCHANGEE:invoiceCreatedQueue}
-    invoiceCreatedRoutingkey: ${RABBITMQ__INVOICE_CREATED_ROUTINGKEY:invoice_created_queue}
+    invoiceCreatedQueue: ${RABBITMQ_INVOICE_CREATED_QUEUE}
+    invoiceCreatedExchange: ${RABBITMQ_INVOICE_CREATED_EXCHANGE}
+    invoiceCreatedRoutingkey: ${RABBITMQ_INVOICE_CREATED_ROUTINGKEY}
   promotion:
-    categoryPromotionQueue: ${RABBITMQ_CATEGORY_PROMOTION_QUEUE:categoryPromotion}
-    categoryPromotionExchange: ${RABBITMQ_CATEGORY_PROMOTION_EXCHANGE:categoryPromotionQueue}
-    categoryPromotionRoutingkey: ${RABBITMQ_CATEGORY_PROMOTION_ROUTINGKEY:category_promotion_queue}
+    categoryPromotionQueue: ${RABBITMQ_CATEGORY_PROMOTION_QUEUE}
+    categoryPromotionExchange: ${RABBITMQ_CATEGORY_PROMOTION_EXCHANGE}
+    categoryPromotionRoutingkey: ${RABBITMQ_CATEGORY_PROMOTION_ROUTINGKEY}

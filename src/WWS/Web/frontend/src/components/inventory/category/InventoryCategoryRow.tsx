@@ -59,7 +59,7 @@ const InventoryCategoryRow = ({category, items}: IInventoryCategoryRowProps) => 
         <Flex grow={1} direction="column">
           {items.map(i =>
             <Fragment key={`item_row${i.id}`}>
-              <InventoryItemRow item={i} category={category} />
+              <InventoryItemRow item={i} />
             </Fragment>
           )}
           {items.length === 0 ?

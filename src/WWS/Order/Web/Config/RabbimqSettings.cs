@@ -13,9 +13,9 @@ namespace Web.Config
         public string Password { get; set; }
         public string OrderStateChangedQueue { get; set; }
         public string OrderStateChangedQueueName { get; set; }
-        public string orderCreatedQueue { get; set; }
-        public string orderCreatedExchange { get; set; }
-        public string orderCreatedRoutingkey { get; set; }
+        public string OrderCreatedQueue { get; set; }
+        public string OrderCreatedExchange { get; set; }
+        public string OrderCreatedRoutingkey { get; set; }
     }
 
     public interface IRabbimqSettings
@@ -26,8 +26,8 @@ namespace Web.Config
         public string Password { get; set; }
         public string OrderStateChangedQueue { get; set; }
         public string OrderStateChangedQueueName { get; set; }
-        public string orderCreatedQueue { get; set; }
-        public string orderCreatedExchange { get; set; }
-        public string orderCreatedRoutingkey { get; set; }
+        public string OrderCreatedQueue { get; set; }
+        public string OrderCreatedExchange { get; set; }
+        public string OrderCreatedRoutingkey { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Dal.Invoices;
+using Mapping;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -21,10 +22,16 @@ namespace Dal.Config
 
         private static void configureMongodb(IServiceCollection services, IConfiguration config)
         {
-            services.Configure<InvoiceDatabaseSettings>(config.GetSection(nameof(InvoiceDatabaseSettings)));
+            var databaseName = Environment.GetEnvironmentVariable(EnvironmentVariables.MongodbDatabaseName);
+            var connectionString = Environment.GetEnvironmentVariable(EnvironmentVariables.MongodbConnectionString);
+            var collectionName = Environment.GetEnvironmentVariable(EnvironmentVariables.MongodbInvoiceCollectionName);
 
-            services.AddSingleton<IInvoiceDatabaseSettings>(sp =>
-                sp.GetRequiredService<IOptions<InvoiceDatabaseSettings>>().Value);
+            services.AddSingleton<IInvoiceDatabaseSettings>(new InvoiceDatabaseSettings()
+            {
+                DatabaseName = databaseName,
+                ConnectionString = connectionString,
+                InvoicesCollectionName = collectionName,
+            });
         }
     }
 }
