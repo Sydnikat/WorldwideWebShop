@@ -92,7 +92,13 @@ services:
       context: .
       dockerfile: Web/Docker/Dockerfile.dev
     environment:
-      CHOKIDAR_USEPOLLING: "true"
+      - CHOKIDAR_USEPOLLING="true"
+      - REACT_APP_INVENTORY_SERVICE=http://localhost:5080/api/inventory
+      - REACT_APP_ORDER_SERVICE=http://localhost:5080/api/order
+      - REACT_APP_INVOICE_SERVICE=http://localhost:5080/api/invoice
+      - REACT_APP_USER_SERVICE=http://localhost:5080/api/users
+      - REACT_APP_AUTH_SERVICE=http://localhost:5080/auth
+      - REACT_APP_FRONTEND_BASE=http://localhost:5080
     ports:
       - "3001:3000"
   rabbitmq:
