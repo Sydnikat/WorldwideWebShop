@@ -1,0 +1,115 @@
+DROP DATABASE IF EXISTS WWS;
+CREATE DATABASE WWS;
+GO
+
+USE WWS;
+
+DROP TABLE IF EXISTS OrderItem;
+DROP TABLE IF EXISTS CustomerOrder;
+DROP TABLE IF EXISTS Review;
+DROP TABLE IF EXISTS TechnicalSpecification;
+DROP TABLE IF EXISTS TechnicalSpecEnumListItem;
+DROP TABLE IF EXISTS TechnicalSpecInfo;
+DROP TABLE IF EXISTS Item;
+DROP TABLE IF EXISTS Category;
+DROP TABLE IF EXISTS Discount;
+
+CREATE TABLE Category (
+  CategoryID BIGINT NOT NULL IDENTITY PRIMARY KEY,
+  Name VARCHAR(75) NOT NULL
+);
+
+CREATE TABLE Discount (
+  DiscountID BIGINT NOT NULL IDENTITY PRIMARY KEY,
+  StartDate DATE,
+  EndDate DATE,
+  Value FLOAT,
+  Expired BIT NOT NULL,
+  CategoryId BIGINT NULL,
+  FOREIGN KEY (CategoryId) REFERENCES Category(CategoryID)
+);
+
+CREATE TABLE Item (
+  ItemID BIGINT NOT NULL IDENTITY PRIMARY KEY,
+  CategoryId BIGINT NOT NULL,
+  Name VARCHAR(75) NOT NULL,
+  Description VARCHAR(255) NOT NULL,
+  DiscountID BIGINT,
+  Discount INT,
+  Rating FLOAT,
+  RatingCount INT NOT NULL,
+  Created DATE NOT NULL,
+  Price Float NOT NULL,
+  Stock INT NOT NULL,
+  LowLevel INT NOT NULL,
+  FOREIGN KEY (DiscountID) REFERENCES Discount(DiscountID),
+  FOREIGN KEY (CategoryId) REFERENCES Category(CategoryID)
+);
+
+CREATE TABLE TechnicalSpecification (
+  TechnicalSpecificationID BIGINT NOT NULL IDENTITY PRIMARY KEY,
+  Name VARCHAR(75) NOT NULL,
+  UnitOfMeasure VARCHAR(255) NULL,
+  CategoryId BIGINT NOT NULL,
+  IsNumber BIT NOT NULL,
+  IsBoolean BIT NOT NULL,
+  IsString BIT NOT NULL,
+  IsEnumList BIT NOT NULL,
+  FOREIGN KEY (CategoryId) REFERENCES Category(CategoryID)
+);
+
+CREATE TABLE TechnicalSpecEnumListItem (
+  TechnicalSpecEnumListItemID BIGINT NOT NULL IDENTITY PRIMARY KEY,
+  EnumName VARCHAR(75) NOT NULL,
+  TechnicalSpecificationId BIGINT NOT NULL,
+  FOREIGN KEY (TechnicalSpecificationId) REFERENCES TechnicalSpecification(TechnicalSpecificationID)
+);
+
+CREATE TABLE TechnicalSpecInfo (
+  TechnicalSpecInfoID BIGINT NOT NULL IDENTITY PRIMARY KEY,
+  TechnicalSpecificationId BIGINT NOT NULL,
+  ItemId BIGINT NOT NULL,
+  ValueString VARCHAR(255) NOT NULL,
+  FOREIGN KEY (TechnicalSpecificationId) REFERENCES TechnicalSpecification(TechnicalSpecificationID),
+  FOREIGN KEY (ItemId) REFERENCES Item(ItemID)
+);
+
+
+CREATE TABLE Review (
+  ReviewID BIGINT NOT NULL IDENTITY PRIMARY KEY,
+  ItemID BIGINT NOT NULL,
+  ReviewerName VARCHAR(75) NOT NULL,
+  ReviewerID VARCHAR(75) NOT NULL,
+  Summary VARCHAR(255) NOT NULL,
+  Rating FLOAT NOT NULL,
+  Created DATE NOT NULL,
+  FOREIGN KEY (ItemID) REFERENCES Item(ItemID)
+);
+
+CREATE TABLE CustomerOrder(
+  OrderId BIGINT NOT NULL IDENTITY PRIMARY KEY,
+  OrderCode uniqueidentifier NOT NULL,
+  CustomerId VARCHAR(50) NOT NULL,
+  CustomerName VARCHAR(255) NOT NULL,
+  TotalPrice FLOAT NOT NULL,
+  Created DATE NOT NULL,
+  Zip VARCHAR(75) NOT NULL,
+  City VARCHAR(75) NOT NULL,
+  Street VARCHAR(100) NOT NULL,
+  CountryCode VARCHAR(10) NOT NULL,
+  Email VARCHAR(75) NOT NULL,
+  Phone VARCHAR(25) NOT NULL,
+  State INT NOT NULL
+);
+
+CREATE TABLE OrderItem(
+  OrderItemId BIGINT NOT NULL IDENTITY PRIMARY KEY,
+  ItemID BIGINT NOT NULL,
+  OrderId BIGINT NOT NULL,
+  Name VARCHAR(75) NOT NULL,
+  Price FLOAT NOT NULL,
+  Count INT NOT NULL,
+  FOREIGN KEY (OrderId) REFERENCES CustomerOrder(OrderId),
+);
+
+GO

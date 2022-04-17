@@ -43,6 +43,13 @@ services:
     ports:
     - "8084:8080"
   mssql:
+    image: ${REGISTRY_URL:-wws}/mssql-dev:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Mssql/Docker/Dockerfile
+    environment:
+      - SA_PASSWORD=WWSPass420*
+      - ACCEPT_EULA=Y
     ports:
     - "1433:1433"
   mongodb:
