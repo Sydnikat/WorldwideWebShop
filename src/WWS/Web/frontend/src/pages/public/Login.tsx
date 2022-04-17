@@ -13,7 +13,7 @@ import {
   InputRightElement,
   useToast
 } from "@chakra-ui/react";
-import {homeRoute, registerRoute} from "../../constants/routeConstants";
+import {adminRoute, homeRoute, registerRoute} from "../../constants/routeConstants";
 import {LoginRequest, User} from "../../types/dto/User";
 import {useMutation} from "react-query";
 import { login } from "../../services/queries";
@@ -95,6 +95,10 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
     history.push(registerRoute);
   };
 
+  const onInventoryClick = () => {
+    history.push(adminRoute);
+  };
+
   const handleShowClick = () => setShowPassword(!showPassword);
 
   return (
@@ -167,6 +171,12 @@ const Login: React.FC<RouteComponentProps> = ({ history }) => {
           Még nincs fiókja?{" "}
           <Button variant="link" color="blue" onClick={onSignupClick}>
             Regisztráció
+          </Button>
+        </Box>
+        <Box>
+          Termékeket árusítana?{" "}
+          <Button variant="link" color="blue" onClick={onInventoryClick}>
+            Raktár
           </Button>
         </Box>
       </Flex>

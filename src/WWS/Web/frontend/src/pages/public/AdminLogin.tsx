@@ -65,6 +65,10 @@ const AdminLogin: React.FC<RouteComponentProps> = ({ history }) => {
     }
   };
 
+  const onGoBackClick = () => {
+    history.push(homeRoute);
+  };
+
   return (
     <>
       <Flex
@@ -109,6 +113,13 @@ const AdminLogin: React.FC<RouteComponentProps> = ({ history }) => {
             </form>
           </Box>
         </Stack>
+
+        <Box>
+          <Button variant="link" color="blue" onClick={onGoBackClick}>
+            Vissza
+          </Button>
+          {" "}a főoldalra
+        </Box>
 
       </Flex>
     </>
