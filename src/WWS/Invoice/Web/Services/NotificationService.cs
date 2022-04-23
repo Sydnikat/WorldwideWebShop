@@ -53,6 +53,9 @@ namespace Web.Services
                 props.DeliveryMode = 2;
 
                 channel.QueueDeclare(queue: rabbimqSettings.InvoiceCreatedQueue, durable: true, exclusive: false, autoDelete: false, arguments: null);
+
+                channel.ExchangeDeclare(exchange: rabbimqSettings.InvoiceCreatedExchange, type: ExchangeType.Fanout, durable: true, autoDelete: false, arguments: null);
+
                 channel.BasicPublish(exchange: rabbimqSettings.InvoiceCreatedExchange, routingKey: rabbimqSettings.InvoiceCreatedRoutingkey, basicProperties: props, body: body);
             }
 
