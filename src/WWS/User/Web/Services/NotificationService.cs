@@ -29,8 +29,12 @@ namespace Web.Services
                 Email = user.Email.Value
             };
 
+            Console.WriteLine("creating new event...");
+
             var msg = JsonSerializer.Serialize(newEvent, Common.DTOs.JsonSerializationOptions.options);
             var body = Encoding.UTF8.GetBytes(msg);
+
+            Console.WriteLine("msg serialized");
 
             var factory = new ConnectionFactory()
             {
@@ -42,13 +46,20 @@ namespace Web.Services
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
+                Console.WriteLine("channel created...");
                 var props = channel.CreateBasicProperties();
                 props.ContentType = "application/json";
                 props.ContentEncoding = "UTF-8";
                 props.DeliveryMode = 2;
 
                 channel.QueueDeclare(queue: rabbimqSettings.MailQueue, durable: true, exclusive: false, autoDelete: false, arguments: null);
+                Console.WriteLine("channel created...");
+
+                channel.ExchangeDeclare(exchange: rabbimqSettings.Exchange, type: ExchangeType.Fanout, durable: true, autoDelete: false, arguments: null);
+                Console.WriteLine("exchange created...");
+
                 channel.BasicPublish(exchange: rabbimqSettings.Exchange, routingKey: rabbimqSettings.RoutingKey, basicProperties: props, body: body);
+                Console.WriteLine("event published...");
             }
 
             return Task.CompletedTask;

@@ -46,6 +46,7 @@ namespace Web.Services
                 );
 
             var savedUser = await userRepository.Save(newUser).ConfigureAwait(false);
+            Console.WriteLine($"user with id: ${savedUser.Id} was created...");
 
             if (savedUser != null)
                 await notificationService.PublishUserRegisteredEvent(savedUser).ConfigureAwait(false);
