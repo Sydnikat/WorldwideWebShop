@@ -99,10 +99,13 @@ namespace Web.Controllers
             }
             catch (Refit.ApiException ex)
             {
+                Console.WriteLine(ex.StatusCode);
+                Console.WriteLine(ex.Message);
+
                 if (ex.StatusCode == HttpStatusCode.NotFound)
                     throw new WWSException("Item not found", StatusCodes.Status404NotFound);
                 else
-                    throw;
+                    throw ex;
             }
             
         }
