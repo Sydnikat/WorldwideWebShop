@@ -32,11 +32,16 @@ namespace Dal.Config
 
         private static void configureSqlServer(IServiceCollection services, IConfiguration config)
         {
-            var mssqlConnection = Environment.GetEnvironmentVariable(EnvironmentVariables.MSSQLConnection);
+            var mssqlUsername = Environment.GetEnvironmentVariable(EnvironmentVariables.MSSQLUsername);
+            var mssqlPassword = Environment.GetEnvironmentVariable(EnvironmentVariables.MSSQLPassword);
+            var mssqlDatabase = Environment.GetEnvironmentVariable(EnvironmentVariables.MSSQLDatabase);
+            var mssqlHost = Environment.GetEnvironmentVariable(EnvironmentVariables.MSSQLHost);
+
+            var mssqlConnectionStr = $"Server={mssqlHost};User Id={mssqlUsername};Password={mssqlPassword};Database={mssqlDatabase};";
 
             services.AddSingleton<IDatabaseSettings>(new DatabaseSettings()
             {
-                MSSQLConnection = mssqlConnection,
+                MSSQLConnection = mssqlConnectionStr,
             });
         }
     }

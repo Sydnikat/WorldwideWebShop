@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Mapping;
+using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Refit;
 using System;
@@ -17,6 +18,9 @@ namespace Inventory.Supply.Web.Config
     {
         public static void AddRefit(this IServiceCollection services)
         {
+            var userServiceUrl = Environment.GetEnvironmentVariable(EnvironmentVariables.UserServiceUrl);
+            var inventoryServiceUrl = Environment.GetEnvironmentVariable(EnvironmentVariables.InventoryServiceUrl);
+            var invoiceServiceUrl = Environment.GetEnvironmentVariable(EnvironmentVariables.InvoiceServiceUrl);
 
             bool RetryableStatusPredicate(HttpStatusCode statusCode) =>
                 statusCode == HttpStatusCode.BadGateway ||
@@ -28,15 +32,15 @@ namespace Inventory.Supply.Web.Config
                     .WaitAndRetryAsync(3, retryCount => TimeSpan.FromMilliseconds(100 * Math.Pow(2, retryCount)));
 
             services.AddRefitClient<IUserApiClient>()
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://user"))
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri(userServiceUrl))
                 .AddPolicyHandler(policyHandler);
 
             services.AddRefitClient<IInventoryApiClient>()
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://inventory:8080"))
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri(inventoryServiceUrl))
                 .AddPolicyHandler(policyHandler);
 
             services.AddRefitClient<IInvoiceApiClient>()
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri("http://invoice"))
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri(invoiceServiceUrl))
                 .AddPolicyHandler(policyHandler);
         }
     }

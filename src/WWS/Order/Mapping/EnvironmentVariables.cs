@@ -24,5 +24,13 @@ namespace Mapping
         public static readonly string RedisCartsInstance = "REDIS_CARTS_INSTANCE";
 
         public static readonly string MSSQLConnection = "MSSQL_CONNECTION";
+        public static readonly string MSSQLHost = "MSSQL_HOST";
+        public static readonly string MSSQLDatabase = "MSSQL_DATABASE";
+        public static readonly string MSSQLUsername = "MSSQL_USERNAME";
+        public static readonly string MSSQLPassword = "MSSQL_PASSWORD";
+
+        public static readonly string UserServiceUrl = "USER_SERVICE_URL";
+        public static readonly string InventoryServiceUrl = "INVENTORY_SERVICE_URL";
+        public static readonly string InvoiceServiceUrl = "INVOICE_SERVICE_URL";
     }
 }
