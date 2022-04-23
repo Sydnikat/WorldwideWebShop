@@ -38,6 +38,9 @@ namespace Web.Services.Receivers
             _channel = _connection.CreateModel();
 
             _channel.QueueDeclare(queue: rabbimqSettings.CategoryDiscountQueue, durable: true, exclusive: false, autoDelete: false, arguments: null);
+
+            _channel.ExchangeDeclare(exchange: rabbimqSettings.CategoryDiscountExchange, type: ExchangeType.Fanout, durable: true, autoDelete: false, null);
+
             _channel.QueueBind(queue: rabbimqSettings.CategoryDiscountQueue, exchange: rabbimqSettings.CategoryDiscountExchange, routingKey: rabbimqSettings.CategoryDiscountRoutingkey, arguments: null);
         }
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
