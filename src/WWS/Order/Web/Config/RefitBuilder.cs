@@ -19,7 +19,8 @@ namespace Inventory.Supply.Web.Config
         public static void AddRefit(this IServiceCollection services)
         {
             var userServiceUrl = Environment.GetEnvironmentVariable(EnvironmentVariables.UserServiceUrl);
-            var inventoryServiceUrl = Environment.GetEnvironmentVariable(EnvironmentVariables.InventoryServiceUrl);
+            var inventoryServiceHost = Environment.GetEnvironmentVariable(EnvironmentVariables.InventoryServiceHost);
+            var inventoryServicPort = Environment.GetEnvironmentVariable(EnvironmentVariables.InventoryServicePort);
             var invoiceServiceUrl = Environment.GetEnvironmentVariable(EnvironmentVariables.InvoiceServiceUrl);
 
             bool RetryableStatusPredicate(HttpStatusCode statusCode) =>
@@ -35,8 +36,13 @@ namespace Inventory.Supply.Web.Config
                 .ConfigureHttpClient(c => c.BaseAddress = new Uri(userServiceUrl))
                 .AddPolicyHandler(policyHandler);
 
+            var uriBuilder = new UriBuilder();
+            uriBuilder.Scheme = "http";
+            uriBuilder.Host = inventoryServiceHost;
+            uriBuilder.Port = int.Parse(inventoryServicPort);
+
             services.AddRefitClient<IInventoryApiClient>()
-                .ConfigureHttpClient(c => c.BaseAddress = new Uri(inventoryServiceUrl))
+                .ConfigureHttpClient(c => c.BaseAddress = uriBuilder.Uri)
                 .AddPolicyHandler(policyHandler);
 
             services.AddRefitClient<IInvoiceApiClient>()

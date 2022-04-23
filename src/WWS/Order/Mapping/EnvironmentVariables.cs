@@ -30,7 +30,8 @@ namespace Mapping
         public static readonly string MSSQLPassword = "MSSQL_PASSWORD";
 
         public static readonly string UserServiceUrl = "USER_SERVICE_URL";
-        public static readonly string InventoryServiceUrl = "INVENTORY_SERVICE_URL";
+        public static readonly string InventoryServiceHost = "INVENTORY_SERVICE_HOST";
+        public static readonly string InventoryServicePort = "INVENTORY_SERVICE_PORT";
         public static readonly string InvoiceServiceUrl = "INVOICE_SERVICE_URL";
     }
 }
