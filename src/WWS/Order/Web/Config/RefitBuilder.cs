@@ -36,10 +36,8 @@ namespace Inventory.Supply.Web.Config
                 .ConfigureHttpClient(c => c.BaseAddress = new Uri(userServiceUrl))
                 .AddPolicyHandler(policyHandler);
 
-            var uriBuilder = new UriBuilder("http", inventoryServiceHost, int.Parse(inventoryServicPort));
-
             services.AddRefitClient<IInventoryApiClient>()
-                .ConfigureHttpClient(c => c.BaseAddress = uriBuilder.Uri)
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri($"http://{inventoryServiceHost}:{inventoryServicPort}"))
                 .AddPolicyHandler(policyHandler);
 
             services.AddRefitClient<IInvoiceApiClient>()
