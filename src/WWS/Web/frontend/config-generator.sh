@@ -24,3 +24,5 @@ window.config = {
     baseUrl: \"${REACT_APP_FRONTEND_BASE:-"http://localhost:5080"}\",
 }
 " > ${CONFFILE}
+
+echo "Generated config file $CONFFILE"

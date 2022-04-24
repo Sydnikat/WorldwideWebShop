@@ -17,7 +17,7 @@ jobs:
         name: sydnikat/wws-web
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        dockerfile: Web/Docker/Dockerfile.dev
+        dockerfile: Web/Docker/Dockerfile
         context: .
         workdir: src/WWS
         tags: "dev-latest"
