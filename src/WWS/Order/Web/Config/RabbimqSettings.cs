@@ -11,7 +11,7 @@ namespace Web.Config
         public string Host { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
-        public string OrderStateChangedQueue { get; set; }
+        //public string OrderStateChangedQueue { get; set; }
         public string OrderStateChangedQueueName { get; set; }
         public string OrderCreatedQueue { get; set; }
         public string OrderCreatedExchange { get; set; }
@@ -24,7 +24,7 @@ namespace Web.Config
         public string Host { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
-        public string OrderStateChangedQueue { get; set; }
+        //public string OrderStateChangedQueue { get; set; }
         public string OrderStateChangedQueueName { get; set; }
         public string OrderCreatedQueue { get; set; }
         public string OrderCreatedExchange { get; set; }

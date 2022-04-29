@@ -20,7 +20,7 @@ namespace Web.Config
             services.AddMassTransit(s =>
             {
                 
-                s.AddConsumer<OrderStataChangedEventHandler>();
+                s.AddConsumer<OrderStateChangedEventHandler>();
 
                 s.UsingRabbitMq((ctx, c) =>
                 {
@@ -33,7 +33,7 @@ namespace Web.Config
 
                     c.ReceiveEndpoint(settings.OrderStateChangedQueueName, e =>
                     {
-                        e.ConfigureConsumer<OrderStataChangedEventHandler>(ctx);
+                        e.ConfigureConsumer<OrderStateChangedEventHandler>(ctx);
                     });
                 });
                 

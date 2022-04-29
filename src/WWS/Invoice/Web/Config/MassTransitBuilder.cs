@@ -30,7 +30,7 @@ namespace Web.Config
                         });
                 });
 
-                EndpointConvention.Map<IOrderStataChangedEvent>(new Uri(settings.OrderStateChangedQueue));
+                EndpointConvention.Map<IOrderStateChangedEvent>(new Uri(settings.OrderStateChangedQueue));
                 
             });
 

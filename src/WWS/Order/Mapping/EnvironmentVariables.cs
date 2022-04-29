@@ -13,7 +13,7 @@ namespace Mapping
         public static readonly string RabbimqPassword = "RABBITMQ_PASSWORD";
         public static readonly string RabbimqFullHost = "RABBITMQ_FULL_HOST";
 
-        public static readonly string RabbimqOrderStateChangedQueue = "RABBITMQ_ORDER_STATE_CHANGED_QUEUE_FULL_URL";
+        //public static readonly string RabbimqOrderStateChangedQueue = "RABBITMQ_ORDER_STATE_CHANGED_QUEUE_FULL_URL";
         public static readonly string RabbimqOrderStateChangedQueueName = "RABBITMQ_ORDER_STATE_CHANGED_QUEUE_NAME";
 
         public static readonly string RabbimqOrderCreatedQueue = "RABBITMQ_ORDER_CREATED_QUEUE";

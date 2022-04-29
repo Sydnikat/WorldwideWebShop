@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace Web.IntegrationEvents
 {
-    public class OrderStateChangedEvent : IOrderStataChangedEvent
+    public class OrderStateChangedEvent : IOrderStateChangedEvent
     {
         public Guid OrderCode { get; set; }
         public bool Success { get; set; }
     }
 
-    public interface IOrderStataChangedEvent
+    public interface IOrderStateChangedEvent
     {
         public Guid OrderCode { get; set; }
         public bool Success { get; set; }

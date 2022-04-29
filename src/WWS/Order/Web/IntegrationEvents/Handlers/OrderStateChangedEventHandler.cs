@@ -7,16 +7,16 @@ using Web.Services;
 
 namespace Web.IntegrationEvents.Handlers
 {
-    public class OrderStataChangedEventHandler : IConsumer<IOrderStateChangedEvent>
+    public class OrderStateChangedEventHandler : IConsumer<OrderStateChangedEvent>
     {
         private readonly IOrderService orderService;
 
-        public OrderStataChangedEventHandler(IOrderService orderService)
+        public OrderStateChangedEventHandler(IOrderService orderService)
         {
             this.orderService = orderService;
         }
 
-        public async Task Consume(ConsumeContext<IOrderStateChangedEvent> context)
+        public async Task Consume(ConsumeContext<OrderStateChangedEvent> context)
         {
             var orderCode = context.Message.OrderCode;
             var success = context.Message.Success;

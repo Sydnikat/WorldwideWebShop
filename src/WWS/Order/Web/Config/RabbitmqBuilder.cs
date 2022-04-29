@@ -18,7 +18,7 @@ namespace Web.Config
             var password = Environment.GetEnvironmentVariable(EnvironmentVariables.RabbimqPassword);
             var fullHostName = Environment.GetEnvironmentVariable(EnvironmentVariables.RabbimqFullHost);
 
-            var orderStateChangedQueue = Environment.GetEnvironmentVariable(EnvironmentVariables.RabbimqOrderStateChangedQueue);
+            //var orderStateChangedQueue = Environment.GetEnvironmentVariable(EnvironmentVariables.RabbimqOrderStateChangedQueue);
             var orderStateChangedQueueName = Environment.GetEnvironmentVariable(EnvironmentVariables.RabbimqOrderStateChangedQueueName);
 
             var orderCreatedQueue = Environment.GetEnvironmentVariable(EnvironmentVariables.RabbimqOrderCreatedQueue);
@@ -31,7 +31,7 @@ namespace Web.Config
                 Username = username,
                 Password = password,
                 FullHost = fullHostName,
-                OrderStateChangedQueue = orderStateChangedQueue,
+                //OrderStateChangedQueue = orderStateChangedQueue,
                 OrderStateChangedQueueName = orderStateChangedQueueName,
                 OrderCreatedQueue = orderCreatedQueue,
                 OrderCreatedExchange = orderCreatedExchange,
