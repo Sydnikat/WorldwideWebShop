@@ -18,8 +18,8 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0-preview.1.21102.12" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0-preview.1.21102.12" />
-    <PackageReference Include="MongoDB.Bson" Version="2.13.0-beta1" />
-    <PackageReference Include="MongoDB.Driver" Version="2.13.0-beta1" />
+    <PackageReference Include="MongoDB.Bson" Version="2.15.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.15.0" />
   </ItemGroup>
 
   <ItemGroup>
