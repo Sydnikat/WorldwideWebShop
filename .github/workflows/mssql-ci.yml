@@ -10,7 +10,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
+      
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v3
+      with:
+        images: |
+          sydnikat/wws-mssql
+        tags: |
+          type=semver,pattern={{version}}
+    
     - name: Build and Publish dev image to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
@@ -20,4 +31,4 @@ jobs:
         dockerfile: Mssql/Docker/Dockerfile
         context: .
         workdir: src/WWS
-        tags: "dev-latest"
+        tags: "dev-latest,${{ steps.meta.outputs.tags }}"
