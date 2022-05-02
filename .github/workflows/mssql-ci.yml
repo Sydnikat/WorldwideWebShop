@@ -20,6 +20,8 @@ jobs:
         images: |
           sydnikat/wws-mssql
         tags: |
+          type=ref,event=branch
+          type=ref,event=pr
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
     
