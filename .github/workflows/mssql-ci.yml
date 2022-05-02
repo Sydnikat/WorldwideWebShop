@@ -6,8 +6,6 @@ on:
     paths:
       - "src/WWS/Mssql/**"
       - ".github/workflows/mssql-ci.yml"
-    tags:
-      - "v*"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,8 +21,7 @@ jobs:
           sydnikat/wws-mssql
         tags: |
           type=semver,pattern={{version}}
-          type=semver,pattern={{raw}}
-          type=semver,pattern={{major}}.{{minor}}
+          type=ref,event=tag
     
     - name: Build and Publish dev image to Registry
       uses: elgohr/Publish-Docker-Github-Action@v4
