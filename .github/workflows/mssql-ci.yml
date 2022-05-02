@@ -22,6 +22,6 @@ jobs:
         dockerfile: Mssql/Docker/Dockerfile
         context: .
         workdir: src/WWS
-        tag_semver: true
+        tag_semver: refs/tags/v1.2.3
         # tags: ${{ steps.meta.outputs.tags }}
         # tags: "dev-latest,${{ steps.meta.outputs.tags }}"
