@@ -6,6 +6,8 @@ on:
     paths:
       - "src/WWS/Mssql/**"
       - ".github/workflows/mssql-ci.yml"
+    tags:
+     - "0.*"
 jobs:
   build:
     runs-on: ubuntu-latest
