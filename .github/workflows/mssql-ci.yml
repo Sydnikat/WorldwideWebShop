@@ -31,5 +31,6 @@ jobs:
         dockerfile: Mssql/Docker/Dockerfile
         context: .
         workdir: src/WWS
-        # tags: "dev-latest,${{ steps.meta.outputs.tags }},dev-${{ env.STATE_RELEASE_VERSION }}"
         tag_semver: true
+        tags: ${{ steps.meta.outputs.tags }}
+        # tags: "dev-latest,${{ steps.meta.outputs.tags }},dev-${{ env.STATE_RELEASE_VERSION }}"
