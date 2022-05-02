@@ -6,12 +6,23 @@ on:
     paths:
       - "src/WWS/Mssql/**"
       - ".github/workflows/mssql-ci.yml"
+    tags: 'v*'
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+      
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v3
+      with:
+        images: |
+          sydnikat/wws-mssql
+        tags: |
+          # minimal
+          type=semver,pattern={{version}}
     
     - name: Build and Publish dev image to Registry
       uses: elgohr/Publish-Docker-Github-Action@v4
@@ -22,6 +33,6 @@ jobs:
         dockerfile: Mssql/Docker/Dockerfile
         context: .
         workdir: src/WWS
-        tag_semver: refs/tags/v1.2.3
+        tag_semver: true
         # tags: ${{ steps.meta.outputs.tags }}
-        # tags: "dev-latest,${{ steps.meta.outputs.tags }}"
+        tags: "dev-latest,${{ steps.meta.outputs.tags }}"
